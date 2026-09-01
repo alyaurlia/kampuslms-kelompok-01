@@ -1,4 +1,5 @@
 Nama    : Ade Putri Amanda
+
 NIM     : 10241002
 
 # Read → Break → Fix → Build #
@@ -18,7 +19,23 @@ Jawab: Bagian yang mengurus *route* (mengatur jalur/URL) adalah *withRouting()*,
 
 Jawab:
 
+`<?php`
+
+`use Illuminate\Support\Facades\Route;`
+
+`Route::get('/', function () {`
+    `return view('welcome');`
+`});`
+
 <img src="asset/selamat datang.png">
+
+`<?php`
+
+`use Illuminate\Support\Facades\Route;`
+
+`Route::get('/', function () {`
+   ` return ('kelompok 1');`
+`});`
 
 <img src="asset/kelompok 1.png">
 
@@ -26,3 +43,5 @@ Jawab:
 Tulis jawabannya di docs/minggu-01-catatan.md di repo kelompok. Setiap anggota menulis catatan sendiri di berkas terpisah (docs/minggu-01-<nama>.md).
 
 Jawab: 
+
+<img src="asset/php artisan route list.png">
