@@ -62,7 +62,7 @@ dan setelah saya jalan kan di website munucl hasil akhir yang sesuai
 
 <img src="image/Andika3.jpeg">
 
-1 rute (`/`) didefinisikan secara manual di file `routes/web.php` pada baris ke-5.
+1 rute (`/`) didefinisikan secara manual di file `routes/web.php` pada baris ke-5..
 
 ---
 
@@ -76,4 +76,5 @@ Lakukan satu per satu, catat pesan errornya, lalu kembalikan:
 | 2 | Kosongkan nilai `APP_KEY` di `.env` |halaman yang muncul akan eror dikarenakan kita mengahpus `APP_KEY` nya sehingga laravel tidak enkripsi | <img src="image/No 2 tabel.png"> |
 | 3 | Ubah `DB_DATABASE` menjadi nama yang tidak ada |akan terjadi eror dikarenakan laravel tidak bisa menemukan database yang telah kita buat | <img src="image/No 3 tabel.png">  |
 | 4 | Ubah `APP_DEBUG=false`, lalu ulangi nomor 3 |tampilan akan menunjukkan halaman `"500 Server Error"` yang kosong tanpa detail pesan error| <img src="image/No 4 tabel.png"> |
+
 
