@@ -62,7 +62,7 @@ dan setelah saya jalan kan di website munucl hasil akhir yang sesuai
 
 <img src="image/Andika3.jpeg">
 
-1 rute (`/`) didefinisikan secara manual di file `routes/web.php` pada baris ke-5..
+1 rute (`/`) didefinisikan secara manual di file `routes/web.php` pada baris ke-5...
 
 ---
 
