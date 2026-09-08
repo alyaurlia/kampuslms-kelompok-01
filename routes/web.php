@@ -9,3 +9,7 @@ Route::get('/', function () {
 Route::get('/tentang', function () {
     return view('tentang');
 });
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->name('dashboard');
