@@ -75,4 +75,10 @@ class CourseController extends Controller
  
         return view('mata-kuliah.show', compact('mataKuliah'));
     }
+
+    public function tentang()
+    {
+        return view('tentang');
+    }
+    
 }
