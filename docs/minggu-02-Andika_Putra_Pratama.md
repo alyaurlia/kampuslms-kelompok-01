@@ -12,7 +12,7 @@ Ambil route `/tentang` yang Anda buat minggu lalu. Tanpa AI, tulis di catatan An
 ### 1. Baris mana di `routes/web.php` yang menangkapnya?<br>
 Route `/tentang` berada di garis nomer 9 pada file `routes/web.php`.
 
-<br>
+<br> 
 
 ### 2. Kalau ditangani controller, berkas dan method mana?
 tidak ditangani oleh controller karena di file `routes/web.php` tepatnya di line 9 route langsung berisi fungsi tidak memanggil controller

@@ -53,6 +53,6 @@ Sistem manajemen pembelajaran kampus berbasis web menggunakan Laravel.
 |---|---|
 | Ade Putri Amanda | Frontend |
 | Adelia Isra Ekaputri | Backend |
-| Adelia Cyntia Renata | UI/UX |
+| Adelia Cyntia Renata | Frontend |
 | Alya Auralia | Database |
 | Andika Putra Pratama | Backend |
