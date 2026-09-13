@@ -1,7 +1,7 @@
 <?php
- 
+
 namespace App\Http\Controllers;
- 
+
 class CourseController extends Controller
 {
     /**
@@ -39,7 +39,7 @@ class CourseController extends Controller
             ],
         ];
     }
- 
+
     /**
      * GET /mata-kuliah
      * Menampilkan daftar seluruh mata kuliah.
@@ -50,10 +50,10 @@ class CourseController extends Controller
     public function index()
     {
         $mataKuliah = $this->data();
- 
-        return view('mata-kuliah.index', compact('mataKuliah'));
+
+        return view('courses.index', compact('mataKuliah'));
     }
- 
+
     /**
      * GET /mata-kuliah/{mata_kuliah}
      * Menampilkan detail satu mata kuliah berdasarkan id.
@@ -68,17 +68,16 @@ class CourseController extends Controller
         // collect() dipakai supaya bisa pakai method firstWhere() yang ringkas,
         // menggantikan sementara apa yang nanti dilakukan Course::findOrFail().
         $mataKuliah = collect($this->data())->firstWhere('id', $id);
- 
+
         // abort(404) dipanggil manual karena belum ada findOrFail() dari Eloquent;
         // ini menjaga perilaku tetap sama persis begitu nanti pindah ke database.
         abort_if(is_null($mataKuliah), 404);
- 
-        return view('mata-kuliah.show', compact('mataKuliah'));
+
+        return view('courses.show', compact('mataKuliah'));
     }
 
     public function tentang()
     {
         return view('tentang');
     }
-
 }

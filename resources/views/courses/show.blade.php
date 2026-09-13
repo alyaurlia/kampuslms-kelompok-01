@@ -7,22 +7,29 @@
 
     {{-- Tombol kembali ditaruh di atas judul supaya konsisten dengan pola
          navigasi umum "list -> detail -> kembali ke list". --}}
-    <a href="{{ route('mata-kuliah.index') }}">&larr; Kembali ke Daftar Mata Kuliah</a>
+    <a href="{{ route('mata-kuliah.index') }}"
+       style="font-family:Arial, sans-serif; font-size:0.85rem; color:var(--color-ink-soft); text-decoration:none;">
+        &larr; Kembali ke Daftar Mata Kuliah
+    </a>
 
-    <h1>{{ $mataKuliah['nama'] }}</h1>
+    <h1 style="font-size:1.6rem; margin:0.75rem 0 1.5rem;">{{ $mataKuliah['nama'] }}</h1>
 
-    <dl>
-        <dt>Kode</dt>
-        <dd>{{ $mataKuliah['kode'] }}</dd>
+    <section style="background:var(--color-surface); border:1px solid var(--color-border); border-radius:6px; padding:1.5rem;">
 
-        <dt>SKS</dt>
-        <dd>{{ $mataKuliah['sks'] }}</dd>
+        <dl style="font-family:Arial, sans-serif; font-size:0.9rem; margin:0;">
+            <dt style="color:var(--color-ink-soft); font-weight:600; margin-bottom:0.25rem;">Kode</dt>
+            <dd style="margin:0 0 1rem;">{{ $mataKuliah['kode'] }}</dd>
 
-        <dt>Dosen Pengampu</dt>
-        <dd>{{ $mataKuliah['dosen'] }}</dd>
+            <dt style="color:var(--color-ink-soft); font-weight:600; margin-bottom:0.25rem;">SKS</dt>
+            <dd style="margin:0 0 1rem;">{{ $mataKuliah['sks'] }}</dd>
 
-        <dt>Deskripsi</dt>
-        <dd>{{ $mataKuliah['deskripsi'] }}</dd>
-    </dl>
+            <dt style="color:var(--color-ink-soft); font-weight:600; margin-bottom:0.25rem;">Dosen Pengampu</dt>
+            <dd style="margin:0 0 1rem;">{{ $mataKuliah['dosen'] }}</dd>
+
+            <dt style="color:var(--color-ink-soft); font-weight:600; margin-bottom:0.25rem;">Deskripsi</dt>
+            <dd style="margin:0; line-height:1.6;">{{ $mataKuliah['deskripsi'] }}</dd>
+        </dl>
+
+    </section>
 
 </x-layout>
