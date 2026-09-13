@@ -17,3 +17,4 @@ Route::get('/dashboard', function () {
 
 Route::get('/mata-kuliah', [CourseController::class, 'index'])->name('mata-kuliah.index');
 Route::get('/mata-kuliah/{mata_kuliah}', [CourseController::class, 'show'])->name('mata-kuliah.show');
+
