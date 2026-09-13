@@ -77,11 +77,22 @@
 <body>
 
     <header class="app-header">
-        <span class="brand">LMS Kampus</span>
-        <nav>
-            <a href="{{ route('dashboard') }}">Dasbor</a>
-        </nav>
-    </header>
+    <span class="brand">LMS Kampus</span>
+   <nav>
+    <a href="{{ route('dashboard') }}"
+       style="{{ request()->routeIs('dashboard') ? 'color:#fff; text-decoration:underline;' : '' }}">
+        Dashboard
+    </a>
+    <a href="{{ route('mata-kuliah.index') }}"
+       style="{{ request()->routeIs('mata-kuliah.*') ? 'color:#fff; text-decoration:underline;' : '' }}">
+        Mata Kuliah
+    </a>
+    <a href="{{ route('tentang') }}"
+       style="{{ request()->routeIs('tentang') ? 'color:#fff; text-decoration:underline;' : '' }}">
+        Tentang
+    </a>
+</nav>
+</header>
 
     <main>
         {{-- Slot default: tempat konten tiap halaman disisipkan --}}
