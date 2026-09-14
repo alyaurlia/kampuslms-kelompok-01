@@ -1,3 +1,4 @@
+
 @props(['title' => 'LMS Kampus'])
 <!DOCTYPE html>
 <html lang="id">
@@ -10,23 +11,24 @@
 
     <style>
         :root {
-            --color-bg: #F5F6F8;
+            --color-bg: #FFF8F2;
             --color-surface: #FFFFFF;
-            --color-ink: #1C2430;
-            --color-ink-soft: #5B6472;
-            --color-primary: #234E70;
-            --color-primary-dark: #16324A;
-            --color-border: #DDE1E7;
-            --color-accent: #C98A3C;
+            --color-ink: #2B1B22;
+            --color-ink-soft: #8A6B75;
+            --color-primary: #CB125E;
+            --color-primary-dark: #8F0D42;
+            --color-border: #F3D9C4;
+            --color-accent: #DEA249;
 
             /* Palet kartu mata kuliah (dipakai di index & show lewat
-               crc32(kode) % 5), diturunkan dari warna tema utama supaya
-               tetap serasi dengan nuansa navy/emas LMS ini. */
-            --color-card-1-from: #234E70; --color-card-1-to: #16324A; /* navy (primary) */
-            --color-card-2-from: #C98A3C; --color-card-2-to: #A66F2E; /* emas (accent) */
-            --color-card-3-from: #2E7D6B; --color-card-3-to: #1F5D50; /* teal tua */
-            --color-card-4-from: #7A3B4A; --color-card-4-to: #5C2C39; /* wine/maroon */
-            --color-card-5-from: #4A6178; --color-card-5-to: #364A5C; /* slate blue */
+               crc32(kode) % 5), diturunkan dari color palette
+               Sour Apple - Apricot Blossom - Pavilion Peach -
+               Candy Heart - Heather Berry - Paper Flower. */
+            --color-card-1-from: #CB125E; --color-card-1-to: #8F0D42; /* paper flower (primary) */
+            --color-card-2-from: #DEA249; --color-card-2-to: #B87F30; /* pavilion peach */
+            --color-card-3-from: #A9BF55; --color-card-3-to: #839343; /* sour apple */
+            --color-card-4-from: #F85988; --color-card-4-to: #D93E6C; /* heather berry */
+            --color-card-5-from: #EBD22F; --color-card-5-to: #C9AF1F; /* apricot blossom */
         }
 
         * { box-sizing: border-box; }
@@ -55,7 +57,7 @@
         }
 
         header.app-header nav a {
-            color: #E4E9EF;
+            color: #F3D9C4;
             text-decoration: none;
             font-family: Arial, Helvetica, sans-serif;
             font-size: 0.9rem;
