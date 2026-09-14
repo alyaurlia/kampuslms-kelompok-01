@@ -1,4 +1,3 @@
-
 @props(['title' => 'LMS Kampus'])
 <!DOCTYPE html>
 <html lang="id">
@@ -19,6 +18,15 @@
             --color-primary-dark: #16324A;
             --color-border: #DDE1E7;
             --color-accent: #C98A3C;
+
+            /* Palet kartu mata kuliah (dipakai di index & show lewat
+               crc32(kode) % 5), diturunkan dari warna tema utama supaya
+               tetap serasi dengan nuansa navy/emas LMS ini. */
+            --color-card-1-from: #234E70; --color-card-1-to: #16324A; /* navy (primary) */
+            --color-card-2-from: #C98A3C; --color-card-2-to: #A66F2E; /* emas (accent) */
+            --color-card-3-from: #2E7D6B; --color-card-3-to: #1F5D50; /* teal tua */
+            --color-card-4-from: #7A3B4A; --color-card-4-to: #5C2C39; /* wine/maroon */
+            --color-card-5-from: #4A6178; --color-card-5-to: #364A5C; /* slate blue */
         }
 
         * { box-sizing: border-box; }
@@ -71,6 +79,176 @@
             font-size: 0.8rem;
             color: var(--color-ink-soft);
             padding: 1.5rem;
+        }
+
+        /* =========================================================
+           Komponen kartu mata kuliah (dipakai bersama oleh
+           courses/index.blade.php dan courses/show.blade.php)
+           supaya tidak ada CSS yang diduplikasi di dua tempat.
+           ========================================================= */
+
+        .mk-back-link {
+            font-family: Arial, sans-serif;
+            font-size: 0.85rem;
+            color: var(--color-ink-soft);
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 0.75rem;
+        }
+        .mk-back-link:hover { text-decoration: underline; }
+
+        /* --- motif banner, dipakai baik di banner besar (show)
+               maupun banner kecil di grid (index) --- */
+        .mk-pattern-diamond::before {
+            background-image:
+                linear-gradient(45deg, rgba(255,255,255,0.25) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(255,255,255,0.25) 25%, transparent 25%);
+            background-size: 32px 32px;
+        }
+        .mk-pattern-triangle::before {
+            background-image:
+                linear-gradient(60deg, rgba(255,255,255,0.2) 25%, transparent 25.5%),
+                linear-gradient(-60deg, rgba(255,255,255,0.2) 25%, transparent 25.5%);
+            background-size: 36px 42px;
+        }
+        .mk-pattern-circle::before {
+            background-image: radial-gradient(circle, rgba(255,255,255,0.25) 2px, transparent 2.5px);
+            background-size: 24px 24px;
+        }
+        [class^="mk-pattern-"]::before,
+        [class*=" mk-pattern-"]::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            opacity: 0.35;
+        }
+
+        .mk-badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: rgba(255, 255, 255, 0.92);
+            color: var(--color-primary-dark);
+            font-family: Arial, sans-serif;
+            font-weight: 700;
+            font-size: 0.75rem;
+            letter-spacing: 0.02em;
+            padding: 4px 12px;
+            border-radius: 6px;
+        }
+
+        /* --- halaman detail (show.blade.php) --- */
+        .mk-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .mk-banner {
+            position: relative;
+            height: 170px;
+        }
+        .mk-body {
+            padding: 1.5rem;
+            font-family: Arial, sans-serif;
+        }
+        .mk-title {
+            font-size: 1.5rem;
+            margin: 0 0 1.25rem;
+            color: var(--color-ink);
+        }
+        .mk-meta-row {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            padding-bottom: 1.25rem;
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+        .mk-meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        .mk-meta-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: var(--color-ink-soft);
+        }
+        .mk-meta-value {
+            font-size: 0.95rem;
+            color: var(--color-ink);
+        }
+        .mk-desc-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: var(--color-ink-soft);
+            margin: 0 0 0.5rem;
+        }
+        .mk-desc-text {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 0;
+            color: var(--color-ink);
+        }
+
+        /* --- halaman daftar (index.blade.php) --- */
+        .mk-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+        .mk-grid-card {
+            display: block;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 10px;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            transition: box-shadow 0.15s ease, transform 0.15s ease;
+        }
+        .mk-grid-card:hover {
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+        .mk-grid-banner {
+            position: relative;
+            height: 120px;
+        }
+        .mk-grid-arrow {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.92);
+            color: var(--color-primary-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+        .mk-grid-body {
+            padding: 1rem 1.1rem 1.2rem;
+            font-family: Arial, sans-serif;
+        }
+        .mk-grid-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0 0 0.4rem;
+            color: var(--color-primary);
+            line-height: 1.35;
+        }
+        .mk-grid-meta {
+            font-size: 0.8rem;
+            color: var(--color-ink-soft);
+            margin: 0;
         }
     </style>
 </head>

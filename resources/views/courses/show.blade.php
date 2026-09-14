@@ -2,34 +2,54 @@
     View show: menampilkan detail satu mata kuliah.
     $mataKuliah di sini adalah array asosiatif tunggal (bukan koleksi),
     sesuai bentuk data yang dikirim controller lewat compact().
+
+    Style kartu (.mk-card, .mk-banner, dst.) didefinisikan terpusat di
+    layout.blade.php supaya konsisten dan tidak diduplikasi dengan
+    courses/index.blade.php.
 --}}
 <x-layout :title="$mataKuliah['nama']">
 
     {{-- Tombol kembali ditaruh di atas judul supaya konsisten dengan pola
          navigasi umum "list -> detail -> kembali ke list". --}}
-    <a href="{{ route('mata-kuliah.index') }}"
-       style="font-family:Arial, sans-serif; font-size:0.85rem; color:var(--color-ink-soft); text-decoration:none;">
+    <a href="{{ route('mata-kuliah.index') }}" class="mk-back-link">
         &larr; Kembali ke Daftar Mata Kuliah
     </a>
 
-    <h1 style="font-size:1.6rem; margin:0.75rem 0 1.5rem;">{{ $mataKuliah['nama'] }}</h1>
+    @php
+        // Palet warna & motif dirotasi berdasarkan kode mata kuliah (crc32),
+        // memakai variabel --color-card-N-* yang sama dengan index.blade.php,
+        // supaya identitas visual satu mata kuliah konsisten di kedua halaman.
+        $mkPatterns = ['diamond', 'triangle', 'circle', 'diamond', 'triangle'];
+        $mkIndex = (crc32($mataKuliah['kode']) % 5) + 1;
+        $mkPattern = $mkPatterns[$mkIndex - 1];
+    @endphp
 
-    <section style="background:var(--color-surface); border:1px solid var(--color-border); border-radius:6px; padding:1.5rem;">
+    <div class="mk-card">
 
-        <dl style="font-family:Arial, sans-serif; font-size:0.9rem; margin:0;">
-            <dt style="color:var(--color-ink-soft); font-weight:600; margin-bottom:0.25rem;">Kode</dt>
-            <dd style="margin:0 0 1rem;">{{ $mataKuliah['kode'] }}</dd>
+        <div class="mk-banner mk-pattern-{{ $mkPattern }}"
+             style="background: linear-gradient(135deg, var(--color-card-{{ $mkIndex }}-from), var(--color-card-{{ $mkIndex }}-to));">
+            <span class="mk-badge">{{ $mataKuliah['kode'] }}</span>
+        </div>
 
-            <dt style="color:var(--color-ink-soft); font-weight:600; margin-bottom:0.25rem;">SKS</dt>
-            <dd style="margin:0 0 1rem;">{{ $mataKuliah['sks'] }}</dd>
+        <div class="mk-body">
+            <h1 class="mk-title">{{ $mataKuliah['nama'] }}</h1>
 
-            <dt style="color:var(--color-ink-soft); font-weight:600; margin-bottom:0.25rem;">Dosen Pengampu</dt>
-            <dd style="margin:0 0 1rem;">{{ $mataKuliah['dosen'] }}</dd>
+            <div class="mk-meta-row">
+                <div class="mk-meta-item">
+                    <span class="mk-meta-label">SKS</span>
+                    <span class="mk-meta-value">{{ $mataKuliah['sks'] }}</span>
+                </div>
+                <div class="mk-meta-item">
+                    <span class="mk-meta-label">Dosen Pengampu</span>
+                    <span class="mk-meta-value">{{ $mataKuliah['dosen'] }}</span>
+                </div>
+            </div>
 
-            <dt style="color:var(--color-ink-soft); font-weight:600; margin-bottom:0.25rem;">Deskripsi</dt>
-            <dd style="margin:0; line-height:1.6;">{{ $mataKuliah['deskripsi'] }}</dd>
-        </dl>
+            <div class="mk-desc">
+                <h2 class="mk-desc-label">Deskripsi</h2>
+                <p class="mk-desc-text">{{ $mataKuliah['deskripsi'] }}</p>
+            </div>
+        </div>
+    </div>
 
-    </section>
-
-</x-layout>
+</x-layout> 
