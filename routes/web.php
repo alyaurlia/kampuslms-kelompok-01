@@ -15,6 +15,4 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
 
-Route::get('/mata-kuliah', [CourseController::class, 'index'])->name('mata-kuliah.index');
-Route::get('/mata-kuliah/{mata_kuliah}', [CourseController::class, 'show'])->name('mata-kuliah.show');
-
+Route::resource('mata-kuliah', CourseController::class);
