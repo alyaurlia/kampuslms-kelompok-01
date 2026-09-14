@@ -1,54 +1,60 @@
 {{--
-    View index: menampilkan daftar mata kuliah dalam bentuk tabel.
+    View index: menampilkan daftar mata kuliah dalam bentuk grid kartu,
+    meniru gaya kartu "Kursusku" di Beranda ITK (banner bermotif + badge
+    kode + tombol aksi bulat), bukan lagi tabel.
+
+    Style kartu (.mk-grid, .mk-grid-card, dst.) didefinisikan terpusat di
+    layout.blade.php supaya konsisten dan tidak diduplikasi dengan
+    courses/show.blade.php.
+
     Dibungkus <x-layout> (bukan @extends) sesuai batasan komponen Blade.
 --}}
 <x-layout title="Daftar Mata Kuliah">
 
     <h1 style="font-size:1.6rem; margin-bottom:1.5rem;">Daftar Mata Kuliah</h1>
 
-    <section style="background:var(--color-surface); border:1px solid var(--color-border); border-radius:6px; padding:1.5rem;">
+    {{-- @forelse dipakai (bukan @foreach) supaya ada fallback rapi
+         kalau suatu saat $mataKuliah kosong, tanpa perlu if terpisah. --}}
+    @forelse ($mataKuliah as $mk)
+    @empty
+        <section style="background:var(--color-surface); border:1px solid var(--color-border); border-radius:6px; padding:1.5rem;">
+            <p style="margin:0; color:var(--color-ink-soft); text-align:center; font-family:Arial, sans-serif;">
+                Belum ada data mata kuliah.
+            </p>
+        </section>
+    @endforelse
 
-        {{-- @forelse dipakai (bukan @foreach) supaya ada fallback rapi
-             kalau suatu saat $mataKuliah kosong, tanpa perlu if terpisah. --}}
-        <table style="width:100%; border-collapse:collapse; font-family:Arial, sans-serif; font-size:0.9rem;">
-            <thead>
-                <tr style="text-align:left; border-bottom:2px solid var(--color-border);">
-                    <th style="padding:0.6rem 0.5rem; color:var(--color-ink-soft); font-weight:600;">Kode</th>
-                    <th style="padding:0.6rem 0.5rem; color:var(--color-ink-soft); font-weight:600;">Nama</th>
-                    <th style="padding:0.6rem 0.5rem; color:var(--color-ink-soft); font-weight:600;">SKS</th>
-                    <th style="padding:0.6rem 0.5rem; color:var(--color-ink-soft); font-weight:600;">Dosen</th>
-                    <th style="padding:0.6rem 0.5rem; color:var(--color-ink-soft); font-weight:600;">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($mataKuliah as $mk)
-                    <tr style="{{ !$loop->last ? 'border-bottom:1px solid var(--color-border);' : '' }}">
+    @if (count($mataKuliah))
+        <div class="mk-grid">
+            @foreach ($mataKuliah as $mk)
+                @php
+                    // Palet & motif sama persis dengan show.blade.php, memakai
+                    // variabel --color-card-N-* dari layout.blade.php, supaya
+                    // satu mata kuliah punya identitas visual yang konsisten
+                    // di daftar maupun di halaman detailnya.
+                    $mkPatterns = ['diamond', 'triangle', 'circle', 'diamond', 'triangle'];
+                    $mkIndex = (crc32($mk['kode']) % 5) + 1;
+                    $mkPattern = $mkPatterns[$mkIndex - 1];
+                @endphp
+
+                <a href="{{ route('mata-kuliah.show', $mk['id']) }}" class="mk-grid-card">
+
+                    <div class="mk-grid-banner mk-pattern-{{ $mkPattern }}"
+                         style="background: linear-gradient(135deg, var(--color-card-{{ $mkIndex }}-from), var(--color-card-{{ $mkIndex }}-to));">
+                        <span class="mk-badge">{{ $mk['kode'] }}</span>
+                        <span class="mk-grid-arrow" aria-hidden="true">&#10132;</span>
+                    </div>
+
+                    <div class="mk-grid-body">
                         {{-- Semua output variabel pakai {{ }} agar otomatis
                              di-escape, sesuai batasan yang diminta. --}}
-                        <td style="padding:0.6rem 0.5rem;">{{ $mk['kode'] }}</td>
-                        <td style="padding:0.6rem 0.5rem; font-weight:600;">{{ $mk['nama'] }}</td>
-                        <td style="padding:0.6rem 0.5rem;">{{ $mk['sks'] }}</td>
-                        <td style="padding:0.6rem 0.5rem;">{{ $mk['dosen'] }}</td>
-                        <td style="padding:0.6rem 0.5rem;">
-                            {{-- route() dengan parameter id, bukan URL hardcode
-                                 seperti "/mata-kuliah/1", supaya tetap benar
-                                 walau struktur URI berubah. --}}
-                            <a href="{{ route('mata-kuliah.show', $mk['id']) }}"
-                               style="color:var(--color-primary); text-decoration:none; font-weight:600;">
-                                Detail &rarr;
-                            </a>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" style="padding:1rem 0.5rem; color:var(--color-ink-soft); text-align:center;">
-                            Belum ada data mata kuliah.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                        <h2 class="mk-grid-title">{{ $mk['nama'] }}</h2>
+                        <p class="mk-grid-meta">{{ $mk['sks'] }} SKS &middot; {{ $mk['dosen'] }}</p>
+                    </div>
 
-    </section>
+                </a>
+            @endforeach
+        </div>
+    @endif
 
 </x-layout>
