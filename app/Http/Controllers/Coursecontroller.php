@@ -2,78 +2,100 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
+use Illuminate\Http\Request;
+
 class CourseController extends Controller
 {
     /**
-     * Sumber data statis sementara, menggantikan query ke database.
-     * Ditulis sebagai method terpisah (bukan property class) supaya nanti
-     * gampang diganti jadi Course::all() / Course::query() tanpa mengubah
-     * signature method index() & show().
-     */
-    private function data(): array
-    {
-        return [
-            [
-                'id' => 1,
-                'kode' => 'IF101',
-                'nama' => 'Algoritma dan Pemrograman',
-                'sks' => 3,
-                'dosen' => 'Dr. Siti Aminah',
-                'deskripsi' => 'Pengantar dasar algoritma, struktur kontrol, dan pemrograman prosedural.',
-            ],
-            [
-                'id' => 2,
-                'kode' => 'IF201',
-                'nama' => 'Struktur Data',
-                'sks' => 3,
-                'dosen' => 'Budi Santoso, M.Kom.',
-                'deskripsi' => 'Konsep dan implementasi struktur data seperti list, stack, queue, dan tree.',
-            ],
-            [
-                'id' => 3,
-                'kode' => 'IF301',
-                'nama' => 'Basis Data',
-                'sks' => 4,
-                'dosen' => 'Dr. Andi Wijaya',
-                'deskripsi' => 'Perancangan basis data relasional, normalisasi, dan SQL.',
-            ],
-        ];
-    }
-
-    /**
      * GET /mata-kuliah
-     * Menampilkan daftar seluruh mata kuliah.
-     * Belum ada filter per-role di sini karena datanya masih statis;
-     * nanti saat sudah pakai database, filter "milik dosen" / "yang
-     * tersedia untuk mahasiswa" diterapkan di query, bukan di view.
      */
     public function index()
     {
-        $mataKuliah = $this->data();
+        $mataKuliah = Course::all();
 
         return view('courses.index', compact('mataKuliah'));
     }
 
     /**
-     * GET /mata-kuliah/{mata_kuliah}
-     * Menampilkan detail satu mata kuliah berdasarkan id.
-     * Parameter masih berupa id mentah (bukan route model binding) karena
-     * belum ada model/Eloquent; nanti tinggal diganti jadi Course $mataKuliah
-     * begitu modelnya dibuat.
-     *
-     * @param  int  $id
+     * GET /mata-kuliah/create
      */
-    public function show(int $id)
+    public function create()
     {
-        // collect() dipakai supaya bisa pakai method firstWhere() yang ringkas,
-        // menggantikan sementara apa yang nanti dilakukan Course::findOrFail().
-        $mataKuliah = collect($this->data())->firstWhere('id', $id);
+        return view('courses.create');
+    }
 
-        // abort(404) dipanggil manual karena belum ada findOrFail() dari Eloquent;
-        // ini menjaga perilaku tetap sama persis begitu nanti pindah ke database.
-        abort_if(is_null($mataKuliah), 404);
+    /**
+     * POST /mata-kuliah
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'code'       => 'required|string|max:20|unique:courses,code',
+            'name'       => 'required|string|max:255',
+            'sks'        => 'required|integer|min:1|max:6',
+            'lecturer_id' => 'required|exists:users,id',
+            'description' => 'nullable|string',
+        ]);
 
-        return view('courses.show', compact('mataKuliah'));
+        Course::create($validated);
+
+        return redirect()
+            ->route('mata-kuliah.index')
+            ->with('success', 'Mata kuliah berhasil ditambahkan.');
+    }
+
+    /**
+     * GET /mata-kuliah/{mata_kuliah}
+     * Nama parameter HARUS "mata_kuliah" (bukan "course"), karena
+     * Route::resource('mata-kuliah', ...) menghasilkan wildcard
+     * {mata_kuliah} — tanda hubung otomatis diubah jadi underscore
+     * oleh Laravel. Kalau nama variabel tidak cocok, route model
+     * binding tidak akan resolve model-nya secara otomatis.
+     */
+    public function show(Course $mata_kuliah)
+    {
+        return view('courses.show', ['mataKuliah' => $mata_kuliah]);
+    }
+
+    /**
+     * GET /mata-kuliah/{mata_kuliah}/edit
+     */
+    public function edit(Course $mata_kuliah)
+    {
+        return view('courses.edit', ['mataKuliah' => $mata_kuliah]);
+    }
+
+    /**
+     * PUT/PATCH /mata-kuliah/{mata_kuliah}
+     */
+    public function update(Request $request, Course $mata_kuliah)
+    {
+        $validated = $request->validate([
+            'code'       => 'required|string|max:20|unique:courses,code,' . $mata_kuliah->id,
+            'name'       => 'required|string|max:255',
+            'sks'        => 'required|integer|min:1|max:6',
+            'lecturer_id' => 'required|exists:users,id',
+            'description' => 'nullable|string',
+        ]);
+
+        $mata_kuliah->update($validated);
+
+        return redirect()
+            ->route('mata-kuliah.index')
+            ->with('success', 'Mata kuliah berhasil diperbarui.');
+    }
+
+    /**
+     * DELETE /mata-kuliah/{mata_kuliah}
+     */
+    public function destroy(Course $mata_kuliah)
+    {
+        $mata_kuliah->delete();
+
+        return redirect()
+            ->route('mata-kuliah.index')
+            ->with('success', 'Mata kuliah berhasil dihapus.');
     }
 
     public function tentang()
