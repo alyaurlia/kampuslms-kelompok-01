@@ -22,6 +22,30 @@
             @csrf
             @method('PUT')
 
+            {{-- Status --}}
+<div style="margin-bottom:1rem;">
+    <label for="status" style="display:block; margin-bottom:0.4rem; font-family:Arial, sans-serif;">
+        Status
+    </label>
+
+    <select
+        name="status"
+        id="status"
+        style="width:100%; padding:0.5rem; border:1px solid var(--color-border); border-radius:4px;"
+    >
+        <option value="">-- Pilih Status --</option>
+        <option value="draft" {{ old('status', $mataKuliah->status) === 'draft' ? 'selected' : '' }}>
+            Draft
+        </option>
+        <option value="active" {{ old('status', $mataKuliah->status) === 'active' ? 'selected' : '' }}>
+            Active
+        </option>
+        <option value="archived" {{ old('status', $mataKuliah->status) === 'archived' ? 'selected' : '' }}>
+            Archived
+        </option>
+    </select>
+</div>
+
             {{-- Kode --}}
             <div style="margin-bottom:1rem;">
                 <label for="code" style="display:block; margin-bottom:0.4rem; font-family:Arial, sans-serif;">
