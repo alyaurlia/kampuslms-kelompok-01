@@ -4,19 +4,30 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreCourseRequest;
+use App\Http\Requests\UpdateCourseRequest;
 
 class CourseController extends Controller
 {
     /**
      * GET /mata-kuliah
      */
-    public function index()
+    public function index(Request $request)
     {
-        $mataKuliah = Course::all();
+        $mataKuliah = Course::query()
+            ->with('lecturer')
+            ->when($request->filled('q'), fn ($query) =>
+                $query->where('name', 'like', '%' . $request->q . '%')
+                      ->orWhere('code', 'like', '%' . $request->q . '%'))
+            ->when($request->filled('status'), fn ($query) =>
+                $query->where('status', $request->status))
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
 
         return view('courses.index', compact('mataKuliah'));
     }
-
+    
     /**
      * GET /mata-kuliah/create
      */
@@ -28,22 +39,14 @@ class CourseController extends Controller
     /**
      * POST /mata-kuliah
      */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'code'       => 'required|string|max:20|unique:courses,code',
-            'name'       => 'required|string|max:255',
-            'sks'        => 'required|integer|min:1|max:6',
-            'lecturer_id' => 'required|exists:users,id',
-            'description' => 'nullable|string',
-        ]);
+    public function store(StoreCourseRequest $request)
+{
+    Course::create($request->validated());
 
-        Course::create($validated);
-
-        return redirect()
-            ->route('mata-kuliah.index')
-            ->with('success', 'Mata kuliah berhasil ditambahkan.');
-    }
+    return redirect()
+        ->route('mata-kuliah.index')
+        ->with('success', 'Mata kuliah berhasil ditambahkan.');
+}
 
     /**
      * GET /mata-kuliah/{mata_kuliah}
@@ -69,22 +72,14 @@ class CourseController extends Controller
     /**
      * PUT/PATCH /mata-kuliah/{mata_kuliah}
      */
-    public function update(Request $request, Course $mata_kuliah)
-    {
-        $validated = $request->validate([
-            'code'       => 'required|string|max:20|unique:courses,code,' . $mata_kuliah->id,
-            'name'       => 'required|string|max:255',
-            'sks'        => 'required|integer|min:1|max:6',
-            'lecturer_id' => 'required|exists:users,id',
-            'description' => 'nullable|string',
-        ]);
+    public function update(UpdateCourseRequest $request, Course $mata_kuliah)
+{
+    $mata_kuliah->update($request->validated());
 
-        $mata_kuliah->update($validated);
-
-        return redirect()
-            ->route('mata-kuliah.index')
-            ->with('success', 'Mata kuliah berhasil diperbarui.');
-    }
+    return redirect()
+        ->route('mata-kuliah.index')
+        ->with('success', 'Mata kuliah berhasil diperbarui.');
+}
 
     /**
      * DELETE /mata-kuliah/{mata_kuliah}

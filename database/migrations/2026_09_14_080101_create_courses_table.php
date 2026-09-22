@@ -15,7 +15,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->unsignedTinyInteger('sks');
             $table->foreignId('lecturer_id')->constrained('users')->cascadeOnDelete();
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->enum('status', ['draft', 'active', 'archived'])->default('draft');
             $table->timestamps();
         });
     }

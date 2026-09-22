@@ -17,6 +17,30 @@
         <form action="{{ route('mata-kuliah.store') }}" method="POST">
             @csrf
 
+{{-- Status --}}
+<div style="margin-bottom:1.5rem;">
+    <label for="status" style="display:block; margin-bottom:0.4rem;">
+        Status
+    </label>
+
+    <select
+        name="status"
+        id="status"
+        style="width:100%; padding:0.5rem; border:1px solid var(--color-border); border-radius:4px;"
+    >
+        <option value="">-- Pilih Status --</option>
+        <option value="draft" {{ old('status') === 'draft' ? 'selected' : '' }}>
+            Draft
+        </option>
+        <option value="active" {{ old('status') === 'active' ? 'selected' : '' }}>
+            Active
+        </option>
+        <option value="archived" {{ old('status') === 'archived' ? 'selected' : '' }}>
+            Archived
+        </option>
+    </select>
+</div>
+
             {{-- Kode --}}
             <div style="margin-bottom:1rem;">
                 <label for="code" style="display:block; margin-bottom:0.4rem;">
