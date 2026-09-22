@@ -53,3 +53,13 @@
     </div>
 
 </x-layout> 
+
+{{--
+    View show: menampilkan detail satu pengguna.
+    $user di sini adalah OBJEK model Eloquent (akses pakai ->), sesuai
+    bentuk data yang dikirim controller lewat compact('user').
+
+    Style kartu (.mk-card, .mk-banner, dst.) dipakai ulang dari
+    layout.blade.php supaya identitas visual konsisten dengan
+    courses/show.blade.php, meski datanya beda (nama, email, peran).
+--}}
