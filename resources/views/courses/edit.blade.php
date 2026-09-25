@@ -44,6 +44,10 @@
             Archived
         </option>
     </select>
+
+    @error('status')
+                    <p style="color:#b3261e; font-size:0.85rem; margin-top:0.3rem;">{{ $message }}</p>
+                @enderror
 </div>
 
             {{-- Kode --}}
@@ -59,6 +63,10 @@
                     value="{{ old('code', $mataKuliah->code) }}"
                     style="width:100%; padding:0.5rem; border:1px solid var(--color-border); border-radius:4px;"
                 >
+
+                @error('code')
+                    <p style="color:#b3261e; font-size:0.85rem; margin-top:0.3rem;">{{ $message }}</p>
+                @enderror
             </div>
 
             {{-- Nama --}}
@@ -74,6 +82,10 @@
                     value="{{ old('name', $mataKuliah->name) }}"
                     style="width:100%; padding:0.5rem; border:1px solid var(--color-border); border-radius:4px;"
                 >
+
+                @error('name')
+                    <p style="color:#b3261e; font-size:0.85rem; margin-top:0.3rem;">{{ $message }}</p>
+                @enderror
             </div>
 
             {{-- SKS --}}
@@ -91,6 +103,10 @@
                     value="{{ old('sks', $mataKuliah->sks) }}"
                     style="width:100%; padding:0.5rem; border:1px solid var(--color-border); border-radius:4px;"
                 >
+
+                @error('sks')
+                    <p style="color:#b3261e; font-size:0.85rem; margin-top:0.3rem;">{{ $message }}</p>
+                @enderror
             </div>
 
             {{-- Dosen --}}
@@ -106,6 +122,10 @@
                     value="{{ old('lecturer_id', $mataKuliah->lecturer_id) }}"
                     style="width:100%; padding:0.5rem; border:1px solid var(--color-border); border-radius:4px;"
                 >
+
+                @error('lecturer_id')
+                    <p style="color:#b3261e; font-size:0.85rem; margin-top:0.3rem;">{{ $message }}</p>
+                @enderror
             </div>
 
             {{-- Deskripsi --}}
@@ -120,6 +140,10 @@
                     rows="4"
                     style="width:100%; padding:0.5rem; border:1px solid var(--color-border); border-radius:4px;"
                 >{{ old('description', $mataKuliah->description) }}</textarea>
+
+                @error('description')
+                    <p style="color:#b3261e; font-size:0.85rem; margin-top:0.3rem;">{{ $message }}</p>
+                @enderror
             </div>
 
             {{-- Tombol --}}
