@@ -39,6 +39,10 @@
             Archived
         </option>
     </select>
+
+    @error('status')
+                    <p style="color:#b3261e; font-size:0.85rem; margin-top:0.3rem;">{{ $message }}</p>
+                @enderror
 </div>
 
             {{-- Kode --}}
@@ -54,6 +58,10 @@
                     value="{{ old('code') }}"
                     style="width:100%; padding:0.5rem; border:1px solid var(--color-border); border-radius:4px;"
                 >
+
+                @error('code')
+                    <p style="color:#b3261e; font-size:0.85rem; margin-top:0.3rem;">{{ $message }}</p>
+                @enderror
             </div>
 
             {{-- Nama --}}
@@ -69,6 +77,10 @@
                     value="{{ old('name') }}"
                     style="width:100%; padding:0.5rem; border:1px solid var(--color-border); border-radius:4px;"
                 >
+
+                @error('name')
+                    <p style="color:#b3261e; font-size:0.85rem; margin-top:0.3rem;">{{ $message }}</p>
+                @enderror
             </div>
 
             {{-- SKS --}}
@@ -86,6 +98,10 @@
                     value="{{ old('sks') }}"
                     style="width:100%; padding:0.5rem; border:1px solid var(--color-border); border-radius:4px;"
                 >
+
+                @error('sks')
+                    <p style="color:#b3261e; font-size:0.85rem; margin-top:0.3rem;">{{ $message }}</p>
+                @enderror
             </div>
 
             {{-- Dosen --}}
@@ -101,6 +117,10 @@
                     value="{{ old('lecturer_id') }}"
                     style="width:100%; padding:0.5rem; border:1px solid var(--color-border); border-radius:4px;"
                 >
+
+                @error('lecturer_id')
+                    <p style="color:#b3261e; font-size:0.85rem; margin-top:0.3rem;">{{ $message }}</p>
+                @enderror
             </div>
 
             {{-- Deskripsi --}}
@@ -115,6 +135,10 @@
                     rows="4"
                     style="width:100%; padding:0.5rem; border:1px solid var(--color-border); border-radius:4px;"
                 >{{ old('description') }}</textarea>
+
+                @error('description')
+                    <p style="color:#b3261e; font-size:0.85rem; margin-top:0.3rem;">{{ $message }}</p>
+                @enderror
             </div>
 
             <div style="display:flex; gap:0.75rem;">
