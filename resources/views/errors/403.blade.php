@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Akses Ditolak - KampusLMS</title>
 
     <style>
@@ -25,30 +26,30 @@
         .error-container {
             width: 90%;
             max-width: 500px;
+            padding: 45px 35px;
             text-align: center;
             background-color: white;
-            padding: 45px 35px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
         }
 
         .error-code {
+            margin-bottom: 10px;
             font-size: 72px;
             font-weight: bold;
             color: #dc2626;
-            margin-bottom: 10px;
         }
 
         h1 {
-            font-size: 24px;
             margin-bottom: 12px;
+            font-size: 24px;
         }
 
         p {
+            margin-bottom: 25px;
             font-size: 15px;
             line-height: 1.6;
             color: #6b7280;
-            margin-bottom: 25px;
         }
 
         .back-button {
@@ -74,7 +75,8 @@
         <h1>Akses Ditolak</h1>
 
         <p>
-            Maaf, Anda tidak memiliki izin untuk mengakses halaman atau melakukan tindakan ini.
+            Maaf, Anda tidak memiliki izin untuk mengakses
+            halaman atau melakukan tindakan ini.
         </p>
 
         <a href="{{ url('/') }}" class="back-button">
