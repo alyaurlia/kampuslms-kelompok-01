@@ -1,5 +1,4 @@
-
-@props(['title' => 'LMS Kampus'])
+@props(['title' => 'LMS Kampus', 'role' => null])
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -69,6 +68,27 @@
             text-decoration: underline;
         }
 
+        /* Menu yang sedang aktif */
+        header.app-header nav a.active {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+        /* Label peran di samping nama brand */
+        .role-badge {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            background: var(--color-accent);
+            color: var(--color-ink);
+            padding: 2px 10px;
+            border-radius: 999px;
+            margin-left: 0.6rem;
+            vertical-align: middle;
+        }
+
         main {
             max-width: 920px;
             margin: 0 auto;
@@ -81,6 +101,42 @@
             font-size: 0.8rem;
             color: var(--color-ink-soft);
             padding: 1.5rem;
+        }
+
+        /* =========================================================
+           Komponen dashboard (admin / dosen / mahasiswa)
+           ========================================================= */
+
+        .page-title {
+            font-size: 1.5rem;
+            margin: 0 0 1.5rem;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.25rem;
+        }
+        .stat-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 10px;
+            padding: 1.25rem;
+            font-family: Arial, sans-serif;
+        }
+        .stat-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: var(--color-ink-soft);
+            margin: 0 0 0.4rem;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin: 0;
         }
 
         /* =========================================================
@@ -256,23 +312,52 @@
 </head>
 <body>
 
+    @php
+        // Daftar menu per peran: [label, nama route, pola untuk penanda aktif].
+        // Sesuaikan nama route dengan yang dibuat di routes/web.php.
+        $menus = [
+            'admin' => [
+                ['Dashboard',   'admin.dashboard',          'admin.dashboard'],
+                ['Kelola User', 'admin.users.index',        'admin.users.*'],
+                ['Mata Kuliah', 'admin.mata-kuliah.index',  'admin.mata-kuliah.*'],
+            ],
+            'dosen' => [
+                ['Dashboard',   'dosen.dashboard',          'dosen.dashboard'],
+                ['Kelas Saya',  'dosen.kelas.index',        'dosen.kelas.*'],
+                ['Input Nilai', 'dosen.nilai.index',        'dosen.nilai.*'],
+            ],
+            'mahasiswa' => [
+                ['Dashboard',   'mahasiswa.dashboard',          'mahasiswa.dashboard'],
+                ['Mata Kuliah', 'mahasiswa.mata-kuliah.index',  'mahasiswa.mata-kuliah.*'],
+                ['Nilai',       'mahasiswa.nilai.index',        'mahasiswa.nilai.*'],
+            ],
+        ];
+
+        // Kalau role tidak diisi, pakai menu bawaan yang lama
+        $menu = $menus[$role] ?? [
+            ['Dashboard',   'dashboard',          'dashboard'],
+            ['Mata Kuliah', 'mata-kuliah.index',  'mata-kuliah.*'],
+            ['Tentang',     'tentang',            'tentang'],
+        ];
+    @endphp
+
     <header class="app-header">
-    <span class="brand">LMS Kampus</span>
-   <nav>
-    <a href="{{ route('dashboard') }}"
-       style="{{ request()->routeIs('dashboard') ? 'color:#fff; text-decoration:underline;' : '' }}">
-        Dashboard
-    </a>
-    <a href="{{ route('mata-kuliah.index') }}"
-       style="{{ request()->routeIs('mata-kuliah.*') ? 'color:#fff; text-decoration:underline;' : '' }}">
-        Mata Kuliah
-    </a>
-    <a href="{{ route('tentang') }}"
-       style="{{ request()->routeIs('tentang') ? 'color:#fff; text-decoration:underline;' : '' }}">
-        Tentang
-    </a>
-</nav>
-</header>
+        <span class="brand">
+            LMS Kampus
+            @if($role)
+                <span class="role-badge">{{ ucfirst($role) }}</span>
+            @endif
+        </span>
+        <nav>
+            @foreach($menu as [$label, $routeName, $pattern])
+                {{-- Route::has() mencegah error kalau route belum dibuat --}}
+                <a href="{{ Route::has($routeName) ? route($routeName) : '#' }}"
+                   class="{{ request()->routeIs($pattern) ? 'active' : '' }}">
+                    {{ $label }}
+                </a>
+            @endforeach
+        </nav>
+    </header>
 
     <main>
         {{-- Slot default: tempat konten tiap halaman disisipkan --}}
