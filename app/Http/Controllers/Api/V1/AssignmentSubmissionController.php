@@ -26,7 +26,7 @@ class AssignmentSubmissionController extends Controller
         $user   = $request->user();
         $course = $assignment->course;
 
-        $query = $assignment->submissions()->with(['user', 'grade']);
+        $query = $assignment->submissions()->with(['student', 'grade']);
 
         $query = match ($user->role) {
             'admin'     => $query,
