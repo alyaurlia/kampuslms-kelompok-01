@@ -68,11 +68,15 @@ class AssignmentSubmissionController extends Controller
 
         $file = $request->file('file');
 
+        $submittedAt = now();
+
         $submission = $assignment->submissions()->create([
             'user_id'       => $user->id,
             'file_path'     => $file->store("submissions/{$assignment->id}"),
             'original_name' => $file->getClientOriginalName(),
-            'submitted_at'  => now(),
+            'file_size'     => $file->getSize(),
+            'submitted_at'  => $submittedAt,
+            'is_late'       => $submittedAt->gt($assignment->due_at),
         ]);
 
         $submission->load(['user', 'grade']);

@@ -13,6 +13,8 @@ class Submission extends Model
     use HasFactory;
 
     protected $fillable = [
+        'assignment_id',
+        'user_id',
         'file_path',
         'original_name',
         'file_size',
@@ -35,6 +37,12 @@ class Submission extends Model
     }
 
     public function student(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // Alias untuk kompatibilitas dengan resource/controller API.
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
