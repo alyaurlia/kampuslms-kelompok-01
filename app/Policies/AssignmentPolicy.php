@@ -21,6 +21,16 @@ class AssignmentPolicy
         return $course === null || (int) $course->lecturer_id === (int) $user->id;
     }
 
+    public function submit(User $user, Assignment $assignment): bool
+    {
+        return $user->role === 'mahasiswa'
+            && $assignment->status === 'published'
+            && $assignment->course
+                ->students()
+                ->whereKey($user->id)
+                ->exists();
+    }
+
     public function update(User $user, Assignment $assignment): bool
     {
         return $this->owns($user, $assignment);
