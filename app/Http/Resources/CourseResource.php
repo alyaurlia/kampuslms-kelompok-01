@@ -7,17 +7,26 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class CourseResource extends JsonResource
 {
+    /**
+     * Daftar putih. Kolom mengikuti skema courses di modul:
+     * id, code, name, description, sks, lecturer_id, status.
+     * SESUAIKAN dengan kontrak Bagian 5 kalau berbeda.
+     */
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'code' => $this->code,
-            'name' => $this->name,
+            'id'          => $this->id,
+            'code'        => $this->code,
+            'name'        => $this->name,
             'description' => $this->description,
-            'lecturer' => UserResource::make($this->whenLoaded('lecturer')),
-            // hanya muncul bila di-loadCount (detail), tidak memicu query tambahan
-            'materials_count' => $this->whenCounted('materials'),
-            'assignments_count' => $this->whenCounted('assignments'),
+            'sks'         => $this->sks,
+            'status'      => $this->status,
+            'lecturer'    => new UserResource($this->whenLoaded('lecturer')),
+            'counts'      => [
+                'materials'   => $this->whenCounted('materials'),
+                'assignments' => $this->whenCounted('assignments'),
+            ],
+            'created_at'  => $this->created_at?->toIso8601String(),
         ];
     }
 }
