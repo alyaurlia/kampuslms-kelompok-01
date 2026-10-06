@@ -2,7 +2,11 @@
 
 namespace App\Providers;
 
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +23,28 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // 429 dalam JSON lengkap dengan header Retry-After
+        $tooMany = fn (string $pesan) => function (Request $request, array $headers) use ($pesan) {
+            return response()->json(['message' => $pesan], 429, $headers);
+        };
+
+        // Umum: 60/menit. Kunci: id pengguna (dari token), cadangan IP.
+        RateLimiter::for('api-umum', function (Request $request) use ($tooMany) {
+            return Limit::perMinute(60)
+                ->by($request->user()?->id ?: $request->ip())
+                ->response($tooMany('Terlalu banyak permintaan. Coba lagi sebentar lagi.'));
+        });
+
+        // Login: 5/menit per kombinasi email+IP, plus 20/menit per IP.
+        RateLimiter::for('api-login', function (Request $request) use ($tooMany) {
+            $email = $request->input('email');
+            $email = is_string($email) ? Str::lower($email) : ''; // input bisa berupa array
+            $pesan = $tooMany('Terlalu banyak percobaan login. Coba lagi dalam satu menit.');
+
+            return [
+                Limit::perMinute(5)->by($email . '|' . $request->ip())->response($pesan),
+                Limit::perMinute(20)->by($request->ip())->response($pesan),
+            ];
+        });
     }
 }

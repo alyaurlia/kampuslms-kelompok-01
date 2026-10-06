@@ -12,10 +12,10 @@ Route::prefix('v1')->group(function () {
 
     // PUBLIK: harus di LUAR grup auth:sanctum, kalau tidak, orang tidak bisa login.
     Route::post('auth/login', [AuthController::class, 'login'])
-        ->middleware('throttle:5,1');
+        ->middleware('throttle:api-login');
 
     // TERLINDUNGI
-    Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
+    Route::middleware(['auth:sanctum', 'throttle:api-umum'])->group(function () {
 
         // Auth
         Route::post('auth/logout', [AuthController::class, 'logout']);
