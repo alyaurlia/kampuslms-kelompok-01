@@ -18,7 +18,7 @@ class SubmissionResource extends JsonResource
         return [
             'id'            => $this->id,
             'assignment_id' => $this->assignment_id,
-            'student'       => new UserResource($this->whenLoaded('user')),
+            'student'       => new UserResource($this->whenLoaded('student')),
             'original_name' => $this->original_name,
             'file_size'     => (int) $this->file_size,
             'note'          => $this->note,
