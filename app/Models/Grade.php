@@ -13,6 +13,7 @@ class Grade extends Model
     protected $fillable = [
         'score',
         'feedback',
+        'graded_by',
         'graded_at',
     ];
 
