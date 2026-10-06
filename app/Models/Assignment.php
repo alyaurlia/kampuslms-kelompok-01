@@ -35,8 +35,9 @@ class Assignment extends Model
     protected function casts(): array
     {
         return [
-            'due_at' => 'datetime',
-            'allow_late' => 'boolean',
+        'due_at'     => 'datetime',
+        'allow_late' => 'boolean',
+        'max_score'  => 'integer',
         ];
     }
 
