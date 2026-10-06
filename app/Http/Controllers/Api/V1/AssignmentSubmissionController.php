@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\StoreSubmissionRequest;
 use App\Http\Resources\SubmissionCollection;
+use App\Http\Resources\SubmissionResource;
 use App\Models\Assignment;
 use Illuminate\Http\Request;
 
@@ -42,5 +44,41 @@ class AssignmentSubmissionController extends Controller
             ->paginate(min(max($request->integer('per_page', 15), 1), 100));
 
         return new SubmissionCollection($submissions);
+    }
+
+    /**
+     * POST /api/v1/assignments/{assignment}/submissions   (multipart, field "file")
+     *
+     * - hanya mahasiswa yang terdaftar di mata kuliah tugas ini
+     *   (dicek di StoreSubmissionRequest::authorize() lewat AssignmentPolicy::submit)
+     * - satu mahasiswa satu pengumpulan per tugas => 409 kalau sudah ada
+     * - berkas disimpan di disk privat (bukan public)
+     *
+     * Respons: 201 + SubmissionResource.
+     */
+    public function store(StoreSubmissionRequest $request, Assignment $assignment): \Illuminate\Http\JsonResponse
+    {
+        $user = $request->user();
+
+        if ($assignment->submissions()->where('user_id', $user->id)->exists()) {
+            return response()->json([
+                'message' => 'Anda sudah mengumpulkan tugas ini.',
+            ], 409);
+        }
+
+        $file = $request->file('file');
+
+        $submission = $assignment->submissions()->create([
+            'user_id'       => $user->id,
+            'file_path'     => $file->store("submissions/{$assignment->id}"),
+            'original_name' => $file->getClientOriginalName(),
+            'submitted_at'  => now(),
+        ]);
+
+        $submission->load(['user', 'grade']);
+
+        return (new SubmissionResource($submission))
+            ->response()
+            ->setStatusCode(201);
     }
 }
