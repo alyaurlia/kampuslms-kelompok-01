@@ -10,10 +10,10 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'nim'      => ['required', 'string'],
+            'nim_nip' => ['required', 'string'],
             'password' => ['required', 'string'],
         ], [
-            'nim.required'      => 'NIM wajib diisi.',
+            'nim_nip.required' => 'NIM/NIP wajib diisi.',
             'password.required' => 'Kata sandi wajib diisi.',
         ]);
 
@@ -24,8 +24,8 @@ class AuthController extends Controller
         }
 
         return back()
-            ->withErrors(['nim' => 'NIM atau kata sandi salah.'])
-            ->onlyInput('nim');
+            ->withErrors(['nim_nip' => 'NIM/NIP atau kata sandi salah.'])
+            ->onlyInput('nim_nip');
     }
 
     public function logout(Request $request)
