@@ -8,42 +8,38 @@ use App\Models\User;
 
 class AssignmentPolicy
 {
-    /**
-     * Dosen boleh membuat tugas. Bila MK sudah diketahui, dosen harus
-     * pengampunya. ($course null = MK tidak ada; biarkan validasi `exists` -> 422)
-     */
-    public function create(User $user, ?Course $course = null): bool
+    public function viewAny(User $user): bool
     {
-        if ($user->role !== 'dosen') {
-            return false;
-        }
-
-        return $course === null || (int) $course->lecturer_id === (int) $user->id;
+        return true; // daftar disaring di query
     }
 
-    public function submit(User $user, Assignment $assignment): bool
+    public function view(User $user, Assignment $assignment): bool
     {
-        return $user->role === 'mahasiswa'
-            && $assignment->status === 'published'
-            && $assignment->course
-                ->students()
-                ->whereKey($user->id)
-                ->exists();
+        $course = $assignment->course;
+
+        return $course->isManagedBy($user) || $course->hasStudent($user);
+    }
+
+    // Course wajib. Admin atau dosen pengampu MK tersebut.
+    public function create(User $user, Course $course): bool
+    {
+        return $course->isManagedBy($user);
     }
 
     public function update(User $user, Assignment $assignment): bool
     {
-        return $this->owns($user, $assignment);
+        return $assignment->course->isManagedBy($user);
     }
 
     public function delete(User $user, Assignment $assignment): bool
     {
-        return $this->owns($user, $assignment);
+        return $assignment->course->isManagedBy($user);
     }
 
-    private function owns(User $user, Assignment $assignment): bool
+    // Mengumpulkan tugas: mahasiswa terdaftar, tugas harus published
+    public function submit(User $user, Assignment $assignment): bool
     {
-        return $user->role === 'dosen'
-            && (int) $assignment->course->lecturer_id === (int) $user->id;
+        return $assignment->status === 'published'
+            && $assignment->course->hasStudent($user);
     }
 }
