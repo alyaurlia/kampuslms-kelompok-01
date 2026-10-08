@@ -19,32 +19,34 @@ class DatabaseSeeder extends Seeder
         $demoPassword = env('DEMO_PASSWORD', 'password');
 
         // --- 1 admin ---
-        $admin = User::factory()->admin()->create([
-            'name' => 'Admin KampusLMS',
-            'email' => 'admin@kampuslms.test',
-            'nim_nip' => '198001012005011001', // NIP (18 digit)
-            'password' => $demoPassword,
-        ]);
+        $admin = User::factory()->admin()->updateOrCreate(
+    ['email' => 'admin@kampuslms.test'],
+    [
+        'name' => 'Admin KampusLMS',
+        'nim_nip' => '198001012005011001',
+        'password' => $demoPassword,
+    ]
+);
 
         // --- 3 dosen ---
-        $dosens = User::factory()->dosen()->count(2)->create();
-        $dosenDemo = User::factory()->dosen()->create([
-            'name' => 'Dosen Demo',
-            'email' => 'dosen@kampuslms.test',
-            'nim_nip' => '198505052010011002', // NIP (18 digit)
-            'password' => $demoPassword,
-        ]);
-        $dosens->push($dosenDemo);
+        $dosenDemo = User::factory()->dosen()->updateOrCreate(
+    ['email' => 'dosen@kampuslms.test'],
+    [
+        'name' => 'Dosen Demo',
+        'nim_nip' => '198505052010011002',
+        'password' => $demoPassword,
+    ]
+);
 
         // --- 30 mahasiswa ---
-        $mahasiswas = User::factory()->mahasiswa()->count(29)->create();
-        $mahasiswaDemo = User::factory()->mahasiswa()->create([
-            'name' => 'Mahasiswa Demo',
-            'email' => 'mahasiswa@kampuslms.test',
-            'nim_nip' => '10241999', // NIM
-            'password' => $demoPassword,
-        ]);
-        $mahasiswas->push($mahasiswaDemo);
+        $mahasiswaDemo = User::factory()->mahasiswa()->updateOrCreate(
+    ['email' => 'mahasiswa@kampuslms.test'],
+    [
+        'name' => 'Mahasiswa Demo',
+        'nim_nip' => '10241999',
+        'password' => $demoPassword,
+    ]
+);
 
         // --- 5 mata kuliah, tiap MK ≥15 mahasiswa terdaftar ---
         $courses = collect();
