@@ -5,32 +5,37 @@ namespace App\Policies;
 use App\Models\Course;
 use App\Models\User;
 
-/**
- * JIKA Anda SUDAH punya CoursePolicy, jangan ditimpa: cukup pastikan
- * method view() di bawah setara dengan punya Anda.
- * Laravel 12 menemukan policy ini otomatis (Course -> CoursePolicy).
- */
 class CoursePolicy
 {
     public function viewAny(User $user): bool
     {
-        return true; // daftar sudah disaring di query (lihat controller index)
+        return true; // daftar disaring di query (scopeVisibleTo)
     }
 
     public function view(User $user, Course $course): bool
     {
-        return $user->role === 'admin'
-            || $course->lecturer_id === $user->id
-            || $course->students()->whereKey($user->id)->exists();
+        return $course->isManagedBy($user) || $course->hasStudent($user);
     }
 
+    public function create(User $user): bool
+    {
+        return $user->role === 'admin';
+    }
+
+    // Matriks: CRUD mata kuliah hanya admin
     public function update(User $user, Course $course): bool
     {
-        return $user->role === 'admin' || $course->lecturer_id === $user->id;
+        return $user->role === 'admin';
     }
 
     public function delete(User $user, Course $course): bool
     {
         return $user->role === 'admin';
+    }
+
+    // Admin, atau dosen pengampu MK itu
+    public function manageEnrollment(User $user, Course $course): bool
+    {
+        return $course->isManagedBy($user);
     }
 }
