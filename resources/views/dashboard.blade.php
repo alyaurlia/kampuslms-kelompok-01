@@ -1,4 +1,3 @@
-
 @php
     $namaPengguna = 'Adelia';
 
@@ -26,39 +25,38 @@
 
 <x-layout title="Dasbor">
 
-    <h1 style="font-size:1.6rem; margin-bottom:1.5rem;">
+    <h1 class="home-title">
         Jumpa lagi, {{ $namaPengguna }}! 👋
     </h1>
 
-    <div style="display:flex; gap:1.5rem; align-items:flex-start; flex-wrap:wrap;">
+    <div class="home-layout">
 
         {{-- ============ SEMESTER OVERVIEW ============ --}}
-        <section style="flex:1 1 500px; background:var(--color-surface); border:1px solid var(--color-border); border-radius:6px; padding:1.5rem;">
+        <section class="home-card home-card--semester">
 
-            <h2 style="font-size:1.1rem; margin-top:0; margin-bottom:1rem;">Semester overview</h2>
+            <h2 class="home-card-title">Semester overview</h2>
 
             @foreach ($semesters as $semester)
-                <details @if ($semester['aktif']) open @endif
-                         style="border:1px solid var(--color-border); border-radius:4px; margin-bottom:0.5rem;">
+                <details @if ($semester['aktif']) open @endif class="semester-item">
 
-                    <summary style="cursor:pointer; padding:0.75rem 1rem; font-weight:600; font-family:Arial, sans-serif; font-size:0.95rem; list-style:revert;">
+                    <summary class="semester-summary">
                         {{ $semester['label'] }}
                     </summary>
 
                     @if (count($semester['courses']) === 0)
-                        <p style="margin:0; padding:0 1rem 1rem; font-family:Arial, sans-serif; font-size:0.85rem; color:var(--color-ink-soft);">
+                        <p class="semester-empty">
                             Belum ada data mata kuliah untuk semester ini.
                         </p>
                     @else
-                        <div style="border-top:1px solid var(--color-border);">
+                        <div class="semester-courses">
                             @foreach ($semester['courses'] as $course)
-                                <div style="display:flex; align-items:center; justify-content:space-between; padding:0.75rem 1rem; {{ !$loop->last ? 'border-bottom:1px solid var(--color-border);' : '' }}">
+                                <div class="semester-course">
 
-                                    <span style="font-family:Arial, sans-serif; font-size:0.9rem; font-weight:600;">
+                                    <span class="semester-course-name">
                                         {{ $course['nama'] }} - {{ $course['kode'] }}
                                     </span>
 
-                                    <span aria-hidden="true" style="color:var(--color-ink-soft);">&#9734;</span>
+                                    <span aria-hidden="true" class="semester-course-star">&#9734;</span>
                                 </div>
                             @endforeach
                         </div>
@@ -70,21 +68,21 @@
         </section>
 
         {{-- ============ CALENDAR (LIGHT, DINAMIS) ============ --}}
-        <section id="kalender-card" style="flex:0 1 320px; background:var(--color-surface); border:1px solid var(--color-border); border-radius:6px; padding:1.5rem; font-family:Arial, sans-serif;">
+        <section id="kalender-card" class="home-card home-card--calendar">
 
-            <h2 style="font-size:1.1rem; margin-top:0; margin-bottom:1rem;">Calendar</h2>
+            <h2 class="home-card-title">Calendar</h2>
 
             {{-- Header navigasi bulan --}}
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
-                <button id="kalender-prev" type="button" style="cursor:pointer; background:none; border:none; color:var(--color-ink-soft); font-size:1.1rem; padding:0.25rem 0.5rem; line-height:1;">&#8249;</button>
-                <span id="kalender-label" style="font-weight:600; font-size:0.95rem;"></span>
-                <button id="kalender-next" type="button" style="cursor:pointer; background:none; border:none; color:var(--color-ink-soft); font-size:1.1rem; padding:0.25rem 0.5rem; line-height:1;">&#8250;</button>
+            <div class="kal-nav">
+                <button id="kalender-prev" type="button" class="kal-nav-btn">&#8249;</button>
+                <span id="kalender-label" class="kal-label"></span>
+                <button id="kalender-next" type="button" class="kal-nav-btn">&#8250;</button>
             </div>
 
             {{-- Header hari --}}
-            <div style="display:grid; grid-template-columns:repeat(7, 1fr); text-align:center; margin-bottom:0.5rem;">
+            <div class="kal-days">
                 @foreach (['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'] as $h)
-                    <span style="font-size:0.7rem; color:var(--color-ink-soft); font-weight:600;">{{ $h }}</span>
+                    <span class="kal-day">{{ $h }}</span>
                 @endforeach
             </div>
 
@@ -124,15 +122,6 @@
                 return eventData.find(e => e.tanggal === tanggalStr);
             }
 
-            function warnaTipe(tipe) {
-                switch (tipe) {
-                    case 'today': return '#22c55e';
-                    case 'event': return '#ec4899';
-                    case 'info':  return '#38bdf8';
-                    default: return 'transparent';
-                }
-            }
-
             function renderKalender() {
                 elLabel.textContent = `${namaBulan[tampilBulan]} ${tampilTahun}`;
                 elGrid.innerHTML = '';
@@ -163,39 +152,29 @@
                 // Render per baris (7 kolom)
                 for (let i = 0; i < sel.length; i += 7) {
                     const baris = document.createElement('div');
-                    baris.style.display = 'grid';
-                    baris.style.gridTemplateColumns = 'repeat(7, 1fr)';
-                    baris.style.textAlign = 'center';
-                    baris.style.marginBottom = '0.35rem';
+                    baris.className = 'kal-row';
 
                     sel.slice(i, i + 7).forEach(item => {
                         const span = document.createElement('span');
                         span.textContent = item.tgl;
+                        span.className = 'kal-cell';
 
-                        let tipe = null;
-                        if (!item.luarBulan) {
+                        if (item.luarBulan) {
+                            span.classList.add('kal-cell--luar');
+                        } else {
                             const tglStr = formatTanggal(tampilTahun, tampilBulan, item.tgl);
+                            let tipe = null;
+
                             if (tglStr === todayStr) {
                                 tipe = 'today';
                             } else {
                                 const ev = cariEvent(tglStr);
                                 if (ev) tipe = ev.tipe;
                             }
-                        }
 
-                        span.style.display = 'inline-flex';
-                        span.style.alignItems = 'center';
-                        span.style.justifyContent = 'center';
-                        span.style.width = '28px';
-                        span.style.height = '28px';
-                        span.style.margin = '0 auto';
-                        span.style.borderRadius = '50%';
-                        span.style.fontSize = '0.8rem';
-                        span.style.fontWeight = tipe ? '700' : '400';
-                        span.style.background = warnaTipe(tipe);
-                        span.style.color = item.luarBulan
-                            ? '#c9ccd1'
-                            : (tipe ? '#ffffff' : 'var(--color-ink)');
+                            // tipe: 'today' | 'event' | 'info' (lihat .kal-cell--* di dashboard.css)
+                            if (tipe) span.classList.add('kal-cell--' + tipe);
+                        }
 
                         baris.appendChild(span);
                     });

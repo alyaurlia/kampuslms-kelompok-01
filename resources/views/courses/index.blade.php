@@ -1,3 +1,19 @@
+{{--
+    View index: menampilkan daftar mata kuliah dalam bentuk grid kartu,
+    meniru gaya kartu "Kursusku" di Beranda ITK (banner bermotif + badge
+    kode + tombol aksi bulat).
+
+    Style kartu (.mk-grid, .mk-grid-card, dst.) didefinisikan terpusat di
+    resources/css/courses.css supaya konsisten dan tidak diduplikasi dengan
+    courses/show.blade.php.
+
+    $mataKuliah sekarang hasil paginate() dari Eloquent, jadi setiap
+    elemennya adalah OBJEK model (akses pakai ->), bukan array asosiatif.
+
+    $routePrefix dikirim controller (mis. 'admin.mata-kuliah') supaya view
+    yang sama melayani admin, dosen, dan mahasiswa. Tombol Tambah/Edit/Hapus
+    hanya tampil kalau route-nya memang ada untuk peran tersebut.
+--}}
 @php
     $rp   = \Illuminate\Support\Str::before(request()->route()->getName(), 'mata-kuliah');
     $role = auth()->user()->role;
@@ -5,9 +21,17 @@
 
 <x-layout title="Daftar Mata Kuliah">
 
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-        <h1 style="font-size:1.6rem; margin:0;">Daftar Mata Kuliah</h1>
+    @php
+        $user      = auth()->user();
+        $canCreate = Route::has($routePrefix . '.create');
+        $canDelete = Route::has($routePrefix . '.destroy');
+    @endphp
 
+    <div class="mk-page-header">
+        <h1 class="mk-page-title">Daftar Mata Kuliah</h1>
+
+        @if ($canCreate)
+            <a href="{{ route($routePrefix . '.create') }}" class="mk-btn-add">
         @if ($role === 'admin')
             <a href="{{ route($rp . 'mata-kuliah.create') }}"
                style="padding:0.5rem 1rem; border-radius:4px; background:var(--color-card-1-from); color:#fff; text-decoration:none; font-family:Arial, sans-serif; font-size:0.9rem;">
@@ -17,11 +41,23 @@
     </div>
 
     @if (session('success'))
-        <div style="background:#e6f4ea; border:1px solid #b7dfc2; border-radius:6px; padding:1rem; margin-bottom:1.5rem; font-family:Arial, sans-serif; color:#1e7e34;">
+        <div class="alert-success">
             {{ session('success') }}
         </div>
     @endif
 
+    {{-- Form pencarian & filter status --}}
+    <form method="GET" action="{{ route($routePrefix . '.index') }}" class="mk-filter">
+
+        <input
+            type="text"
+            name="q"
+            value="{{ request('q') }}"
+            placeholder="Cari kode atau nama mata kuliah..."
+            class="mk-filter-input"
+        >
+
+        <select name="status" class="mk-filter-select">
     <form method="GET" action="{{ route($rp . 'mata-kuliah.index') }}"
           style="display:flex; gap:0.75rem; margin-bottom:1.5rem; flex-wrap:wrap;">
 
@@ -36,12 +72,12 @@
             <option value="archived" {{ request('status') === 'archived' ? 'selected' : '' }}>Archived</option>
         </select>
 
-        <button type="submit"
-                style="padding:0.5rem 1rem; border-radius:4px; border:none; background:var(--color-card-1-from); color:#fff; cursor:pointer;">
+        <button type="submit" class="mk-filter-btn">
             Cari
         </button>
 
         @if (request('q') || request('status'))
+            <a href="{{ route($routePrefix . '.index') }}" class="mk-filter-reset">
             <a href="{{ route($rp . 'mata-kuliah.index') }}"
                style="padding:0.5rem 1rem; border-radius:4px; border:1px solid var(--color-border); text-decoration:none; color:inherit;">
                 Reset
@@ -50,10 +86,8 @@
     </form>
 
     @if ($mataKuliah->isEmpty())
-        <section style="background:var(--color-surface); border:1px solid var(--color-border); border-radius:6px; padding:1.5rem;">
-            <p style="margin:0; color:var(--color-ink-soft); text-align:center; font-family:Arial, sans-serif;">
-                Belum ada data mata kuliah.
-            </p>
+        <section class="mk-empty">
+            <p>Belum ada data mata kuliah.</p>
         </section>
     @else
         <div class="mk-grid">
@@ -62,10 +96,18 @@
                     $mkPatterns = ['diamond', 'triangle', 'circle', 'diamond', 'triangle'];
                     $mkIndex = (crc32($mk->code) % 5) + 1;
                     $mkPattern = $mkPatterns[$mkIndex - 1];
+
+                    // Edit: route harus ada untuk peran ini DAN user adalah admin
+                    // atau dosen pengampu (sama dengan canManageCourse di controller).
+                    $canEdit = Route::has($routePrefix . '.edit')
+                        && ($user?->role === 'admin' || $mk->lecturer_id === $user?->id);
                 @endphp
 
-                <div class="mk-grid-card" style="display:flex; flex-direction:column;">
+                <div class="mk-grid-card">
 
+                    {{-- Area klik untuk lihat detail: banner + judul + meta --}}
+                    <a href="{{ route($routePrefix . '.show', $mk->id) }}" class="mk-grid-link">
+                        <div class="mk-grid-banner mk-pattern-{{ $mkPattern }} mk-bg-{{ $mkIndex }}">
                     <a href="{{ route($rp . 'mata-kuliah.show', $mk->id) }}" style="text-decoration:none; color:inherit;">
                         <div class="mk-grid-banner mk-pattern-{{ $mkPattern }}"
                              style="background: linear-gradient(135deg, var(--color-card-{{ $mkIndex }}-from), var(--color-card-{{ $mkIndex }}-to));">
@@ -79,6 +121,23 @@
                         </div>
                     </a>
 
+                    {{-- Footer aksi: di luar <a> di atas supaya klik edit/hapus
+                         tidak ikut men-trigger navigasi ke halaman detail. --}}
+                    @if ($canEdit || $canDelete)
+                        <div class="mk-grid-actions">
+                            @if ($canEdit)
+                                <a href="{{ route($routePrefix . '.edit', $mk->id) }}" class="mk-action-edit">
+                                    Edit
+                                </a>
+                            @endif
+
+                            @if ($canDelete)
+                                <form action="{{ route($routePrefix . '.destroy', $mk->id) }}" method="POST"
+                                      class="mk-action-form"
+                                      onsubmit="return confirm('Yakin ingin menghapus mata kuliah {{ $mk->name }}?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="mk-action-delete">
                     {{-- Aksi: edit untuk admin & dosen, hapus hanya admin --}}
                     @if (in_array($role, ['admin', 'dosen']))
                         <div style="display:flex; gap:0.5rem; padding:0 1rem 1rem 1rem; margin-top:auto;">
@@ -106,6 +165,9 @@
             @endforeach
         </div>
 
+        {{-- Pagination — otomatis membawa query string (?q=...&status=...)
+             karena controller sudah pakai withQueryString() --}}
+        <div class="mk-pagination">
         <div style="margin-top:2rem;">
             {{ $mataKuliah->links() }}
         </div>

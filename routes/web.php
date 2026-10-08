@@ -74,3 +74,11 @@ Route::middleware('auth')->group(function () {
         });
     });
 });
+
+// HANYA untuk pengembangan. Hapus sebelum dikumpulkan.
+if (app()->environment('local')) {
+    Route::get('/dev-login/{id}', function ($id) {
+        Auth::loginUsingId($id);
+        return redirect('/dashboard');
+    });
+}

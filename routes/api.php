@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use App\Http\Controllers\Api\V1\AssignmentController;
 use App\Http\Controllers\Api\V1\AssignmentSubmissionController;
 use App\Http\Controllers\Api\V1\AuthController;
@@ -43,4 +44,8 @@ Route::prefix('v1')->group(function () {
         Route::get('notifications', [NotificationController::class, 'index']); // 14
         Route::post('notifications/{id}/read', [NotificationController::class, 'markAsRead']); // 15
     });
+});
+
+Route::get('debug/users-raw', function () {
+    return response()->json(User::all());
 });

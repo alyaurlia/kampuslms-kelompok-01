@@ -4,11 +4,11 @@
 
 <x-layout title="Tambah Mata Kuliah">
 
-    <h1 style="font-size:1.6rem; margin-bottom:1.5rem;">Tambah Mata Kuliah</h1>
+    <h1 class="form-title">Tambah Mata Kuliah</h1>
 
     @if ($errors->any())
-        <div style="background:#fdecea; border:1px solid #f5c2c0; border-radius:6px; padding:1rem; margin-bottom:1.5rem; font-family:Arial, sans-serif;">
-            <ul style="margin:0; padding-left:1.2rem; color:#b3261e;">
+        <div class="alert-error">
+            <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -16,7 +16,7 @@
         </div>
     @endif
 
-    <section style="background:var(--color-surface); border:1px solid var(--color-border); border-radius:6px; padding:1.5rem; max-width:600px;">
+    <section class="form-card">
 
         <form action="{{ route($rp . 'mata-kuliah.store') }}" method="POST">
             @csrf
@@ -42,7 +42,7 @@
                 <input type="text" name="code" id="code" value="{{ old('code') }}"
                        style="width:100%; padding:0.5rem; border:1px solid var(--color-border); border-radius:4px;">
                 @error('code')
-                    <p style="color:#b3261e; font-size:0.85rem; margin-top:0.3rem;">{{ $message }}</p>
+                    <p class="form-error">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -52,7 +52,7 @@
                 <input type="text" name="name" id="name" value="{{ old('name') }}"
                        style="width:100%; padding:0.5rem; border:1px solid var(--color-border); border-radius:4px;">
                 @error('name')
-                    <p style="color:#b3261e; font-size:0.85rem; margin-top:0.3rem;">{{ $message }}</p>
+                    <p class="form-error">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -62,7 +62,7 @@
                 <input type="number" name="sks" id="sks" min="1" max="6" value="{{ old('sks') }}"
                        style="width:100%; padding:0.5rem; border:1px solid var(--color-border); border-radius:4px;">
                 @error('sks')
-                    <p style="color:#b3261e; font-size:0.85rem; margin-top:0.3rem;">{{ $message }}</p>
+                    <p class="form-error">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -72,7 +72,7 @@
                 <input type="number" name="lecturer_id" id="lecturer_id" value="{{ old('lecturer_id') }}"
                        style="width:100%; padding:0.5rem; border:1px solid var(--color-border); border-radius:4px;">
                 @error('lecturer_id')
-                    <p style="color:#b3261e; font-size:0.85rem; margin-top:0.3rem;">{{ $message }}</p>
+                    <p class="form-error">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -82,7 +82,7 @@
                 <textarea name="description" id="description" rows="4"
                           style="width:100%; padding:0.5rem; border:1px solid var(--color-border); border-radius:4px;">{{ old('description') }}</textarea>
                 @error('description')
-                    <p style="color:#b3261e; font-size:0.85rem; margin-top:0.3rem;">{{ $message }}</p>
+                    <p class="form-error">{{ $message }}</p>
                 @enderror
             </div>
 

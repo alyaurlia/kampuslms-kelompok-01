@@ -11,25 +11,26 @@ abstract class Controller
      * Akan dipindah ke CoursePolicy@view di minggu 7.
      */
     protected function canViewCourse(Course $course): bool
-    {
-        $user = auth()->user();
+{
+    $user = auth()->user();
 
-        return match ($user->role) {
-            'admin'     => true,
-            'dosen'     => $course->lecturer_id === $user->id,
-            'mahasiswa' => $course->students()->whereKey($user->id)->exists(),
-            default     => false,
-        };
+    if (! $user) {
+        return false;
     }
 
-    /**
-     * SEMENTARA (Build 5): boleh mengelola (ubah/hapus) mata kuliah ini?
-     * Akan dipindah ke CoursePolicy@update di minggu 7.
-     */
-    protected function canManageCourse(Course $course): bool
-    {
-        $user = auth()->user();
+    return match ($user->role) {
+        // ... tetap sama
+    };
+}
 
-        return $user->role === 'admin' || $course->lecturer_id === $user->id;
+protected function canManageCourse(Course $course): bool
+{
+    $user = auth()->user();
+
+    if (! $user) {
+        return false;
     }
+
+    return $user->role === 'admin' || $course->lecturer_id === $user->id;
+}
 }

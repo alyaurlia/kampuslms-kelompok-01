@@ -1,0 +1,90 @@
+/* =========================================================
+   forms.css — komponen form (create/edit di courses/ dan Users/)
+   ========================================================= */
+
+.form-title {
+    font-size: 1.6rem;
+    margin-bottom: 1.5rem;
+}
+
+/* --- kotak pesan error validasi di atas form --- */
+.alert-error {
+    background: #fdecea;
+    border: 1px solid #f5c2c0;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    font-family: Arial, sans-serif;
+}
+.alert-error ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    color: #b3261e;
+}
+
+/* --- kartu pembungkus form --- */
+.form-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    padding: 1.5rem;
+    max-width: 600px;
+}
+
+/* --- satu baris field (label + input + pesan error) --- */
+.form-group {
+    margin-bottom: 1rem;
+}
+.form-group--lg {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.4rem;
+}
+/* label dengan font Arial (dipakai di halaman edit) */
+.form-label--sans {
+    font-family: Arial, sans-serif;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+}
+
+/* teks bantuan kecil di bawah input */
+.form-hint {
+    margin: 0.3rem 0 0;
+    font-size: 0.8rem;
+    color: var(--color-ink-soft);
+}
+
+.form-error {
+    color: #b3261e;
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+}
+
+/* --- tombol --- */
+.form-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+.btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 4px;
+}
+.btn-primary {
+    border: none;
+    background: var(--color-card-1-from);
+    color: #fff;
+    cursor: pointer;
+}
+.btn-secondary {
+    border: 1px solid var(--color-border);
+    text-decoration: none;
+    color: inherit;
+}

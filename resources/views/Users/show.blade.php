@@ -4,8 +4,9 @@
     bentuk data yang dikirim controller lewat compact('user').
 
     Style kartu (.mk-card, .mk-banner, dst.) dipakai ulang dari
-    layout.blade.php supaya identitas visual konsisten dengan
+    resources/css/courses.css supaya identitas visual konsisten dengan
     courses/show.blade.php, meski datanya beda (nama, email, peran).
+    Tombol aksi memakai class dari resources/css/users.css.
 --}}
 <x-layout :title="$user->name">
 
@@ -17,7 +18,7 @@
 
     @php
         // Palet warna & motif dirotasi berdasarkan email pengguna (crc32),
-        // memakai variabel --color-card-N-* yang sama dengan
+        // memakai class .mk-bg-N (lihat courses.css) yang sama dengan
         // courses/show.blade.php, supaya identitas visual tiap pengguna
         // konsisten setiap kali halaman dibuka.
         $mkPatterns = ['diamond', 'triangle', 'circle', 'diamond', 'triangle'];
@@ -27,8 +28,7 @@
 
     <div class="mk-card">
 
-        <div class="mk-banner mk-pattern-{{ $mkPattern }}"
-             style="background: linear-gradient(135deg, var(--color-card-{{ $mkIndex }}-from), var(--color-card-{{ $mkIndex }}-to));">
+        <div class="mk-banner mk-pattern-{{ $mkPattern }} mk-bg-{{ $mkIndex }}">
             <span class="mk-badge">{{ ucfirst($user->role) }}</span>
         </div>
 
@@ -52,9 +52,8 @@
 
             {{-- Tombol aksi: edit / hapus, sejajar dengan tombol serupa
                  di users/index.blade.php --}}
-            <div style="display:flex; gap:0.75rem; margin-top:1.5rem;">
-                <a href="{{ route('users.edit', $user->id) }}"
-                   style="padding:0.5rem 1.2rem; border-radius:4px; border:1px solid var(--color-border); text-decoration:none; color:inherit; font-family:Arial, sans-serif; font-size:0.9rem;">
+            <div class="user-detail-actions">
+                <a href="{{ route('users.edit', $user->id) }}" class="user-detail-edit">
                     Edit
                 </a>
 
@@ -62,8 +61,7 @@
                       onsubmit="return confirm('Yakin ingin menghapus pengguna {{ $user->name }}?');">
                     @csrf
                     @method('DELETE')
-                    <button type="submit"
-                            style="padding:0.5rem 1.2rem; border-radius:4px; border:1px solid #f5c2c0; background:#fdecea; color:#b3261e; cursor:pointer; font-family:Arial, sans-serif; font-size:0.9rem;">
+                    <button type="submit" class="user-detail-delete">
                         Hapus
                     </button>
                 </form>

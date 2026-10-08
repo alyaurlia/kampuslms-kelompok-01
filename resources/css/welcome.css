@@ -1,0 +1,31 @@
+/* =========================================================
+   welcome.css — halaman login (welcome.blade.php)
+
+   Halaman ini masih memakai class utilitas Tailwind (via CDN) untuk
+   tata letak; di sini hanya warna kustom yang sebelumnya ditulis
+   lewat atribut style="..." dan onfocus/onblur.
+   ========================================================= */
+
+.login-body {
+    background: linear-gradient(135deg, #A9BF55, #CB125E);
+}
+
+.login-card {
+    border-color: #CB125E;
+}
+
+.login-input {
+    border-color: #DEA249;
+}
+.login-input:focus {
+    border-color: #CB125E;
+    box-shadow: 0 0 0 3px #F8979733;
+}
+
+.login-button {
+    background: linear-gradient(90deg, #F85988, #CB125E);
+}
+
+.login-link {
+    color: #CB125E;
+}
