@@ -18,35 +18,47 @@ class DatabaseSeeder extends Seeder
         // WAJIB diganti di produksi lewat env DEMO_PASSWORD saat deployment.
         $demoPassword = env('DEMO_PASSWORD', 'password');
 
+        // Izinkan mass assignment (role, nim_nip) selama seeding saja.
+        User::unguard();
+
         // --- 1 admin ---
-        $admin = User::factory()->admin()->updateOrCreate(
-    ['email' => 'admin@kampuslms.test'],
-    [
-        'name' => 'Admin KampusLMS',
-        'nim_nip' => '198001012005011001',
-        'password' => $demoPassword,
-    ]
-);
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@kampuslms.test'],
+            [
+                'name'     => 'Admin KampusLMS',
+                'nim_nip'  => '198001012005011001',
+                'role'     => 'admin',
+                'password' => $demoPassword,
+            ]
+        );
 
-        // --- 3 dosen ---
-        $dosenDemo = User::factory()->dosen()->updateOrCreate(
-    ['email' => 'dosen@kampuslms.test'],
-    [
-        'name' => 'Dosen Demo',
-        'nim_nip' => '198505052010011002',
-        'password' => $demoPassword,
-    ]
-);
+        // --- 3 dosen (1 akun demo + 2 acak) ---
+        $dosenDemo = User::updateOrCreate(
+            ['email' => 'dosen@kampuslms.test'],
+            [
+                'name'     => 'Dosen Demo',
+                'nim_nip'  => '198505052010011002',
+                'role'     => 'dosen',
+                'password' => $demoPassword,
+            ]
+        );
+        $dosens = collect([$dosenDemo])->merge(
+            User::factory()->dosen()->count(2)->create()
+        );
 
-        // --- 30 mahasiswa ---
-        $mahasiswaDemo = User::factory()->mahasiswa()->updateOrCreate(
-    ['email' => 'mahasiswa@kampuslms.test'],
-    [
-        'name' => 'Mahasiswa Demo',
-        'nim_nip' => '10241999',
-        'password' => $demoPassword,
-    ]
-);
+        // --- 30 mahasiswa (1 akun demo + 29 acak) ---
+        $mahasiswaDemo = User::updateOrCreate(
+            ['email' => 'mahasiswa@kampuslms.test'],
+            [
+                'name'     => 'Mahasiswa Demo',
+                'nim_nip'  => '10241999',
+                'role'     => 'mahasiswa',
+                'password' => $demoPassword,
+            ]
+        );
+        $mahasiswas = collect([$mahasiswaDemo])->merge(
+            User::factory()->mahasiswa()->count(29)->create()
+        );
 
         // --- 5 mata kuliah, tiap MK ≥15 mahasiswa terdaftar ---
         $courses = collect();
@@ -69,15 +81,15 @@ class DatabaseSeeder extends Seeder
         foreach ($courses as $course) {
             $assignments = collect([
                 Assignment::factory()->past()->create([
-                    'course_id' => $course->id,
+                    'course_id'  => $course->id,
                     'created_by' => $course->lecturer_id,
                 ]),
                 Assignment::factory()->create([
-                    'course_id' => $course->id,
+                    'course_id'  => $course->id,
                     'created_by' => $course->lecturer_id,
                 ]),
                 Assignment::factory()->draft()->create([
-                    'course_id' => $course->id,
+                    'course_id'  => $course->id,
                     'created_by' => $course->lecturer_id,
                 ]),
             ]);
@@ -103,20 +115,22 @@ class DatabaseSeeder extends Seeder
 
                     $submission = Submission::factory()->create([
                         'assignment_id' => $assignment->id,
-                        'user_id' => $student->id,
-                        'submitted_at' => $submittedAt,
-                        'is_late' => $isLate,
+                        'user_id'       => $student->id,
+                        'submitted_at'  => $submittedAt,
+                        'is_late'       => $isLate,
                     ]);
 
                     // ~60% submission sudah dinilai
                     if (fake()->boolean(60)) {
                         Grade::factory()->create([
                             'submission_id' => $submission->id,
-                            'graded_by' => $assignment->created_by,
+                            'graded_by'     => $assignment->created_by,
                         ]);
                     }
                 }
             }
         }
+
+        User::reguard();
     }
 }
