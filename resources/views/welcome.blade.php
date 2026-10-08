@@ -34,13 +34,11 @@
                 @csrf
 
                 <div>
-                    <input type="text" name="nim" placeholder="NIM"
-                        class="login-input w-full border-2 rounded-full px-5 py-3 focus:outline-none transition">
-                    <input type="text" name="nim" value="{{ old('nim') }}" placeholder="NIM"
-                        class="w-full border-2 rounded-full px-5 py-3 focus:outline-none transition"
-                        style="border-color: #DEA249;"
-                        onfocus="this.style.borderColor='#CB125E'; this.style.boxShadow='0 0 0 3px #F8979733'"
-                        onblur="this.style.borderColor='#DEA249'; this.style.boxShadow='none'">
+                   <input type="text" name="nim_nip" value="{{ old('nim_nip') }}" placeholder="NIM / NIP"
+        class="login-input w-full border-2 rounded-full px-5 py-3 focus:outline-none transition"
+        style="border-color: #DEA249;"
+        onfocus="this.style.borderColor='#CB125E'; this.style.boxShadow='0 0 0 3px #F8979733'"
+        onblur="this.style.borderColor='#DEA249'; this.style.boxShadow='none'">
                 </div>
 
                 <div>
