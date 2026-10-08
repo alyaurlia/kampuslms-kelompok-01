@@ -16,14 +16,30 @@ class CourseMaterialController extends Controller
      * Boleh dilihat: admin, dosen pengampu, dan mahasiswa yang terdaftar
      * di mata kuliah ini (CoursePolicy::view).
      */
-    public function index(Request $request, Course $course): MaterialCollection
-    {
-        Gate::authorize('view', $course);   // 403 kalau tidak berhak
+public function index(Request $request, Course $course): MaterialCollection
+{
+    $user = $request->user();
 
-        $materials = $course->materials()
-            ->latest('id')
-            ->paginate(min(max($request->integer('per_page', 15), 1), 100));
+    Gate::authorize('view', $course);
 
-        return new MaterialCollection($materials);
+    $query = $course->materials();
+
+    if ($user->role === 'dosen') {
+        $query->whereHas('course', function ($q) use ($user) {
+            $q->where('lecturer_id', $user->id);
+        });
+    } elseif ($user->role === 'mahasiswa') {
+        $query->whereHas('course.students', function ($q) use ($user) {
+            $q->whereKey($user->id);
+        });
+    }
+
+    $materials = $query
+        ->latest('id')
+        ->paginate(
+            min(max($request->integer('per_page', 15), 1), 100)
+        );
+
+    return new MaterialCollection($materials);
     }
 }
