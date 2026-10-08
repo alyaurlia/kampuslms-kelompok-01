@@ -14,11 +14,16 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // Kata sandi demo: default "password" untuk lokal/CI.
+        // WAJIB diganti di produksi lewat env DEMO_PASSWORD saat deployment.
+        $demoPassword = env('DEMO_PASSWORD', 'password');
+
         // --- 1 admin ---
         $admin = User::factory()->admin()->create([
             'name' => 'Admin KampusLMS',
             'email' => 'admin@kampuslms.test',
-            'password' => 'password',
+            'nim_nip' => '198001012005011001', // NIP (18 digit)
+            'password' => $demoPassword,
         ]);
 
         // --- 3 dosen ---
@@ -26,7 +31,8 @@ class DatabaseSeeder extends Seeder
         $dosenDemo = User::factory()->dosen()->create([
             'name' => 'Dosen Demo',
             'email' => 'dosen@kampuslms.test',
-            'password' => 'password',
+            'nim_nip' => '198505052010011002', // NIP (18 digit)
+            'password' => $demoPassword,
         ]);
         $dosens->push($dosenDemo);
 
@@ -35,7 +41,8 @@ class DatabaseSeeder extends Seeder
         $mahasiswaDemo = User::factory()->mahasiswa()->create([
             'name' => 'Mahasiswa Demo',
             'email' => 'mahasiswa@kampuslms.test',
-            'password' => 'password',
+            'nim_nip' => '10241999', // NIM
+            'password' => $demoPassword,
         ]);
         $mahasiswas->push($mahasiswaDemo);
 
@@ -47,7 +54,7 @@ class DatabaseSeeder extends Seeder
             ]);
             $courses->push($course);
 
-            // enroll minimal 15 mahasiswa acak ke MK ini
+            // enroll 20 mahasiswa acak (≥15) ke MK ini
             $enrolled = $mahasiswas->random(min(20, $mahasiswas->count()));
             foreach ($enrolled as $mhs) {
                 $course->students()->attach($mhs->id, [
@@ -73,7 +80,6 @@ class DatabaseSeeder extends Seeder
                 ]),
             ]);
 
-            // mahasiswa yang terdaftar di MK ini (untuk konsistensi submission)
             $enrolledStudents = $course->students;
 
             foreach ($assignments as $assignment) {
@@ -81,7 +87,7 @@ class DatabaseSeeder extends Seeder
                     continue; // tugas draft tidak menerima submission
                 }
 
-                // ambil sebagian mahasiswa terdaftar untuk mengumpulkan (~70%)
+                // ~70% mahasiswa terdaftar mengumpulkan
                 $submitters = $enrolledStudents->random(
                     max(1, (int) ($enrolledStudents->count() * 0.7))
                 );

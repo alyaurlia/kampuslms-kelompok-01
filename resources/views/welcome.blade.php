@@ -5,11 +5,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Login - Kampus LMS</title>
 
-        <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
 
-        <!-- Tailwind via CDN (sementara, sebelum pakai sistem auth resmi) -->
         <script src="https://cdn.tailwindcss.com"></script>
 
         {{-- Warna kustom halaman login dipisah ke resources/css/welcome.css --}}
@@ -24,12 +22,25 @@
                      alt="Logo Kampus LMS" class="h-24 object-contain">
             </div>
 
-            <form method="POST" action="#" class="space-y-4">
+            {{-- Pesan error login --}}
+            @if ($errors->any())
+                <div class="mb-4 rounded-lg px-4 py-3 text-sm"
+                     style="background:#fdecea; border:1px solid #f5c2c0; color:#b3261e;">
+                    {{ $errors->first() }}
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('login.store') }}" class="space-y-4">
                 @csrf
 
                 <div>
                     <input type="text" name="nim" placeholder="NIM"
                         class="login-input w-full border-2 rounded-full px-5 py-3 focus:outline-none transition">
+                    <input type="text" name="nim" value="{{ old('nim') }}" placeholder="NIM"
+                        class="w-full border-2 rounded-full px-5 py-3 focus:outline-none transition"
+                        style="border-color: #DEA249;"
+                        onfocus="this.style.borderColor='#CB125E'; this.style.boxShadow='0 0 0 3px #F8979733'"
+                        onblur="this.style.borderColor='#DEA249'; this.style.boxShadow='none'">
                 </div>
 
                 <div>

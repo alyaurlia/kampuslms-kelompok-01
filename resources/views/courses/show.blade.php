@@ -13,6 +13,13 @@
     {{-- Tombol kembali ditaruh di atas judul supaya konsisten dengan pola
          navigasi umum "list -> detail -> kembali ke list". --}}
     <a href="{{ route($routePrefix . '.index') }}" class="mk-back-link">
+@php
+    $rp = \Illuminate\Support\Str::before(request()->route()->getName(), 'mata-kuliah');
+@endphp
+
+<x-layout :title="$mataKuliah->name">
+
+    <a href="{{ route($rp . 'mata-kuliah.index') }}" class="mk-back-link">
         &larr; Kembali ke Daftar Mata Kuliah
     </a>
 
@@ -29,6 +36,8 @@
     <div class="mk-card">
 
         <div class="mk-banner mk-pattern-{{ $mkPattern }} mk-bg-{{ $mkIndex }}">
+        <div class="mk-banner mk-pattern-{{ $mkPattern }}"
+             style="background: linear-gradient(135deg, var(--color-card-{{ $mkIndex }}-from), var(--color-card-{{ $mkIndex }}-to));">
             <span class="mk-badge">{{ $mataKuliah->code }}</span>
         </div>
 

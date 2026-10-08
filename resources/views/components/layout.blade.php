@@ -21,8 +21,9 @@
 <body>
 
     @php
-        // Daftar menu per peran: [label, nama route, pola untuk penanda aktif].
-        // Sesuaikan nama route dengan yang dibuat di routes/web.php.
+        // Kalau role tidak dikirim dari halaman, ambil dari user yang login
+        $role = $role ?? auth()->user()?->role;
+
         $menus = [
             'admin' => [
                 ['Dashboard',   'admin.dashboard',          'admin.dashboard'],
@@ -31,21 +32,16 @@
             ],
             'dosen' => [
                 ['Dashboard',   'dosen.dashboard',          'dosen.dashboard'],
-                ['Kelas Saya',  'dosen.kelas.index',        'dosen.kelas.*'],
-                ['Input Nilai', 'dosen.nilai.index',        'dosen.nilai.*'],
+                ['Mata Kuliah', 'dosen.mata-kuliah.index',  'dosen.mata-kuliah.*'],
             ],
             'mahasiswa' => [
                 ['Dashboard',   'mahasiswa.dashboard',          'mahasiswa.dashboard'],
                 ['Mata Kuliah', 'mahasiswa.mata-kuliah.index',  'mahasiswa.mata-kuliah.*'],
-                ['Nilai',       'mahasiswa.nilai.index',        'mahasiswa.nilai.*'],
             ],
         ];
 
-        // Kalau role tidak diisi, pakai menu bawaan yang lama
         $menu = $menus[$role] ?? [
-            ['Dashboard',   'dashboard',          'dashboard'],
-            ['Mata Kuliah', 'mata-kuliah.index',  'mata-kuliah.*'],
-            ['Tentang',     'tentang',            'tentang'],
+            ['Tentang', 'tentang', 'tentang'],
         ];
     @endphp
 
@@ -58,12 +54,21 @@
         </span>
         <nav>
             @foreach($menu as [$label, $routeName, $pattern])
-                {{-- Route::has() mencegah error kalau route belum dibuat --}}
                 <a href="{{ Route::has($routeName) ? route($routeName) : '#' }}"
                    class="{{ request()->routeIs($pattern) ? 'active' : '' }}">
                     {{ $label }}
                 </a>
             @endforeach
+
+            @auth
+                <form method="POST" action="{{ route('logout') }}" style="display:inline; margin-left:1.5rem;">
+                    @csrf
+                    <button type="submit"
+                            style="background:none; border:none; padding:0; cursor:pointer; color:#F3D9C4; font-family:Arial, Helvetica, sans-serif; font-size:0.9rem;">
+                        Keluar
+                    </button>
+                </form>
+            @endauth
         </nav>
     </header>
 
