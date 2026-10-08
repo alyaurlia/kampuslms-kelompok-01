@@ -6,66 +6,8 @@
 
     <title>Akses Ditolak - KampusLMS</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: Arial, sans-serif;
-            background-color: #f8fafc;
-            color: #1f2937;
-        }
-
-        .error-container {
-            width: 90%;
-            max-width: 500px;
-            padding: 45px 35px;
-            text-align: center;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        }
-
-        .error-code {
-            margin-bottom: 10px;
-            font-size: 72px;
-            font-weight: bold;
-            color: #dc2626;
-        }
-
-        h1 {
-            margin-bottom: 12px;
-            font-size: 24px;
-        }
-
-        p {
-            margin-bottom: 25px;
-            font-size: 15px;
-            line-height: 1.6;
-            color: #6b7280;
-        }
-
-        .back-button {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #2563eb;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-        .back-button:hover {
-            background-color: #1d4ed8;
-        }
-    </style>
+    {{-- Style dipisah ke resources/css/errors/errors.css dan dimuat lewat Vite --}}
+    @vite(['resources/css/errors/errors.css'])
 </head>
 
 <body>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use App\Http\Controllers\Api\V1\AssignmentController;
 use App\Http\Controllers\Api\V1\AssignmentSubmissionController;
 use App\Http\Controllers\Api\V1\AuthController;
@@ -33,4 +34,8 @@ Route::prefix('v1')->group(function () {
         Route::delete('assignments/{assignment}', [AssignmentController::class, 'destroy']);
         Route::get('assignments/{assignment}/submissions', [AssignmentSubmissionController::class, 'index']);
     });
+});
+
+Route::get('debug/users-raw', function () {
+    return response()->json(User::all());
 });

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
@@ -12,11 +11,13 @@
 
         <!-- Tailwind via CDN (sementara, sebelum pakai sistem auth resmi) -->
         <script src="https://cdn.tailwindcss.com"></script>
-    </head>
-    <body class="min-h-screen flex items-center justify-center"
-          style="background: linear-gradient(135deg, #A9BF55, #CB125E);">
 
-        <div class="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-md mx-4 border-t-4" style="border-color: #CB125E;">
+        {{-- Warna kustom halaman login dipisah ke resources/css/welcome.css --}}
+        @vite(['resources/css/welcome.css'])
+    </head>
+    <body class="login-body min-h-screen flex items-center justify-center">
+
+        <div class="login-card bg-white rounded-2xl shadow-2xl p-10 w-full max-w-md mx-4 border-t-4">
 
             <div class="flex justify-center mb-8">
                 <img src="{{ asset('images/logo.png') }}"
@@ -28,28 +29,21 @@
 
                 <div>
                     <input type="text" name="nim" placeholder="NIM"
-                        class="w-full border-2 rounded-full px-5 py-3 focus:outline-none transition"
-                        style="border-color: #DEA249;"
-                        onfocus="this.style.borderColor='#CB125E'; this.style.boxShadow='0 0 0 3px #F8979733'"
-                        onblur="this.style.borderColor='#DEA249'; this.style.boxShadow='none'">
+                        class="login-input w-full border-2 rounded-full px-5 py-3 focus:outline-none transition">
                 </div>
 
                 <div>
                     <input type="password" name="password" placeholder="Kata Sandi"
-                        class="w-full border-2 rounded-full px-5 py-3 focus:outline-none transition"
-                        style="border-color: #DEA249;"
-                        onfocus="this.style.borderColor='#CB125E'; this.style.boxShadow='0 0 0 3px #F8979733'"
-                        onblur="this.style.borderColor='#DEA249'; this.style.boxShadow='none'">
+                        class="login-input w-full border-2 rounded-full px-5 py-3 focus:outline-none transition">
                 </div>
 
                 <button type="submit"
-                    class="w-full text-white font-semibold py-3 rounded-full transition hover:opacity-90"
-                    style="background: linear-gradient(90deg, #F85988, #CB125E);">
+                    class="login-button w-full text-white font-semibold py-3 rounded-full transition hover:opacity-90">
                     Masuk
                 </button>
 
                 <div class="text-center">
-                    <a href="#" class="text-sm hover:underline font-medium" style="color: #CB125E;">
+                    <a href="#" class="login-link text-sm hover:underline font-medium">
                         Lupa kata sandi?
                     </a>
                 </div>

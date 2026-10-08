@@ -1,0 +1,118 @@
+/* =========================================================
+   users.css — tabel daftar pengguna (Users/index.blade.php)
+
+   Header halaman, form filter, notifikasi, tampilan kosong, dan
+   pagination memakai class yang sudah ada di courses.css
+   (.mk-page-header, .mk-filter, .alert-success, .mk-empty, dst.).
+   ========================================================= */
+
+.user-table-wrap {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.user-table thead tr {
+    background: var(--color-bg);
+    text-align: left;
+}
+.user-table th {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+}
+.user-table .user-th-right {
+    text-align: right;
+}
+
+.user-table tbody tr {
+    border-bottom: 1px solid var(--color-border);
+}
+.user-table td {
+    padding: 0.75rem 1rem;
+}
+.user-table .user-td-right {
+    text-align: right;
+}
+.user-table .user-td-muted {
+    color: var(--color-ink-soft);
+}
+
+/* --- nama pengguna (tautan ke halaman detail) --- */
+.user-name-link {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* --- label peran --- */
+.user-role-badge {
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: var(--color-bg);
+    color: var(--color-primary-dark);
+    border: 1px solid var(--color-border);
+}
+
+/* --- tombol aksi Edit / Hapus --- */
+.user-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+.user-action-edit {
+    padding: 0.35rem 0.8rem;
+    border-radius: 4px;
+    border: 1px solid var(--color-border);
+    text-decoration: none;
+    color: inherit;
+    font-size: 0.85rem;
+}
+.user-action-delete {
+    padding: 0.35rem 0.8rem;
+    border-radius: 4px;
+    border: 1px solid #f5c2c0;
+    background: #fdecea;
+    color: #b3261e;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+/* =========================================================
+   Halaman detail pengguna (Users/show.blade.php)
+   Kartu, banner, dan meta memakai class .mk-* dari courses.css
+   ========================================================= */
+
+.user-detail-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+.user-detail-edit {
+    padding: 0.5rem 1.2rem;
+    border-radius: 4px;
+    border: 1px solid var(--color-border);
+    text-decoration: none;
+    color: inherit;
+    font-family: Arial, sans-serif;
+    font-size: 0.9rem;
+}
+.user-detail-delete {
+    padding: 0.5rem 1.2rem;
+    border-radius: 4px;
+    border: 1px solid #f5c2c0;
+    background: #fdecea;
+    color: #b3261e;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+    font-size: 0.9rem;
+}

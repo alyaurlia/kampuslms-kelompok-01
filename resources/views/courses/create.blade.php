@@ -1,10 +1,10 @@
 <x-layout title="Tambah Mata Kuliah">
 
-    <h1 style="font-size:1.6rem; margin-bottom:1.5rem;">Tambah Mata Kuliah</h1>
+    <h1 class="form-title">Tambah Mata Kuliah</h1>
 
     @if ($errors->any())
-        <div style="background:#fdecea; border:1px solid #f5c2c0; border-radius:6px; padding:1rem; margin-bottom:1.5rem; font-family:Arial, sans-serif;">
-            <ul style="margin:0; padding-left:1.2rem; color:#b3261e;">
+        <div class="alert-error">
+            <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -12,42 +12,38 @@
         </div>
     @endif
 
-    <section style="background:var(--color-surface); border:1px solid var(--color-border); border-radius:6px; padding:1.5rem; max-width:600px;">
+    <section class="form-card">
 
-        <form action="{{ route('mata-kuliah.store') }}" method="POST">
+        <form action="{{ route($routePrefix . '.store') }}" method="POST">
             @csrf
 
-{{-- Status --}}
-<div style="margin-bottom:1.5rem;">
-    <label for="status" style="display:block; margin-bottom:0.4rem;">
-        Status
-    </label>
+            {{-- Status --}}
+            <div class="form-group form-group--lg">
+                <label for="status" class="form-label">
+                    Status
+                </label>
 
-    <select
-        name="status"
-        id="status"
-        style="width:100%; padding:0.5rem; border:1px solid var(--color-border); border-radius:4px;"
-    >
-        <option value="">-- Pilih Status --</option>
-        <option value="draft" {{ old('status') === 'draft' ? 'selected' : '' }}>
-            Draft
-        </option>
-        <option value="active" {{ old('status') === 'active' ? 'selected' : '' }}>
-            Active
-        </option>
-        <option value="archived" {{ old('status') === 'archived' ? 'selected' : '' }}>
-            Archived
-        </option>
-    </select>
+                <select name="status" id="status" class="form-control">
+                    <option value="">-- Pilih Status --</option>
+                    <option value="draft" {{ old('status') === 'draft' ? 'selected' : '' }}>
+                        Draft
+                    </option>
+                    <option value="active" {{ old('status') === 'active' ? 'selected' : '' }}>
+                        Active
+                    </option>
+                    <option value="archived" {{ old('status') === 'archived' ? 'selected' : '' }}>
+                        Archived
+                    </option>
+                </select>
 
-    @error('status')
-                    <p style="color:#b3261e; font-size:0.85rem; margin-top:0.3rem;">{{ $message }}</p>
+                @error('status')
+                    <p class="form-error">{{ $message }}</p>
                 @enderror
-</div>
+            </div>
 
             {{-- Kode --}}
-            <div style="margin-bottom:1rem;">
-                <label for="code" style="display:block; margin-bottom:0.4rem;">
+            <div class="form-group">
+                <label for="code" class="form-label">
                     Kode Mata Kuliah
                 </label>
 
@@ -56,17 +52,17 @@
                     name="code"
                     id="code"
                     value="{{ old('code') }}"
-                    style="width:100%; padding:0.5rem; border:1px solid var(--color-border); border-radius:4px;"
+                    class="form-control"
                 >
 
                 @error('code')
-                    <p style="color:#b3261e; font-size:0.85rem; margin-top:0.3rem;">{{ $message }}</p>
+                    <p class="form-error">{{ $message }}</p>
                 @enderror
             </div>
 
             {{-- Nama --}}
-            <div style="margin-bottom:1rem;">
-                <label for="name" style="display:block; margin-bottom:0.4rem;">
+            <div class="form-group">
+                <label for="name" class="form-label">
                     Nama Mata Kuliah
                 </label>
 
@@ -75,17 +71,17 @@
                     name="name"
                     id="name"
                     value="{{ old('name') }}"
-                    style="width:100%; padding:0.5rem; border:1px solid var(--color-border); border-radius:4px;"
+                    class="form-control"
                 >
 
                 @error('name')
-                    <p style="color:#b3261e; font-size:0.85rem; margin-top:0.3rem;">{{ $message }}</p>
+                    <p class="form-error">{{ $message }}</p>
                 @enderror
             </div>
 
             {{-- SKS --}}
-            <div style="margin-bottom:1rem;">
-                <label for="sks" style="display:block; margin-bottom:0.4rem;">
+            <div class="form-group">
+                <label for="sks" class="form-label">
                     SKS
                 </label>
 
@@ -96,17 +92,17 @@
                     min="1"
                     max="6"
                     value="{{ old('sks') }}"
-                    style="width:100%; padding:0.5rem; border:1px solid var(--color-border); border-radius:4px;"
+                    class="form-control"
                 >
 
                 @error('sks')
-                    <p style="color:#b3261e; font-size:0.85rem; margin-top:0.3rem;">{{ $message }}</p>
+                    <p class="form-error">{{ $message }}</p>
                 @enderror
             </div>
 
             {{-- Dosen --}}
-            <div style="margin-bottom:1rem;">
-                <label for="lecturer_id" style="display:block; margin-bottom:0.4rem;">
+            <div class="form-group">
+                <label for="lecturer_id" class="form-label">
                     ID Dosen
                 </label>
 
@@ -115,17 +111,17 @@
                     name="lecturer_id"
                     id="lecturer_id"
                     value="{{ old('lecturer_id') }}"
-                    style="width:100%; padding:0.5rem; border:1px solid var(--color-border); border-radius:4px;"
+                    class="form-control"
                 >
 
                 @error('lecturer_id')
-                    <p style="color:#b3261e; font-size:0.85rem; margin-top:0.3rem;">{{ $message }}</p>
+                    <p class="form-error">{{ $message }}</p>
                 @enderror
             </div>
 
             {{-- Deskripsi --}}
-            <div style="margin-bottom:1.5rem;">
-                <label for="description" style="display:block; margin-bottom:0.4rem;">
+            <div class="form-group form-group--lg">
+                <label for="description" class="form-label">
                     Deskripsi
                 </label>
 
@@ -133,27 +129,21 @@
                     name="description"
                     id="description"
                     rows="4"
-                    style="width:100%; padding:0.5rem; border:1px solid var(--color-border); border-radius:4px;"
+                    class="form-control"
                 >{{ old('description') }}</textarea>
 
                 @error('description')
-                    <p style="color:#b3261e; font-size:0.85rem; margin-top:0.3rem;">{{ $message }}</p>
+                    <p class="form-error">{{ $message }}</p>
                 @enderror
             </div>
 
-            <div style="display:flex; gap:0.75rem;">
+            <div class="form-actions">
 
-                <button
-                    type="submit"
-                    style="padding:0.6rem 1.2rem; border:none; border-radius:4px; background:var(--color-card-1-from); color:#fff; cursor:pointer;"
-                >
+                <button type="submit" class="btn btn-primary">
                     Simpan
                 </button>
 
-                <a
-                    href="{{ route('mata-kuliah.index') }}"
-                    style="padding:0.6rem 1.2rem; border-radius:4px; border:1px solid var(--color-border); text-decoration:none; color:inherit;"
-                >
+                <a href="{{ route($routePrefix . '.index') }}" class="btn btn-secondary">
                     Batal
                 </a>
 

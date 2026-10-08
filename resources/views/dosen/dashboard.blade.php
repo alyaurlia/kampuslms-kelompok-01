@@ -1,85 +1,31 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akses Ditolak - KampusLMS</title>
+{{--
+    Dashboard dosen: ringkasan mata kuliah yang diampu user yang sedang login.
+    Memakai komponen .stat-grid / .stat-card yang sama dengan admin/dashboard
+    (didefinisikan di resources/css/dashboard.css).
+--}}
+@php
+    $mkDiampu = \App\Models\Course::where('lecturer_id', auth()->id());
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    $totalMk     = (clone $mkDiampu)->count();
+    $totalAktif  = (clone $mkDiampu)->where('status', 'active')->count();
+    $totalPeserta = (clone $mkDiampu)->withCount('students')->get()->sum('students_count');
+@endphp
 
-        body {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: Arial, sans-serif;
-            background-color: #f8fafc;
-            color: #1f2937;
-        }
+<x-layout title="Dashboard Dosen" role="dosen">
+    <h1 class="page-title">Dashboard Dosen</h1>
 
-        .error-container {
-            width: 90%;
-            max-width: 500px;
-            text-align: center;
-            background-color: white;
-            padding: 45px 35px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        }
-
-        .error-code {
-            font-size: 72px;
-            font-weight: bold;
-            color: #dc2626;
-            margin-bottom: 10px;
-        }
-
-        h1 {
-            font-size: 24px;
-            margin-bottom: 12px;
-        }
-
-        p {
-            font-size: 15px;
-            line-height: 1.6;
-            color: #6b7280;
-            margin-bottom: 25px;
-        }
-
-        .back-button {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #2563eb;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-        .back-button:hover {
-            background-color: #1d4ed8;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="error-container">
-        <div class="error-code">403</div>
-
-        <h1>Akses Ditolak</h1>
-
-        <p>
-            Maaf, Anda tidak memiliki izin untuk mengakses halaman atau melakukan tindakan ini.
-        </p>
-
-        <a href="{{ url('/') }}" class="back-button">
-            Kembali ke Halaman Utama
-        </a>
+    <div class="stat-grid">
+        <div class="stat-card">
+            <p class="stat-label">Mata Kuliah Diampu</p>
+            <p class="stat-value">{{ $totalMk }}</p>
+        </div>
+        <div class="stat-card">
+            <p class="stat-label">Mata Kuliah Aktif</p>
+            <p class="stat-value">{{ $totalAktif }}</p>
+        </div>
+        <div class="stat-card">
+            <p class="stat-label">Total Peserta</p>
+            <p class="stat-value">{{ $totalPeserta }}</p>
+        </div>
     </div>
-</body>
-</html>
+</x-layout>
