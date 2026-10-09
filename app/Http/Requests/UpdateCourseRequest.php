@@ -4,13 +4,13 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Gate;
 
 class UpdateCourseRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        // TODO: minggu 7 — ganti dengan Gate::authorize('update', $this->route('mata_kuliah'))
-        return true;
+        return Gate::forUser($this->user())->allows('update', $this->route('mata_kuliah'));
     }
 
     public function rules(): array
@@ -25,7 +25,7 @@ class UpdateCourseRequest extends FormRequest
             'name'        => ['required', 'string', 'max:150'],
             'description' => ['nullable', 'string'],
             'sks'         => ['required', 'integer', 'between:1,6'],
-            'lecturer_id' => ['required', 'integer', 'exists:users,id'],
+            'lecturer_id' => ['required', 'integer', Rule::exists('users', 'id')->where('role', 'dosen')],
             'status'      => ['required', 'in:draft,active,archived'],
         ];
     }

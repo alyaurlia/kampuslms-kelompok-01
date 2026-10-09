@@ -13,12 +13,16 @@ class AssignmentPolicy
         return true; // daftar disaring di query
     }
 
-    public function view(User $user, Assignment $assignment): bool
-    {
-        $course = $assignment->course;
+public function view(User $user, Assignment $assignment): bool
+{
+    $course = $assignment->course;
 
-        return $course->isManagedBy($user) || $course->hasStudent($user);
+    if ($user->role === 'mahasiswa') {
+        return $assignment->status === 'published' && $course->hasStudent($user);
     }
+
+    return $course->isManagedBy($user);
+}
 
     // Course wajib. Admin atau dosen pengampu MK tersebut.
     public function create(User $user, Course $course): bool

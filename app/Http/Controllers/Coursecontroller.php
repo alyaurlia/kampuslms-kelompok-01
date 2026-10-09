@@ -6,6 +6,7 @@ use App\Http\Requests\StoreCourseRequest;
 use App\Http\Requests\UpdateCourseRequest;
 use App\Models\Course;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 class CourseController extends Controller
@@ -22,11 +23,14 @@ class CourseController extends Controller
 
     /**
      * GET /{peran}/mata-kuliah
-     * TODO minggu 7: saring daftar per peran di level query.
+     * Daftar disaring di level query sesuai peran (scope visibleTo).
      */
     public function index(Request $request)
     {
+        Gate::authorize('viewAny', Course::class);
+
         $mataKuliah = Course::query()
+            ->visibleTo($request->user())
             ->with('lecturer')
             ->when($request->filled('q'), fn ($query) =>
                 $query->where(fn ($q) =>
@@ -46,10 +50,11 @@ class CourseController extends Controller
 
     /**
      * GET /admin/mata-kuliah/create
-     * Route hanya ada di grup admin (dijaga role:admin).
      */
     public function create(Request $request)
     {
+        Gate::authorize('create', Course::class);
+
         return view('courses.create', [
             'routePrefix' => $this->routePrefix($request),
         ]);
@@ -57,10 +62,11 @@ class CourseController extends Controller
 
     /**
      * POST /admin/mata-kuliah
-     * Route hanya ada di grup admin (dijaga role:admin).
      */
     public function store(StoreCourseRequest $request)
     {
+        Gate::authorize('create', Course::class);
+
         Course::create($request->validated());
 
         return redirect()
@@ -76,8 +82,7 @@ class CourseController extends Controller
      */
     public function show(Request $request, Course $mata_kuliah)
     {
-        // SEMENTARA: diganti Gate::authorize('view', ...) di minggu 7.
-        abort_unless($this->canViewCourse($mata_kuliah), 403);
+        Gate::authorize('view', $mata_kuliah);
 
         return view('courses.show', [
             'mataKuliah'  => $mata_kuliah,
@@ -86,12 +91,11 @@ class CourseController extends Controller
     }
 
     /**
-     * GET /{admin|dosen}/mata-kuliah/{mata_kuliah}/edit
+     * GET /admin/mata-kuliah/{mata_kuliah}/edit
      */
     public function edit(Request $request, Course $mata_kuliah)
     {
-        // SEMENTARA: diganti Gate::authorize('update', ...) di minggu 7.
-        abort_unless($this->canManageCourse($mata_kuliah), 403);
+        Gate::authorize('update', $mata_kuliah);
 
         return view('courses.edit', [
             'mataKuliah'  => $mata_kuliah,
@@ -100,12 +104,11 @@ class CourseController extends Controller
     }
 
     /**
-     * PUT/PATCH /{admin|dosen}/mata-kuliah/{mata_kuliah}
+     * PUT/PATCH /admin/mata-kuliah/{mata_kuliah}
      */
     public function update(UpdateCourseRequest $request, Course $mata_kuliah)
     {
-        // SEMENTARA: diganti Gate::authorize('update', ...) di minggu 7.
-        abort_unless($this->canManageCourse($mata_kuliah), 403);
+        Gate::authorize('update', $mata_kuliah);
 
         $mata_kuliah->update($request->validated());
 
@@ -116,10 +119,11 @@ class CourseController extends Controller
 
     /**
      * DELETE /admin/mata-kuliah/{mata_kuliah}
-     * Route hanya ada di grup admin (dijaga role:admin).
      */
     public function destroy(Request $request, Course $mata_kuliah)
     {
+        Gate::authorize('delete', $mata_kuliah);
+
         $mata_kuliah->delete();
 
         return redirect()
