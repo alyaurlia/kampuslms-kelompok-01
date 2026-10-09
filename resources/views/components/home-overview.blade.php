@@ -14,7 +14,7 @@
     'events'     => [],
 ])
 
-<div class="home-layout" style="margin-top: 2.5rem;">
+<div class="home-layout home-overview" style="margin-top: 2.5rem;">
 
     {{-- ===== Semester overview ===== --}}
     <section class="home-card home-card--semester">
