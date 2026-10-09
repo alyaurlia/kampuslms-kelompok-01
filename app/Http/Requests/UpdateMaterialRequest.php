@@ -3,14 +3,15 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
+
 
 class UpdateMaterialRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        // TODO minggu 7: ganti dengan pengecekan Policy.
-        // Sementara, hak akses dijaga abort_unless di MaterialController.
-        return true;
+        return Gate::forUser($this->user())
+            ->allows('update', $this->route('material'));
     }
 
     public function rules(): array

@@ -2,15 +2,16 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Material;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class StoreMaterialRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        // TODO minggu 7: ganti dengan pengecekan Policy.
-        // Sementara, hak akses dijaga abort_unless di MaterialController.
-        return true;
+        return Gate::forUser($this->user())
+            ->allows('create', [Material::class, $this->route('course')]);
     }
 
     public function rules(): array

@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Assignment;
 use App\Models\Course;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class AssignmentController extends Controller
 {
     // GET /{peran}/mata-kuliah/{course}/tugas
     public function index(Course $course)
     {
-        abort_unless($this->canViewCourse($course), 403);
+        Gate::authorize('view', $course);
 
         $assignments = $course->assignments()
             ->when(auth()->user()->role === 'mahasiswa',
@@ -25,7 +26,7 @@ class AssignmentController extends Controller
     // GET /dosen/mata-kuliah/{course}/tugas/create
     public function create(Course $course)
     {
-        abort_unless($this->canManageCourse($course), 403);
+        Gate::authorize('create', [Assignment::class, $course]);
 
         // TODO: return view('assignments.create', compact('course'));
     }
@@ -33,7 +34,7 @@ class AssignmentController extends Controller
     // POST /dosen/mata-kuliah/{course}/tugas
     public function store(Request $request, Course $course)
     {
-        abort_unless($this->canManageCourse($course), 403);
+        Gate::authorize('create', [Assignment::class, $course]);
 
         // TODO: validasi, lalu
         // $course->assignments()->create([...$validated, 'created_by' => auth()->id()]);
@@ -42,11 +43,7 @@ class AssignmentController extends Controller
     // GET /{peran}/tugas/{assignment}  (shallow: tanpa {course})
     public function show(Assignment $assignment)
     {
-        abort_unless($this->canViewCourse($assignment->course), 403);
-        abort_if(
-            auth()->user()->role === 'mahasiswa' && $assignment->status !== 'published',
-            404
-        );
+        Gate::authorize('view', $assignment);
 
         // TODO: return view('assignments.show', compact('assignment'));
     }
@@ -54,18 +51,18 @@ class AssignmentController extends Controller
     // GET /dosen/tugas/{assignment}/edit
     public function edit(Assignment $assignment)
     {
-        abort_unless($this->canManageCourse($assignment->course), 403);
+        Gate::authorize('update', $assignment);
     }
 
     // PUT/PATCH /dosen/tugas/{assignment}
     public function update(Request $request, Assignment $assignment)
     {
-        abort_unless($this->canManageCourse($assignment->course), 403);
+        Gate::authorize('update', $assignment);
     }
 
     // DELETE /dosen/tugas/{assignment}
     public function destroy(Assignment $assignment)
     {
-        abort_unless($this->canManageCourse($assignment->course), 403);
+        Gate::authorize('delete', $assignment);
     }
 }
