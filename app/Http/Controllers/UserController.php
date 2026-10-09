@@ -6,15 +6,20 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class UserController extends Controller
 {
     public function index(Request $request)
     {
         $users = User::query()
-            ->when($request->filled('q'), fn ($query) =>
-                $query->where('name', 'like', '%' . $request->q . '%')
-                      ->orWhere('email', 'like', '%' . $request->q . '%'))
+            ->when($request->filled('q'), function ($query) use ($request) {
+                // Dikelompokkan dalam closure agar OR tidak merusak filter role.
+                $query->where(function ($sub) use ($request) {
+                    $sub->where('name', 'like', '%' . $request->q . '%')
+                        ->orWhere('email', 'like', '%' . $request->q . '%');
+                });
+            })
             ->when($request->filled('role'), fn ($query) =>
                 $query->where('role', $request->role))
             ->latest()
@@ -31,9 +36,17 @@ class UserController extends Controller
 
     public function store(StoreUserRequest $request)
     {
-        User::create($request->validated());
+        $data = $request->validated();
 
-        return redirect()->route('users.index')->with('success', 'Pengguna berhasil ditambahkan.');
+        // role sengaja tidak ada di $fillable (mencegah mass assignment),
+        // jadi diisi eksplisit di sini. Hanya admin yang sampai ke method ini.
+        $user = new User(Arr::except($data, 'role'));
+        $user->role = $data['role'];
+        $user->save();
+
+        return redirect()
+            ->route('admin.users.index')
+            ->with('success', 'Pengguna berhasil ditambahkan.');
     }
 
     public function show(User $user)
@@ -54,15 +67,32 @@ class UserController extends Controller
             unset($data['password']);
         }
 
-        $user->update($data);
+        $user->fill(Arr::except($data, 'role'));
 
-        return redirect()->route('users.index')->with('success', 'Pengguna berhasil diperbarui.');
+        if (isset($data['role'])) {
+            $user->role = $data['role'];
+        }
+
+        $user->save();
+
+        return redirect()
+            ->route('admin.users.index')
+            ->with('success', 'Pengguna berhasil diperbarui.');
     }
 
     public function destroy(User $user)
     {
+        // Admin tidak boleh menghapus akunnya sendiri.
+        if ($user->is(auth()->user())) {
+            return redirect()
+                ->route('admin.users.index')
+                ->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
+        }
+
         $user->delete();
 
-        return redirect()->route('users.index')->with('success', 'Pengguna berhasil dihapus.');
+        return redirect()
+            ->route('admin.users.index')
+            ->with('success', 'Pengguna berhasil dihapus.');
     }
 }

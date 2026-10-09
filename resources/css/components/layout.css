@@ -1,6 +1,7 @@
 /* =========================================================
    layout.css — kerangka halaman (dipakai semua halaman)
-   Berisi: variabel warna, reset, body, header/nav, main, footer
+   Berisi: variabel warna, reset, body, header/nav, main, footer,
+   dan alert (flash message)
    ========================================================= */
 
 :root {
@@ -22,6 +23,14 @@
     --color-card-3-from: #A9BF55; --color-card-3-to: #839343; /* sour apple */
     --color-card-4-from: #F85988; --color-card-4-to: #D93E6C; /* heather berry */
     --color-card-5-from: #EBD22F; --color-card-5-to: #C9AF1F; /* apricot blossom */
+
+    /* Alert (flash message) */
+    --color-success-bg: #F1F5E2;
+    --color-success-border: #A9BF55;
+    --color-success-text: #55612B;
+    --color-error-bg: #FDE8F0;
+    --color-error-border: #F85988;
+    --color-error-text: #8F0D42;
 }
 
 * { box-sizing: border-box; }
@@ -87,6 +96,28 @@ main {
     max-width: 920px;
     margin: 0 auto;
     padding: 2.5rem 1.5rem 4rem;
+}
+
+/* Flash message (success / error) di atas konten halaman */
+.alert {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.9rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid transparent;
+    border-radius: 8px;
+}
+
+.alert-success {
+    background: var(--color-success-bg);
+    border-color: var(--color-success-border);
+    color: var(--color-success-text);
+}
+
+.alert-error {
+    background: var(--color-error-bg);
+    border-color: var(--color-error-border);
+    color: var(--color-error-text);
 }
 
 footer.app-footer {
