@@ -73,6 +73,15 @@
     </header>
 
     <main>
+        {{-- Flash message: berlaku untuk seluruh halaman yang memakai layout ini --}}
+        @if (session('success'))
+            <div class="alert alert-success" role="alert">{{ session('success') }}</div>
+        @endif
+
+        @if (session('error'))
+            <div class="alert alert-error" role="alert">{{ session('error') }}</div>
+        @endif
+
         {{-- Slot default: tempat konten tiap halaman disisipkan --}}
         {{ $slot }}
     </main>

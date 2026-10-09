@@ -3,7 +3,7 @@
     <h1 class="form-title">Tambah Pengguna</h1>
 
     @if ($errors->any())
-        <div class="alert-error">
+        <div class="alert alert-error" role="alert">
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -14,7 +14,7 @@
 
     <section class="form-card">
 
-        <form action="{{ route('users.store') }}" method="POST">
+        <form action="{{ route('admin.users.store') }}" method="POST" autocomplete="off">
             @csrf
 
             {{-- Nama --}}
@@ -28,6 +28,7 @@
                     name="name"
                     id="name"
                     value="{{ old('name') }}"
+                    maxlength="150"
                     class="form-control"
                 >
             </div>
@@ -43,6 +44,8 @@
                     name="email"
                     id="email"
                     value="{{ old('email') }}"
+                    maxlength="150"
+                    autocomplete="off"
                     class="form-control"
                 >
             </div>
@@ -57,6 +60,7 @@
                     type="password"
                     name="password"
                     id="password"
+                    autocomplete="new-password"
                     class="form-control"
                 >
             </div>
@@ -71,12 +75,13 @@
                     type="password"
                     name="password_confirmation"
                     id="password_confirmation"
+                    autocomplete="new-password"
                     class="form-control"
                 >
             </div>
 
             {{-- Role --}}
-            <div class="form-group form-group--lg">
+            <div class="form-group">
                 <label for="role" class="form-label">
                     Peran
                 </label>
@@ -89,13 +94,33 @@
                 </select>
             </div>
 
+            {{-- NIM / NIP --}}
+            <div class="form-group form-group--lg">
+                <label for="nim_nip" class="form-label">
+                    NIM / NIP
+                </label>
+
+                <input
+                    type="text"
+                    name="nim_nip"
+                    id="nim_nip"
+                    value="{{ old('nim_nip') }}"
+                    maxlength="30"
+                    class="form-control"
+                >
+
+                <small class="form-hint">
+                    Wajib untuk dosen (NIP) dan mahasiswa (NIM). Kosongkan untuk admin.
+                </small>
+            </div>
+
             <div class="form-actions">
 
                 <button type="submit" class="btn btn-primary">
                     Simpan
                 </button>
 
-                <a href="{{ route('users.index') }}" class="btn btn-secondary">
+                <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">
                     Batal
                 </a>
 
