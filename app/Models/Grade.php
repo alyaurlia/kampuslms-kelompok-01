@@ -15,6 +15,7 @@ class Grade extends Model
         'feedback',
         'graded_by',
         'graded_at',
+        'is_published',
     ];
 
     protected function casts(): array
@@ -22,6 +23,7 @@ class Grade extends Model
         return [
             'score' => 'decimal:2',
             'graded_at' => 'datetime',
+            'is_published' => 'boolean',
         ];
     }
 
