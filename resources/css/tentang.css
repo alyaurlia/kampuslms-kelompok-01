@@ -2,6 +2,11 @@
    tentang.css — halaman Tentang Kelompok (tentang.blade.php)
    ========================================================= */
 
+/* Halaman tentang dibuat lebih lebar supaya 5 kartu muat satu baris */
+main:has(.tim-grid) {
+    max-width: 1120px;
+}
+
 .hero-tentang {
     background: linear-gradient(135deg, var(--color-primary, #7c1d3f) 0%, #4a0f27 100%);
     border-radius: 14px;
@@ -36,30 +41,72 @@
 .fitur-title { font-size: 0.9rem; font-weight: 700; margin: 0 0 0.3rem; }
 .fitur-desc { font-size: 0.78rem; color: var(--color-ink-soft); line-height: 1.5; margin: 0; }
 
-/* --- kartu anggota tim --- */
+/* --- kartu anggota tim (gaya kartu dashboard, berdiri sendiri) --- */
 .tim-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1.25rem;
+    grid-template-columns: repeat(var(--cols, 5), minmax(0, 1fr));
+    gap: 1rem;
 }
 .tim-card {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
-    padding: 1.5rem 1rem;
+    position: relative;
+    overflow: hidden;
+    padding: 1.75rem 1rem 1.5rem;
     text-align: center;
+    background: var(--color-surface, #fff);
+    border: 1px solid var(--color-border, #F3D9C4);
+    border-radius: 28px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .tim-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 16px 32px color-mix(in srgb, var(--color-primary, #CB125E) 12%, transparent);
 }
 .tim-avatar {
-    width: 56px; height: 56px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--color-primary, #7c1d3f), #b34a6f);
-    color: #fff; font-weight: 700; font-size: 1.1rem;
+    width: 64px; height: 64px; margin: 0 auto 1.1rem;
     display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 0.75rem;
+    font-size: 1.25rem; font-weight: 700; color: #fff;
+    background: linear-gradient(135deg, var(--color-primary, #CB125E), #F85988);
+    border-radius: 50%;
+    box-shadow: 0 6px 14px color-mix(in srgb, var(--color-primary, #CB125E) 25%, transparent);
 }
-.tim-nama { font-size: 0.9rem; font-weight: 700; margin: 0 0 0.2rem; }
-.tim-nim { font-size: 0.78rem; color: var(--color-ink-soft); margin: 0; }
+.tim-nama {
+    position: relative; z-index: 1;
+    min-height: 2.8em;
+    margin: 0 0 0.35rem;
+    font-size: 1rem; font-weight: 800; line-height: 1.4;
+    color: var(--color-ink, #2B1B22);
+}
+.tim-role {
+    position: relative; z-index: 1;
+    display: inline-block;
+    margin: 0 0 0.6rem;
+    padding: 0.25rem 0.8rem;
+    font-size: 0.72rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--color-primary, #CB125E);
+    background: color-mix(in srgb, var(--color-primary, #CB125E) 10%, white);
+    border: 1px solid color-mix(in srgb, var(--color-primary, #CB125E) 22%, white);
+    border-radius: 999px;
+}
+.tim-nim {
+    position: relative; z-index: 1;
+    margin: 0; font-size: 0.85rem; letter-spacing: 0.04em;
+    color: var(--color-ink-soft, #8A6B75);
+}
+.tim-number {
+    position: absolute; right: 0.5rem; bottom: -0.6rem;
+    font-size: 4.5rem; font-weight: 900; line-height: 1;
+    color: color-mix(in srgb, var(--color-ink, #2B1B22) 6%, transparent);
+    pointer-events: none; user-select: none;
+}
+
+@media (max-width: 700px) {
+    .tim-grid { grid-template-columns: 1fr; }
+    .tim-card {
+        display: flex; align-items: center; gap: 1rem;
+        padding: 1.1rem 1.25rem; text-align: left; border-radius: 22px;
+    }
+    .tim-avatar { flex: 0 0 56px; width: 56px; height: 56px; margin: 0; font-size: 1.1rem; }
+    .tim-nama { min-height: 0; margin-bottom: 0.3rem; }
+    .tim-role { margin-bottom: 0.4rem; }
+    .tim-number { font-size: 3.5rem; }
+}

@@ -1203,21 +1203,15 @@
 </style>
 
 <section class="admin-dashboard">
-    {{-- HEADER --}}
-    <header class="admin-dashboard__header">
-        <div>
-            <p class="admin-dashboard__eyebrow">KAMPUSLMS / ADMIN</p>
-            <h1 class="admin-dashboard__title">Dashboard</h1>
-            <p class="admin-dashboard__subtitle">
-                Pantau data dan aktivitas pembelajaran KampusLMS.
-            </p>
-        </div>
-
-        <div class="admin-dashboard__date">
-            <span class="admin-dashboard__date-dot"></span>
-            Sistem aktif
-        </div>
-    </header>
+    {{-- HEADER (banner gaya dosen/mahasiswa) --}}
+    <x-dash-hero
+        portal="KampusLMS / Admin"
+        title="Dashboard"
+        sub="Pantau data dan aktivitas pembelajaran KampusLMS."
+        status="Sistem aktif"
+        search-label="Cari data..."
+        target=".admin-metric, .admin-role-row, .admin-task-row, .admin-activity-item, .admin-course-item"
+    />
 
     {{-- STATISTIK UTAMA --}}
     <section class="admin-metrics" aria-label="Ringkasan KampusLMS">

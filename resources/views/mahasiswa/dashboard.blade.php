@@ -42,7 +42,7 @@
 
 <x-layout title="Dashboard Mahasiswa" role="mahasiswa" full-footer>
     <section class="dash">
-        <h1 class="page-title">Dashboard Mahasiswa</h1>
+        <x-dash-hero portal="Portal Mahasiswa" title="Dashboard Mahasiswa"  search-label="Cari mata kuliah..." />
 
         <div class="dash-grid">
             @foreach ($cards as $card)

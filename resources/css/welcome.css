@@ -1,31 +1,378 @@
 /* =========================================================
    welcome.css — halaman login (welcome.blade.php)
 
-   Halaman ini masih memakai class utilitas Tailwind (via CDN) untuk
-   tata letak; di sini hanya warna kustom yang sebelumnya ditulis
-   lewat atribut style="..." dan onfocus/onblur.
+   Kartu dua sisi: kiri logo + sapaan, kanan form login.
+   Palet warna tidak berubah:
+     #A9BF55 (sour apple) -> #CB125E (paper flower)   latar
+     #DEA249 (pavilion peach)                          garis kolom
+     #F85988 -> #CB125E                                tombol
+     #8F0D42 (primary dark)                            sisi kiri
    ========================================================= */
 
+/* ---------- Latar halaman ---------- */
+
 .login-body {
+    position: relative;
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden;
+    font-family: 'Instrument Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
     background: linear-gradient(135deg, #A9BF55, #CB125E);
 }
 
+/* titik-titik dekoratif di pojok (seperti referensi) */
+.login-body::before,
+.login-body::after {
+    content: "";
+    position: absolute;
+    width: 220px;
+    height: 160px;
+    pointer-events: none;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.55) 2px, transparent 2.5px);
+    background-size: 22px 22px;
+}
+.login-body::before {
+    top: 36px;
+    left: 40px;
+}
+.login-body::after {
+    right: 40px;
+    bottom: 36px;
+    background-image: radial-gradient(circle, rgba(222, 162, 73, 0.9) 2px, transparent 2.5px);
+}
+
+.login-shell {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem 1.25rem;
+}
+
+/* ---------- Kartu ---------- */
+
 .login-card {
-    border-color: #CB125E;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    width: 100%;
+    max-width: 920px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.18);
+    box-shadow: 0 30px 70px rgba(60, 10, 35, 0.35);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+}
+
+/* ---------- Sisi kiri ---------- */
+
+.login-aside {
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2.5rem;
+    min-height: 460px;
+    padding: 2.5rem;
+    color: #fff;
+    background:
+        radial-gradient(circle at 15% 10%, rgba(248, 89, 136, 0.55), transparent 55%),
+        linear-gradient(160deg, rgba(143, 13, 66, 0.92), rgba(203, 18, 94, 0.78));
+}
+
+/* gelombang tipis di bawah sisi kiri */
+.login-aside::after {
+    content: "";
+    position: absolute;
+    right: -60px;
+    bottom: -80px;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(circle, rgba(222, 162, 73, 0.35), rgba(222, 162, 73, 0) 70%);
+}
+
+.login-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 84px;
+    height: 84px;
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+.login-logo img {
+    display: block;
+    max-width: 60px;
+    max-height: 60px;
+    object-fit: contain;
+}
+
+.login-welcome {
+    position: relative;
+    z-index: 1;
+}
+
+.login-eyebrow {
+    margin: 0 0 0.6rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    color: #DEA249;
+}
+
+.login-title {
+    margin: 0;
+    font-size: 2.6rem;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: #fff;
+}
+
+.login-text {
+    max-width: 22rem;
+    margin: 1rem 0 0;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.88);
+}
+
+/* ---------- Sisi kanan ---------- */
+
+.login-panel {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2.5rem;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .login-input {
-    border-color: #DEA249;
+    box-sizing: border-box;
+    width: 100%;
+    height: 52px;
+    padding: 0 1.1rem;
+    font: inherit;
+    font-size: 0.95rem;
+    color: #2B1B22;
+    background: #fff;
+    border: 2px solid #DEA249;
+    border-radius: 14px;
+    box-shadow: inset 5px 0 0 #DEA249;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.login-input::placeholder {
+    color: #8A6B75;
 }
 .login-input:focus {
     border-color: #CB125E;
-    box-shadow: 0 0 0 3px #F8979733;
+    box-shadow: inset 5px 0 0 #CB125E, 0 0 0 3px #F8979733;
 }
 
 .login-button {
+    width: 100%;
+    height: 52px;
+    margin-top: 0.25rem;
+    font: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
     background: linear-gradient(90deg, #F85988, #CB125E);
+    border: 0;
+    border-radius: 14px;
+    box-shadow: 0 10px 22px rgba(203, 18, 94, 0.3);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.login-button:hover {
+    opacity: 0.92;
+    transform: translateY(-1px);
+}
+.login-button:active {
+    transform: translateY(0);
+}
+
+.login-forgot {
+    text-align: center;
 }
 
 .login-link {
+    font-size: 0.875rem;
+    font-weight: 500;
     color: #CB125E;
+    text-decoration: none;
+}
+.login-link:hover {
+    text-decoration: underline;
+}
+
+/* ---------- Ikon sosial media + Tentang (di bawah form) ---------- */
+
+.login-social {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #F3D9C4;
+}
+
+.login-social a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    color: #CB125E;
+    background: rgba(203, 18, 94, 0.08);
+    border-radius: 12px;
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.login-social a:hover {
+    color: #fff;
+    background: linear-gradient(90deg, #F85988, #CB125E);
+    transform: translateY(-2px);
+}
+
+/* ---------- Ikon mata (lihat / sembunyikan kata sandi) ---------- */
+
+.login-field {
+    position: relative;
+}
+
+.login-input--password {
+    padding-right: 3.2rem;
+}
+
+.login-eye {
+    position: absolute;
+    top: 50%;
+    right: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    color: #8A6B75;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    border-radius: 10px;
+    transform: translateY(-50%);
+    transition: color 0.2s ease, background 0.2s ease;
+}
+.login-eye:hover,
+.login-eye:focus-visible {
+    color: #CB125E;
+    background: rgba(203, 18, 94, 0.08);
+    outline: none;
+}
+
+/* default: kata sandi tersembunyi -> tampil ikon mata tertutup */
+.login-eye .login-eye__open {
+    display: none;
+}
+.login-eye[aria-pressed="true"] .login-eye__open {
+    display: block;
+}
+.login-eye[aria-pressed="true"] .login-eye__closed {
+    display: none;
+}
+
+/* ---------- Pesan sukses / error ---------- */
+
+.login-alert {
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    border-radius: 12px;
+}
+.login-alert--success {
+    background: #f1f5e2;
+    border: 1px solid #a9bf55;
+    color: #55612b;
+}
+.login-alert--error {
+    background: #fdecea;
+    border: 1px solid #f5c2c0;
+    color: #b3261e;
+}
+
+/* ---------- Responsif ---------- */
+
+@media (max-width: 820px) {
+    .login-card {
+        grid-template-columns: 1fr;
+        max-width: 460px;
+    }
+
+    .login-aside {
+        flex-direction: row;
+        align-items: center;
+        gap: 1.25rem;
+        min-height: 0;
+        padding: 1.5rem;
+    }
+
+    .login-logo {
+        flex: 0 0 auto;
+        width: 64px;
+        height: 64px;
+        border-radius: 18px;
+    }
+    .login-logo img {
+        max-width: 44px;
+        max-height: 44px;
+    }
+
+    .login-title {
+        font-size: 1.6rem;
+    }
+    .login-text {
+        display: none;
+    }
+
+    .login-panel {
+        padding: 1.75rem 1.5rem 2rem;
+    }
+
+    .login-body::before,
+    .login-body::after {
+        width: 140px;
+        height: 100px;
+    }
+}
+
+/* Layar sangat kecil: enam ikon tetap muat satu baris */
+@media (max-width: 480px) {
+    .login-social {
+        gap: 0.45rem;
+    }
+    .login-social a {
+        width: 40px;
+        height: 40px;
+        border-radius: 11px;
+    }
 }
