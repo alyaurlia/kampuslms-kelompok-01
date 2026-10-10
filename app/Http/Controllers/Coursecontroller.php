@@ -8,6 +8,7 @@ use App\Models\Course;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
 class CourseController extends Controller
@@ -97,10 +98,33 @@ class CourseController extends Controller
     {
         Gate::authorize('view', $mata_kuliah);
 
-        return view('courses.show', [
+        $routePrefix = $this->routePrefix($request);
+
+        $data = [
             'mataKuliah'  => $mata_kuliah,
-            'routePrefix' => $this->routePrefix($request),
-        ]);
+            'routePrefix' => $routePrefix,
+        ];
+
+        // Daftar mahasiswa hanya untuk yang boleh mengelola pendaftaran
+        // (admin / dosen pengampu), supaya mahasiswa tidak melihat teman sekelasnya.
+        if ($request->user()->can('manageEnrollment', $mata_kuliah)) {
+            $enrolled = $mata_kuliah->students()
+                ->orderBy('users.name')
+                ->get(['users.id', 'users.name', 'users.nim_nip']);
+
+            $data['enrolled'] = $enrolled;
+
+            // Pilihan "Tambah Mahasiswa" hanya dibutuhkan bila route-nya ada (admin).
+            if (Route::has($routePrefix . '.mahasiswa.store')) {
+                $data['available'] = User::query()
+                    ->where('role', 'mahasiswa')
+                    ->whereNotIn('id', $enrolled->modelKeys())
+                    ->orderBy('name')
+                    ->get(['id', 'name', 'nim_nip']);
+            }
+        }
+
+        return view('courses.show', $data);
     }
 
     /**

@@ -531,3 +531,109 @@
     font-size: 0.85rem;
 }
 .mk-form-errors ul { margin: 0.35rem 0 0; padding-left: 1.2rem; }
+
+/* =========================================================
+   Mahasiswa terdaftar (courses/show.blade.php)
+   Tempel di AKHIR resources/css/components/courses.css
+   ========================================================= */
+
+.mk-enroll {
+    margin-top: 1.75rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.mk-enroll-subtitle {
+    margin: 1.5rem 0 0.75rem;
+    font-size: 0.95rem;
+    color: var(--color-ink);
+}
+
+/* --- tabel peserta --- */
+.mk-enroll-wrap {
+    overflow-x: auto;
+}
+
+.mk-enroll-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.mk-enroll-table th {
+    text-align: left;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+    padding: 0.6rem 0.75rem;
+    border-bottom: 2px solid var(--color-border);
+}
+
+.mk-enroll-table td {
+    padding: 0.65rem 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.mk-enroll-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.mk-enroll-actions {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.mk-enroll-remove {
+    padding: 0.25rem 0.7rem;
+    border-radius: 4px;
+    border: 1px solid #f5c2c0;
+    background: #fdecea;
+    color: #b3261e;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+    font-size: 0.8rem;
+}
+
+/* --- form tambah mahasiswa --- */
+.mk-enroll-form .form-actions {
+    margin-top: 1rem;
+}
+
+.mk-student-picker {
+    margin-top: 0.6rem;
+    max-height: 240px;
+    overflow-y: auto;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background: var(--color-surface);
+}
+
+.mk-student-option {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.mk-student-option:last-child {
+    border-bottom: none;
+}
+
+.mk-student-option:hover {
+    background: var(--color-bg);
+}
+
+.mk-student-option small {
+    margin-left: auto;
+    color: var(--color-ink-soft);
+}
+
+/* atribut hidden dipakai pencarian; display:flex di atas akan menimpanya */
+.mk-student-option[hidden] {
+    display: none;
+}

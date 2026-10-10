@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\CourseEnrollmentController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\UserController;
@@ -75,6 +76,15 @@ Route::middleware('auth')->group(function () {
             Route::resource('users', UserController::class);
 
             Route::resource('mata-kuliah', CourseController::class);
+
+            // Pendaftaran mahasiswa ke mata kuliah (admin).
+            // Nama lengkap: admin.mata-kuliah.mahasiswa.store / .destroy
+            Route::post('mata-kuliah/{mata_kuliah}/mahasiswa', [CourseEnrollmentController::class, 'store'])
+                ->name('mata-kuliah.mahasiswa.store');
+
+            Route::delete('mata-kuliah/{mata_kuliah}/mahasiswa/{student}', [CourseEnrollmentController::class, 'destroy'])
+                ->whereNumber('student')
+                ->name('mata-kuliah.mahasiswa.destroy');
         });
 
 
