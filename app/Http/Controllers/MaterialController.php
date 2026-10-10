@@ -6,7 +6,9 @@ use App\Http\Requests\StoreMaterialRequest;
 use App\Http\Requests\UpdateMaterialRequest;
 use App\Models\Course;
 use App\Models\Material;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 
 class MaterialController extends Controller
 {
@@ -20,13 +22,46 @@ class MaterialController extends Controller
     }
 
     /**
-     * Metadata saja dulu; unggah berkas baru dikerjakan di minggu 9.
-     * Materi bertipe 'file' tidak boleh membawa external_url.
+     * Rapikan data hasil validasi sebelum disimpan:
+     *  - tipe 'link' : buang berkas lama (kalau ada), kosongkan kolom berkas
+     *  - tipe 'file' : kosongkan external_url, simpan berkas baru bila diunggah
+     *
+     * Berkas disimpan di disk 'public' (storage/app/public/materials/{course_id}).
+     * Jalankan sekali: php artisan storage:link
      */
-    private function cleanData(array $data): array
+    private function prepareData(array $data, ?UploadedFile $file, Course $course, ?Material $existing = null): array
     {
-        if ($data['type'] === 'file') {
-            $data['external_url'] = null;
+        unset($data['file']);
+
+        if ($data['type'] === 'link') {
+            if ($existing?->file_path) {
+                Storage::disk('public')->delete($existing->file_path);
+            }
+
+            return $data + [
+                'file_path'     => null,
+                'original_name' => null,
+                'file_size'     => null,
+                'mime_type'     => null,
+            ];
+        }
+
+        $data['external_url'] = null;
+
+        if ($file) {
+            // Ambil metadata SEBELUM store(), lalu hapus berkas lama.
+            $meta = [
+                'original_name' => $file->getClientOriginalName(),
+                'file_size'     => $file->getSize(),
+                'mime_type'     => $file->getClientMimeType(),
+            ];
+
+            if ($existing?->file_path) {
+                Storage::disk('public')->delete($existing->file_path);
+            }
+
+            $data['file_path'] = $file->store("materials/{$course->id}", 'public');
+            $data = array_merge($data, $meta);
         }
 
         return $data;
@@ -71,10 +106,12 @@ class MaterialController extends Controller
     {
         Gate::authorize('create', [Material::class, $course]);
 
+        $data = $this->prepareData($request->validated(), $request->file('file'), $course);
+
         // uploaded_by diisi dari server, BUKAN dari input form.
         // Memakai save() lewat relasi, jadi course_id ikut terisi
         // tanpa perlu masuk $fillable.
-        $material = new Material($this->cleanData($request->validated()));
+        $material = new Material($data);
         $material->uploaded_by = auth()->id();
         $course->materials()->save($material);
 
@@ -118,7 +155,9 @@ class MaterialController extends Controller
     {
         Gate::authorize('update', $material);
 
-        $material->update($this->cleanData($request->validated()));
+        $material->update(
+            $this->prepareData($request->validated(), $request->file('file'), $material->course, $material)
+        );
 
         return redirect()
             ->route($this->role() . '.materi.show', $material)
@@ -134,7 +173,10 @@ class MaterialController extends Controller
 
         $course = $material->course;
 
-        // TODO minggu 9: hapus juga berkas fisiknya lewat Storage::delete().
+        if ($material->file_path) {
+            Storage::disk('public')->delete($material->file_path);
+        }
+
         $material->delete();
 
         return redirect()
