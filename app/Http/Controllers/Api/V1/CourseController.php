@@ -14,28 +14,20 @@ class CourseController extends Controller
     /**
      * GET /api/v1/courses?q=&status=&page=&per_page=
      *
-     * Daftar disaring di QUERY sesuai peran:
+     * Daftar disaring di QUERY sesuai peran (scope Course::visibleTo):
      * - admin     : semua mata kuliah
      * - dosen     : hanya yang dia ampu
      * - mahasiswa : hanya yang dia ikuti
-     * Peran tak dikenal => 403 (bukan error 500).
+     * Peran tak dikenal => daftar kosong.
      */
     public function index(Request $request): CourseCollection
     {
-        $user = $request->user();
+        Gate::authorize('viewAny', Course::class);
 
-        $query = Course::query()
+        $courses = Course::query()
+            ->visibleTo($request->user())
             ->with('lecturer')                          // cegah N+1
-            ->withCount(['materials', 'assignments']);
-
-        $query = match ($user->role) {
-            'admin'     => $query,
-            'dosen'     => $query->where('lecturer_id', $user->id),
-            'mahasiswa' => $query->whereHas('students', fn ($q) => $q->whereKey($user->id)),
-            default     => abort(403),
-        };
-
-        $courses = $query
+            ->withCount(['materials', 'assignments'])
             ->when($request->filled('q'), fn ($query) =>
                 // orWhere WAJIB dibungkus closure agar tidak merusak filter lain
                 $query->where(fn ($q) =>

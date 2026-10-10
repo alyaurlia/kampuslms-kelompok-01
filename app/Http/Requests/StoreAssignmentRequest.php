@@ -15,7 +15,13 @@ class StoreAssignmentRequest extends FormRequest
         $id = filter_var($this->input('course_id'), FILTER_VALIDATE_INT);
         $course = $id === false ? null : Course::find($id);
 
-        return Gate::allows('create', [Assignment::class, $course]);
+        // Course tidak ada -> lanjut ke rules() agar jadi 422, bukan error
+        if ($course === null) {
+            return true;
+        }
+
+        return Gate::forUser($this->user())
+            ->allows('create', [Assignment::class, $course]);
     }
 
     public function rules(): array

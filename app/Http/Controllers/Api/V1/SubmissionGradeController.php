@@ -23,31 +23,20 @@ class SubmissionGradeController extends Controller
         GradeSubmissionRequest $request,
         Submission $submission
     ): JsonResponse {
-        $user = $request->user();
-
-        $isOwner = $user->role === 'dosen'
-            && (int) $submission->assignment->course->lecturer_id === (int) $user->id;
-
-        if (! $isOwner) {
-            return response()->json([
-                'message' => 'Anda tidak memiliki akses ke sumber daya ini.',
-            ], 403);
-        }
+        // Otorisasi sudah dilakukan di GradeSubmissionRequest::authorize()
 
         $grade = Grade::updateOrCreate(
             ['submission_id' => $submission->id],
             [
-                'graded_by' => $user->id,
+                'graded_by' => $request->user()->id,
                 'score'     => $request->validated('score'),
                 'feedback'  => $request->validated('feedback'),
                 'graded_at' => now(),
             ]
         );
 
-        $status = $grade->wasRecentlyCreated ? 201 : 200;
-
         return GradeResource::make($grade)
             ->response()
-            ->setStatusCode($status);
+            ->setStatusCode($grade->wasRecentlyCreated ? 201 : 200);
     }
 }
