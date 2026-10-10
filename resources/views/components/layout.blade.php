@@ -1,4 +1,4 @@
-@props(['title' => 'LMS Kampus', 'role' => null, 'fullFooter' => false])
+@props(['title' => 'LMS Kampus', 'role' => null, 'fullFooter' => true])
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -60,6 +60,15 @@
                 </a>
             @endforeach
 
+            {{-- Pengunjung belum login (mis. di halaman Tentang): "Keluar" kembali ke halaman login,
+                 tampilannya sama dengan tombol Keluar di dashboard --}}
+            @guest
+                <a href="{{ Route::has('login') ? route('login') : url('/') }}"
+                   style="display:inline; margin-left:1.5rem; padding:0; text-decoration:none; color:#F3D9C4; font-family:Arial, Helvetica, sans-serif; font-size:0.9rem;">
+                    Keluar
+                </a>
+            @endguest
+
             @auth
                 <form method="POST" action="{{ route('logout') }}" style="display:inline; margin-left:1.5rem;">
                     @csrf
@@ -86,14 +95,15 @@
         {{ $slot }}
     </main>
 
-    {{-- Footer lengkap aktif lewat <x-layout full-footer>.
+    {{-- Footer lengkap aktif secara bawaan di semua halaman.
+         Untuk mematikannya di satu halaman: <x-layout :full-footer="false">.
          Dua bentuk dicek ($fullFooter dan 'full-footer') agar aman di semua versi Laravel. --}}
     @php
         $footerLengkap = ($fullFooter ?? false) || (${'full-footer'} ?? false);
     @endphp
 
     @if ($footerLengkap)
-        {{-- Footer lengkap (dipakai dashboard admin / dosen / mahasiswa) --}}
+        {{-- Footer lengkap (bawaan semua halaman) --}}
         <footer class="site-footer">
             <div class="site-footer__inner">
                 <div class="site-footer__brand">
