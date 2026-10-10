@@ -22,6 +22,14 @@
                      alt="Logo Kampus LMS" class="h-24 object-contain">
             </div>
 
+            {{-- Pesan sukses (mis. setelah kata sandi berhasil direset) --}}
+            @if (session('success'))
+                <div class="mb-4 rounded-lg px-4 py-3 text-sm" role="alert"
+                     style="background:#f1f5e2; border:1px solid #a9bf55; color:#55612b;">
+                    {{ session('success') }}
+                </div>
+            @endif
+
             {{-- Pesan error login --}}
             @if ($errors->any())
                 <div class="mb-4 rounded-lg px-4 py-3 text-sm"
@@ -34,11 +42,11 @@
                 @csrf
 
                 <div>
-                   <input type="text" name="nim_nip" value="{{ old('nim_nip') }}" placeholder="NIM / NIP"
-        class="login-input w-full border-2 rounded-full px-5 py-3 focus:outline-none transition"
-        style="border-color: #DEA249;"
-        onfocus="this.style.borderColor='#CB125E'; this.style.boxShadow='0 0 0 3px #F8979733'"
-        onblur="this.style.borderColor='#DEA249'; this.style.boxShadow='none'">
+                    <input type="text" name="nim_nip" value="{{ old('nim_nip') }}" placeholder="NIM / NIP"
+                        class="login-input w-full border-2 rounded-full px-5 py-3 focus:outline-none transition"
+                        style="border-color: #DEA249;"
+                        onfocus="this.style.borderColor='#CB125E'; this.style.boxShadow='0 0 0 3px #F8979733'"
+                        onblur="this.style.borderColor='#DEA249'; this.style.boxShadow='none'">
                 </div>
 
                 <div>
@@ -52,7 +60,7 @@
                 </button>
 
                 <div class="text-center">
-                    <a href="#" class="login-link text-sm hover:underline font-medium">
+                    <a href="{{ route('password.request') }}" class="login-link text-sm hover:underline font-medium">
                         Lupa kata sandi?
                     </a>
                 </div>

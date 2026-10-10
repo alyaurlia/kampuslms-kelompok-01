@@ -1,72 +1,63 @@
-{{--
-    View show: menampilkan detail satu pengguna.
-    $user di sini adalah OBJEK model Eloquent (akses pakai ->), sesuai
-    bentuk data yang dikirim controller lewat compact('user').
+<x-layout title="Detail Pengguna">
 
-    Style kartu (.mk-card, .mk-banner, dst.) dipakai ulang dari
-    resources/css/courses.css supaya identitas visual konsisten dengan
-    courses/show.blade.php, meski datanya beda (nama, email, peran).
-    Tombol aksi memakai class dari resources/css/users.css.
---}}
-<x-layout :title="$user->name">
+    <h1 class="form-title">Detail Pengguna</h1>
 
-    {{-- Tombol kembali ditaruh di atas judul supaya konsisten dengan pola
-         navigasi umum "list -> detail -> kembali ke list". --}}
-    <a href="{{ route('users.index') }}" class="mk-back-link">
-        &larr; Kembali ke Daftar Pengguna
-    </a>
+    <section class="form-card">
 
-    @php
-        // Palet warna & motif dirotasi berdasarkan email pengguna (crc32),
-        // memakai class .mk-bg-N (lihat courses.css) yang sama dengan
-        // courses/show.blade.php, supaya identitas visual tiap pengguna
-        // konsisten setiap kali halaman dibuka.
-        $mkPatterns = ['diamond', 'triangle', 'circle', 'diamond', 'triangle'];
-        $mkIndex = (crc32($user->email) % 5) + 1;
-        $mkPattern = $mkPatterns[$mkIndex - 1];
-    @endphp
-
-    <div class="mk-card">
-
-        <div class="mk-banner mk-pattern-{{ $mkPattern }} mk-bg-{{ $mkIndex }}">
-            <span class="mk-badge">{{ ucfirst($user->role) }}</span>
-        </div>
-
-        <div class="mk-body">
-            <h1 class="mk-title">{{ $user->name }}</h1>
-
-            <div class="mk-meta-row">
-                <div class="mk-meta-item">
-                    <span class="mk-meta-label">Email</span>
-                    <span class="mk-meta-value">{{ $user->email }}</span>
-                </div>
-                <div class="mk-meta-item">
-                    <span class="mk-meta-label">Peran</span>
-                    <span class="mk-meta-value">{{ ucfirst($user->role) }}</span>
-                </div>
-                <div class="mk-meta-item">
-                    <span class="mk-meta-label">Terdaftar Sejak</span>
-                    <span class="mk-meta-value">{{ $user->created_at->translatedFormat('d F Y') }}</span>
-                </div>
+        <dl class="user-detail">
+            <div>
+                <dt>Nama Lengkap</dt>
+                <dd>
+                    {{ $user->name }}
+                    @if ($user->is(auth()->user()))
+                        <span class="users-self">Anda</span>
+                    @endif
+                </dd>
             </div>
 
-            {{-- Tombol aksi: edit / hapus, sejajar dengan tombol serupa
-                 di users/index.blade.php --}}
-            <div class="user-detail-actions">
-                <a href="{{ route('users.edit', $user->id) }}" class="user-detail-edit">
-                    Edit
-                </a>
-
-                <form action="{{ route('users.destroy', $user->id) }}" method="POST"
-                      onsubmit="return confirm('Yakin ingin menghapus pengguna {{ $user->name }}?');">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="user-detail-delete">
-                        Hapus
-                    </button>
-                </form>
+            <div>
+                <dt>Email</dt>
+                <dd>{{ $user->email }}</dd>
             </div>
+
+            <div>
+                <dt>NIM / NIP</dt>
+                <dd>{{ $user->nim_nip ?? '—' }}</dd>
+            </div>
+
+            <div>
+                <dt>Peran</dt>
+                <dd><span class="badge badge--{{ $user->role }}">{{ ucfirst($user->role) }}</span></dd>
+            </div>
+
+            @if ($user->role === 'dosen')
+                <div>
+                    <dt>Mata Kuliah Diampu</dt>
+                    <dd>{{ $user->taught_courses_count }}</dd>
+                </div>
+            @elseif ($user->role === 'mahasiswa')
+                <div>
+                    <dt>Mata Kuliah Diikuti</dt>
+                    <dd>{{ $user->courses_count }}</dd>
+                </div>
+            @endif
+
+            <div>
+                <dt>Terdaftar Sejak</dt>
+                <dd>{{ $user->created_at?->format('d M Y, H:i') ?? '—' }}</dd>
+            </div>
+        </dl>
+
+        <div class="form-actions">
+            <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-primary">
+                Edit
+            </a>
+
+            <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">
+                Kembali
+            </a>
         </div>
-    </div>
+
+    </section>
 
 </x-layout>

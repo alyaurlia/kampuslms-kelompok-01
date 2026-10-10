@@ -31,6 +31,11 @@
     max-width: 600px;
 }
 
+/* kartu form yang lebih sempit (lupa & atur ulang kata sandi) */
+.auth-card {
+    max-width: 480px;
+}
+
 /* --- satu baris field (label + input + pesan error) --- */
 .form-group {
     margin-bottom: 1rem;
