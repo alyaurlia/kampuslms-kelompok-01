@@ -63,6 +63,29 @@
                 <p class="mk-desc-text">Belum ada deskripsi untuk mata kuliah ini.</p>
             @endif
 
+            {{-- Pintasan ke materi & tugas (hanya bila route-nya ada untuk peran ini) --}}
+            @if (Route::has($routePrefix . '.materi.index') || Route::has($routePrefix . '.tugas.index'))
+                <div class="mk-shortcuts">
+                    @if (Route::has($routePrefix . '.materi.index'))
+                        <a href="{{ route($routePrefix . '.materi.index', $mataKuliah) }}" class="mk-shortcut">
+                            <span class="mk-shortcut-title">Materi</span>
+                            <span class="mk-shortcut-count">{{ $mataKuliah->materials()->count() }} materi</span>
+                        </a>
+                    @endif
+
+                    @if (Route::has($routePrefix . '.tugas.index'))
+                        <a href="{{ route($routePrefix . '.tugas.index', $mataKuliah) }}" class="mk-shortcut">
+                            <span class="mk-shortcut-title">Tugas</span>
+                            <span class="mk-shortcut-count">
+                                {{ $user->role === 'mahasiswa'
+                                    ? $mataKuliah->assignments()->where('status', 'published')->count()
+                                    : $mataKuliah->assignments()->count() }} tugas
+                            </span>
+                        </a>
+                    @endif
+                </div>
+            @endif
+
             @if ($canEdit)
                 <div class="form-actions" style="margin-top:1.5rem;">
                     <a href="{{ route($routePrefix . '.edit', $mataKuliah) }}" class="btn btn-primary">
