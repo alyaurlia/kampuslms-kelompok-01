@@ -17,7 +17,8 @@ class UserController extends Controller
                 // Dikelompokkan dalam closure agar OR tidak merusak filter role.
                 $query->where(function ($sub) use ($request) {
                     $sub->where('name', 'like', '%' . $request->q . '%')
-                        ->orWhere('email', 'like', '%' . $request->q . '%');
+                        ->orWhere('email', 'like', '%' . $request->q . '%')
+                        ->orWhere('nim_nip', 'like', '%' . $request->q . '%');
                 });
             })
             ->when($request->filled('role'), fn ($query) =>
@@ -51,6 +52,8 @@ class UserController extends Controller
 
     public function show(User $user)
     {
+        $user->loadCount(['taughtCourses', 'courses']);
+
         return view('users.show', compact('user'));
     }
 

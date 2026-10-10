@@ -1,118 +1,108 @@
-{{--
-    View index: menampilkan daftar pengguna dalam bentuk tabel.
-    Berbeda dari mata-kuliah (grid kartu) karena data pengguna lebih
-    cocok ditampilkan sebagai baris (nama, email, role, aksi).
+<x-layout title="Kelola Pengguna">
 
-    Style tabel didefinisikan di resources/css/users.css; header, filter,
-    notifikasi, dan pagination memakai class dari resources/css/courses.css.
+    <div class="users-header">
+        <div>
+            <h1 class="form-title">Kelola Pengguna</h1>
+            <p class="users-subtitle">Daftar akun admin, dosen, dan mahasiswa KampusLMS.</p>
+        </div>
 
-    $users adalah hasil paginate() dari Eloquent, jadi setiap elemen
-    adalah OBJEK model (akses pakai ->), bukan array asosiatif.
---}}
-<x-layout title="Daftar Pengguna">
-
-    <div class="mk-page-header">
-        <h1 class="mk-page-title">Daftar Pengguna</h1>
-
-        <a href="{{ route('users.create') }}" class="mk-btn-add">
+        <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
             + Tambah Pengguna
         </a>
     </div>
 
-    {{-- Notifikasi sukses dari redirect create/update/delete --}}
-    @if (session('success'))
-        <div class="alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    {{-- Form pencarian & filter role --}}
-    <form method="GET" action="{{ route('users.index') }}" class="mk-filter">
-
+    {{-- Pencarian & filter peran (GET, supaya bisa di-bookmark dan ikut pagination) --}}
+    <form method="GET" action="{{ route('admin.users.index') }}" class="users-filter">
         <input
-            type="text"
+            type="search"
             name="q"
             value="{{ request('q') }}"
-            placeholder="Cari nama atau email..."
-            class="mk-filter-input"
+            placeholder="Cari nama, email, atau NIM/NIP"
+            class="form-control"
         >
 
-        <select name="role" class="mk-filter-select">
-            <option value="">-- Semua Peran --</option>
-            <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
-            <option value="dosen" {{ request('role') === 'dosen' ? 'selected' : '' }}>Dosen</option>
-            <option value="mahasiswa" {{ request('role') === 'mahasiswa' ? 'selected' : '' }}>Mahasiswa</option>
+        <select name="role" class="form-control">
+            <option value="">Semua peran</option>
+            @foreach (['admin' => 'Admin', 'dosen' => 'Dosen', 'mahasiswa' => 'Mahasiswa'] as $value => $label)
+                <option value="{{ $value }}" @selected(request('role') === $value)>{{ $label }}</option>
+            @endforeach
         </select>
 
-        <button type="submit" class="mk-filter-btn">
-            Cari
-        </button>
+        <button type="submit" class="btn btn-primary">Cari</button>
 
-        @if (request('q') || request('role'))
-            <a href="{{ route('users.index') }}" class="mk-filter-reset">
-                Reset
-            </a>
+        @if (request()->filled('q') || request()->filled('role'))
+            <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">Reset</a>
         @endif
     </form>
 
-    @if ($users->isEmpty())
-        <section class="mk-empty">
-            <p>Belum ada data pengguna.</p>
-        </section>
-    @else
-        <div class="user-table-wrap">
-            <table class="user-table">
-                <thead>
-                    <tr>
-                        <th>Nama</th>
-                        <th>Email</th>
-                        <th>Peran</th>
-                        <th class="user-th-right">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($users as $user)
+    <section class="form-card users-card">
+
+        @if ($users->count())
+
+            <div class="table-wrap">
+                <table class="users-table">
+                    <thead>
                         <tr>
-                            <td>
-                                <a href="{{ route('users.show', $user->id) }}" class="user-name-link">
-                                    {{ $user->name }}
-                                </a>
-                            </td>
-                            <td class="user-td-muted">
-                                {{ $user->email }}
-                            </td>
-                            <td>
-                                <span class="user-role-badge">
-                                    {{ ucfirst($user->role) }}
-                                </span>
-                            </td>
-                            <td class="user-td-right">
-                                <div class="user-actions">
-                                    <a href="{{ route('users.edit', $user->id) }}" class="user-action-edit">
-                                        Edit
-                                    </a>
-
-                                    <form action="{{ route('users.destroy', $user->id) }}" method="POST"
-                                          onsubmit="return confirm('Yakin ingin menghapus pengguna {{ $user->name }}?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="user-action-delete">
-                                            Hapus
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
+                            <th>Nama</th>
+                            <th>NIM / NIP</th>
+                            <th>Peran</th>
+                            <th class="col-actions">Aksi</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        @foreach ($users as $user)
+                            <tr>
+                                <td>
+                                    <a href="{{ route('admin.users.show', $user) }}" class="users-name">{{ $user->name }}</a>
+                                    @if ($user->is(auth()->user()))
+                                        <span class="users-self">Anda</span>
+                                    @endif
+                                    <div class="users-email">{{ $user->email }}</div>
+                                </td>
 
-        {{-- Pagination — otomatis membawa query string (?q=...&role=...)
-             karena controller sudah pakai withQueryString() --}}
-        <div class="mk-pagination">
-            {{ $users->links() }}
-        </div>
-    @endif
+                                <td>{{ $user->nim_nip ?? '—' }}</td>
+
+                                <td>
+                                    <span class="badge badge--{{ $user->role }}">{{ ucfirst($user->role) }}</span>
+                                </td>
+
+                                <td class="col-actions">
+                                    <a href="{{ route('admin.users.show', $user) }}" class="link-action">Lihat</a>
+                                    <a href="{{ route('admin.users.edit', $user) }}" class="link-action">Edit</a>
+
+                                    {{-- Tidak ada tombol hapus untuk akun sendiri --}}
+                                    @unless ($user->is(auth()->user()))
+                                        <form
+                                            action="{{ route('admin.users.destroy', $user) }}"
+                                            method="POST"
+                                            class="inline-form"
+                                            onsubmit="return confirm('Hapus pengguna ini?')"
+                                        >
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="link-action link-action--danger">Hapus</button>
+                                        </form>
+                                    @endunless
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="users-count">
+                Menampilkan {{ $users->firstItem() }}–{{ $users->lastItem() }} dari {{ $users->total() }} pengguna
+            </p>
+
+            {{-- Markup bootstrap-4 dipilih karena proyek ini tidak memakai Tailwind --}}
+            {{ $users->links('pagination::bootstrap-4') }}
+
+        @else
+
+            <p class="users-empty">Tidak ada pengguna yang cocok dengan pencarian Anda.</p>
+
+        @endif
+
+    </section>
 
 </x-layout>

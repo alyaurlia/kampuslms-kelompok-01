@@ -5,6 +5,7 @@ use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -19,15 +20,36 @@ Route::get('/', function () {
     return view('welcome');
 })->name('login');
 
-   Route::post('/login', [AuthController::class, 'login'])
-       ->middleware('throttle:5,1')
-       ->name('login.store');
+Route::post('/login', [AuthController::class, 'login'])
+    ->middleware('throttle:5,1')
+    ->name('login.store');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/tentang', function () {
     return view('tentang');
 })->name('tentang');
+
+// ---------- Reset kata sandi (hanya untuk yang belum login) ----------
+// Nama route password.request / password.reset dipakai oleh Laravel
+// saat membuat tautan di email, jadi jangan diganti.
+
+Route::middleware('guest')->group(function () {
+
+    Route::get('/lupa-password', [PasswordResetController::class, 'requestForm'])
+        ->name('password.request');
+
+    Route::post('/lupa-password', [PasswordResetController::class, 'sendLink'])
+        ->middleware('throttle:5,1')
+        ->name('password.email');
+
+    Route::get('/reset-password/{token}', [PasswordResetController::class, 'resetForm'])
+        ->name('password.reset');
+
+    Route::post('/reset-password', [PasswordResetController::class, 'reset'])
+        ->middleware('throttle:5,1')
+        ->name('password.update');
+});
 
 // ---------- Perlu login ----------
 
