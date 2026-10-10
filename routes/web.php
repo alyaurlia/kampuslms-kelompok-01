@@ -90,12 +90,12 @@ Route::middleware('auth')->group(function () {
             Route::view('/dashboard', 'dosen.dashboard')
                 ->name('dashboard');
 
+            // Dosen hanya melihat MK yang diampu. Mengubah MK = admin saja
+            // (CoursePolicy::update), jadi edit/update tidak dibuka di sini.
             Route::resource('mata-kuliah', CourseController::class)
                 ->only([
                     'index',
                     'show',
-                    'edit',
-                    'update',
                 ]);
 
             Route::scopeBindings()->group(function () {

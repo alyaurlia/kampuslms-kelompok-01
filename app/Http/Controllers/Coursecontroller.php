@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCourseRequest;
 use App\Http\Requests\UpdateCourseRequest;
 use App\Models\Course;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
@@ -19,6 +20,17 @@ class CourseController extends Controller
     private function routePrefix(Request $request): string
     {
         return Str::beforeLast($request->route()->getName(), '.');
+    }
+
+    /**
+     * Daftar dosen untuk dropdown "Dosen Pengampu" di form create/edit.
+     */
+    private function lecturers()
+    {
+        return User::query()
+            ->where('role', 'dosen')
+            ->orderBy('name')
+            ->get(['id', 'name', 'nim_nip']);
     }
 
     /**
@@ -57,6 +69,7 @@ class CourseController extends Controller
 
         return view('courses.create', [
             'routePrefix' => $this->routePrefix($request),
+            'lecturers'   => $this->lecturers(),
         ]);
     }
 
@@ -100,6 +113,7 @@ class CourseController extends Controller
         return view('courses.edit', [
             'mataKuliah'  => $mata_kuliah,
             'routePrefix' => $this->routePrefix($request),
+            'lecturers'   => $this->lecturers(),
         ]);
     }
 
