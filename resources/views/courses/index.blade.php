@@ -18,6 +18,9 @@
         $user      = auth()->user();
         $canCreate = Route::has($routePrefix . '.create')
             && $user->can('create', \App\Models\Course::class);
+
+        // Status (draft/active/archived) hanya ditampilkan untuk admin dan dosen.
+        $showStatus = in_array($user->role, ['admin', 'dosen']);
     @endphp
 
     <div class="mk-page-header">
@@ -86,8 +89,8 @@
                         <div class="mk-grid-banner mk-pattern-{{ $mkPattern }} mk-bg-{{ $mkIndex }}">
                             <span class="mk-badge">{{ $mk->code }}</span>
 
-                            {{-- Status (draft/active/archived) hanya terlihat oleh admin --}}
-                            @if ($user->role === 'admin')
+                            {{-- Status (draft/active/archived) terlihat oleh admin dan dosen --}}
+                            @if ($showStatus)
                                 <span class="mk-status mk-status--{{ $mk->status }}">{{ ucfirst($mk->status) }}</span>
                             @endif
 
@@ -135,4 +138,4 @@
         </div>
     @endif
 
-</x-layout>
+</x-layout>x

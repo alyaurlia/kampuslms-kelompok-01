@@ -3,37 +3,49 @@
 namespace App\Http\Requests;
 
 use App\Models\Assignment;
-use App\Models\Course;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 class StoreAssignmentRequest extends FormRequest
 {
+    // Otorisasi dilakukan di controller lewat Gate::authorize().
     public function authorize(): bool
     {
-        $id = filter_var($this->input('course_id'), FILTER_VALIDATE_INT);
-        $course = $id === false ? null : Course::find($id);
+        return true;
+    }
 
-        // Course tidak ada -> lanjut ke rules() agar jadi 422, bukan error
-        if ($course === null) {
-            return true;
-        }
-
-        return Gate::forUser($this->user())
-            ->allows('create', [Assignment::class, $course]);
+    // Checkbox tidak terkirim kalau tidak dicentang, jadi paksa jadi boolean.
+    protected function prepareForValidation(): void
+    {
+        $this->merge(['allow_late' => $this->boolean('allow_late')]);
     }
 
     public function rules(): array
     {
         return [
-            'course_id' => ['required', 'integer', 'exists:courses,id'],
-            'title' => ['required', 'string', 'max:255'],
+            'title'        => ['required', 'string', 'max:255'],
             'instructions' => ['required', 'string'],
-            'due_at' => ['required', 'date'],
-            'max_score' => ['sometimes', 'integer', 'between:0,255'],
-            'allow_late' => ['sometimes', 'boolean'],
-            'status' => ['sometimes', Rule::in(Assignment::STATUSES)],
+            'due_at'       => ['required', 'date', 'after:now'],
+            'max_score'    => ['required', 'integer', 'min:1', 'max:100'],
+            'allow_late'   => ['boolean'],
+            'status'       => ['required', Rule::in(Assignment::STATUSES)],
+            'attachment'   => [
+                'nullable', 'file',
+                'mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,txt,jpg,jpeg,png',
+                'max:10240', // 10 MB
+            ],
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'title'        => 'judul',
+            'instructions' => 'instruksi',
+            'due_at'       => 'batas waktu',
+            'max_score'    => 'nilai maksimal',
+            'status'       => 'status',
+            'attachment'   => 'lampiran',
         ];
     }
 }

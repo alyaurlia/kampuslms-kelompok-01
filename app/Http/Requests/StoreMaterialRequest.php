@@ -2,16 +2,15 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Material;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 
 class StoreMaterialRequest extends FormRequest
 {
+    // Otorisasi dilakukan di controller lewat Gate::authorize().
     public function authorize(): bool
     {
-        return Gate::forUser($this->user())
-            ->allows('create', [Material::class, $this->route('course')]);
+        return true;
     }
 
     public function rules(): array
@@ -19,19 +18,24 @@ class StoreMaterialRequest extends FormRequest
         return [
             'title'        => ['required', 'string', 'max:255'],
             'description'  => ['nullable', 'string'],
-            'type'         => ['required', 'in:file,link'],
-            // url:http,https menolak skema berbahaya seperti javascript:
-            'external_url' => ['required_if:type,link', 'nullable', 'url:http,https', 'max:2048'],
+            'type'         => ['required', Rule::in(['file', 'link'])],
+            'external_url' => ['required_if:type,link', 'nullable', 'url', 'max:255'],
+            'file'         => [
+                'required_if:type,file', 'nullable', 'file',
+                'mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,txt,jpg,jpeg,png',
+                'max:10240', // 10 MB
+            ],
         ];
     }
 
-    public function messages(): array
+    public function attributes(): array
     {
         return [
-            'title.required'        => 'Judul materi wajib diisi.',
-            'type.in'               => 'Tipe materi harus berkas atau tautan.',
-            'external_url.required_if' => 'Alamat tautan wajib diisi untuk materi bertipe tautan.',
-            'external_url.url'      => 'Alamat tautan harus diawali http:// atau https://.',
+            'title'        => 'judul',
+            'description'  => 'deskripsi',
+            'type'         => 'tipe materi',
+            'external_url' => 'tautan',
+            'file'         => 'berkas',
         ];
     }
 }

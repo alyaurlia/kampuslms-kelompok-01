@@ -1,8 +1,10 @@
 /* =========================================================
-   courses.css — komponen kartu mata kuliah
-   Dipakai bersama oleh courses/index.blade.php dan
-   courses/show.blade.php supaya tidak ada CSS yang
-   diduplikasi di dua tempat.
+   courses.css — komponen mata kuliah, materi, dan tugas
+   Dipakai bersama oleh:
+     - courses/index.blade.php, courses/show.blade.php
+     - materials/*.blade.php
+     - assignments/*.blade.php
+   supaya tidak ada CSS yang diduplikasi di banyak tempat.
    ========================================================= */
 
 .mk-back-link {
@@ -107,11 +109,45 @@
     color: var(--color-ink-soft);
     margin: 0 0 0.5rem;
 }
+.mk-desc-label--spaced { margin-top: 1.25rem; }
 .mk-desc-text {
     font-size: 0.9rem;
     line-height: 1.6;
     margin: 0;
     color: var(--color-ink);
+}
+
+/* --- pintasan Materi & Tugas di halaman detail mata kuliah --- */
+.mk-shortcuts {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+.mk-shortcut {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+.mk-shortcut:hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+.mk-shortcut-title {
+    font-weight: 700;
+    color: var(--color-primary);
+}
+.mk-shortcut-count {
+    font-size: 0.8rem;
+    color: var(--color-ink-soft);
 }
 
 /* --- halaman daftar (index.blade.php) --- */
@@ -180,12 +216,15 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
     margin-bottom: 1.5rem;
 }
 .mk-page-title {
     font-size: 1.6rem;
     margin: 0;
 }
+.mk-page-title--spaced { margin-bottom: 1.5rem; }
 .mk-btn-add {
     padding: 0.5rem 1rem;
     border-radius: 4px;
@@ -310,8 +349,7 @@
 
 /* =========================================================
    Chip status mata kuliah (draft / active / archived)
-   Tempel di AKHIR resources/css/components/courses.css
-   Tampil di pojok kanan atas banner kartu, hanya untuk admin.
+   Tampil di pojok kanan atas banner kartu, untuk admin dan dosen.
    ========================================================= */
 
 .mk-status {
@@ -344,3 +382,152 @@
 .mk-status--draft::before    { background: #DEA249; } /* kuning: belum dibuka */
 .mk-status--active::before   { background: #5E8B2F; } /* hijau: sedang berjalan */
 .mk-status--archived::before { background: #8A6B75; } /* abu: diarsipkan */
+
+/* =========================================================
+   Materi & Tugas
+   (materials/*.blade.php dan assignments/*.blade.php)
+   ========================================================= */
+
+/* --- daftar materi / tugas --- */
+.mk-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.mk-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    font-family: Arial, sans-serif;
+}
+.mk-list-main { flex: 1; min-width: 220px; }
+.mk-list-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    text-decoration: none;
+}
+.mk-list-title:hover { text-decoration: underline; }
+.mk-list-meta {
+    margin: 0.35rem 0 0;
+    font-size: 0.8rem;
+    color: var(--color-ink-soft);
+}
+.mk-list-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+.mk-list-actions form { margin: 0; }
+
+/* --- chip kecil (tipe materi / status tugas) --- */
+.mk-chip {
+    display: inline-block;
+    padding: 2px 8px;
+    margin-right: 0.35rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    background: #eee;
+    color: var(--color-ink);
+}
+.mk-chip--file,
+.mk-chip--published { background: #e3eed7; color: #3f6b1c; }
+.mk-chip--link      { background: #e1e9f5; color: #2c4f85; }
+.mk-chip--draft     { background: #f8ecd3; color: #8a5d12; }
+
+/* --- tombol --- */
+.mk-btn-primary,
+.mk-btn-ghost,
+.mk-btn-danger {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-family: Arial, sans-serif;
+    font-size: 0.85rem;
+    text-decoration: none;
+    cursor: pointer;
+}
+.mk-btn-primary {
+    border: none;
+    background: var(--color-card-1-from);
+    color: #fff;
+}
+.mk-btn-ghost {
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: inherit;
+}
+.mk-btn-danger {
+    border: 1px solid #f5c2c0;
+    background: #fdecea;
+    color: #b3261e;
+}
+
+/* --- form --- */
+.mk-form {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    font-family: Arial, sans-serif;
+}
+.mk-field { margin-bottom: 1.1rem; flex: 1; min-width: 180px; }
+.mk-field-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+.mk-label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--color-ink-soft);
+}
+.mk-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.55rem;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    background: #fff;
+}
+.mk-hint {
+    margin: 0.35rem 0 0;
+    font-size: 0.8rem;
+    color: var(--color-ink-soft);
+}
+.mk-check {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+.mk-form-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+.mk-form-actions form { margin: 0; }
+.mk-form-errors {
+    background: #fdecea;
+    border: 1px solid #f5c2c0;
+    color: #b3261e;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.85rem;
+}
+.mk-form-errors ul { margin: 0.35rem 0 0; padding-left: 1.2rem; }
