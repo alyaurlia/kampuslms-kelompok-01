@@ -1786,3 +1786,284 @@
 .home-overview .kal-cell--today { background: #22c55e; }
 .home-overview .kal-cell--event { background: #ec4899; }
 .home-overview .kal-cell--info  { background: #38bdf8; }
+
+
+/* =========================================================
+   ANGGOTA TIM — halaman Tentang
+   Memakai kartu .dash-card; semua anggota satu baris rata.
+   Jumlah kolom otomatis mengikuti jumlah anggota (--cols).
+   ========================================================= */
+
+.dash-grid.dash-grid--team {
+    display: grid;
+    grid-template-columns: repeat(var(--cols, 5), minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.dash-grid--team .dash-card--member {
+    min-height: 0;
+    padding: 1.75rem 1rem 1.5rem;
+    text-align: center;
+    border-radius: 28px;
+}
+
+.member-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1.1rem;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: #fff;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-card-4-from));
+    border-radius: 50%;
+    box-shadow: 0 6px 14px color-mix(in srgb, var(--color-primary) 25%, transparent);
+}
+
+.member-name {
+    position: relative;
+    z-index: 1;
+    min-height: 2.8em;           /* ruang untuk 2 baris, supaya semua kartu sama tinggi */
+    margin: 0 0 0.35rem;
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.4;
+    color: var(--color-ink);
+}
+
+.member-nim {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    color: var(--color-ink-soft);
+}
+
+.dash-grid--team .dash-card__number {
+    right: 0.5rem;
+    bottom: -0.6rem;
+    font-size: 4.5rem;
+}
+
+/* Layar kecil: kartu ditumpuk satu kolom, isi sejajar menyamping */
+@media (max-width: 700px) {
+    .dash-grid.dash-grid--team {
+        grid-template-columns: 1fr;
+    }
+
+    .dash-grid--team .dash-card--member {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.1rem 1.25rem;
+        text-align: left;
+        border-radius: 22px;
+    }
+
+    .member-avatar {
+        flex: 0 0 56px;
+        width: 56px;
+        height: 56px;
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+    .member-name {
+        min-height: 0;
+        margin-bottom: 0.15rem;
+    }
+
+    .dash-grid--team .dash-card__number {
+        font-size: 3.5rem;
+    }
+}
+
+
+
+/* =========================================================
+   DASH HERO — banner atas dashboard dosen & mahasiswa
+   (komponen <x-dash-hero>)
+   ========================================================= */
+
+.dash-hero {
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 1.75rem;
+    padding: 1.5rem 1.6rem 1.6rem;
+    color: #fff;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    border-radius: 32px;
+    box-shadow: 0 18px 36px color-mix(in srgb, var(--color-primary) 22%, transparent);
+}
+
+/* lingkaran dekorasi lembut */
+.dash-hero::before,
+.dash-hero::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+.dash-hero::before {
+    width: 260px; height: 260px;
+    right: -70px; top: -110px;
+    background: radial-gradient(circle, rgba(248, 89, 136, .55), rgba(248, 89, 136, 0) 70%);
+}
+.dash-hero::after {
+    width: 220px; height: 220px;
+    left: -80px; bottom: -120px;
+    background: radial-gradient(circle, rgba(222, 162, 73, .35), rgba(222, 162, 73, 0) 70%);
+}
+
+.dash-hero > * { position: relative; z-index: 1; }
+
+.dash-hero__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.1rem;
+}
+
+.dash-hero__portal {
+    margin: 0 0 .3rem;
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+}
+
+.dash-hero__title {
+    margin: 0;
+    font-size: 1.9rem;
+    font-weight: 800;
+    line-height: 1.15;
+    color: #fff;
+}
+
+.dash-hero__actions {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    flex-shrink: 0;
+}
+
+.dash-hero__bell {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px; height: 44px;
+    padding: 0;
+    color: #fff;
+    background: rgba(255, 255, 255, .14);
+    border: 1px solid rgba(255, 255, 255, .22);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background .2s ease, transform .2s ease;
+}
+.dash-hero__bell:hover { background: rgba(255, 255, 255, .24); transform: translateY(-2px); }
+
+.dash-hero__badge {
+    position: absolute;
+    top: -5px; right: -5px;
+    min-width: 20px; height: 20px;
+    padding: 0 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .68rem;
+    font-weight: 800;
+    line-height: 1;
+    color: #fff;
+    background: var(--color-card-4-from, #F85988);
+    border: 2px solid var(--color-primary-dark);
+    border-radius: 999px;
+}
+
+.dash-hero__avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px; height: 48px;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--color-primary-dark);
+    background: #fff;
+    border: 3px solid rgba(255, 255, 255, .45);
+    border-radius: 50%;
+}
+
+.dash-hero__hello {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 800;
+}
+.dash-hero__sub {
+    margin: .2rem 0 1.25rem;
+    font-size: .95rem;
+    color: rgba(255, 255, 255, .85);
+}
+
+.dash-hero__search {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .85rem 1.25rem;
+    color: var(--color-primary);
+    background: #fff;
+    border-radius: 999px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, .14);
+}
+.dash-hero__search:focus-within {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 70%, transparent),
+                0 10px 24px rgba(0, 0, 0, .14);
+}
+.dash-hero__search svg { flex-shrink: 0; }
+.dash-hero__search input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font: inherit;
+    font-size: .95rem;
+    color: var(--color-ink);
+}
+.dash-hero__search input::placeholder { color: var(--color-ink-soft); }
+
+.dash-hero__status {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    margin-top: .6rem;
+    padding: .25rem .7rem;
+    font-size: .72rem;
+    font-weight: 700;
+    background: rgba(255, 255, 255, .14);
+    border: 1px solid rgba(255, 255, 255, .22);
+    border-radius: 999px;
+}
+.dash-hero__status i {
+    width: 7px; height: 7px;
+    background: #22c55e;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, .3);
+}
+
+@media (max-width: 640px) {
+    .dash-hero { padding: 1.2rem 1.15rem 1.3rem; border-radius: 26px; }
+    .dash-hero__title { font-size: 1.5rem; }
+}
+
+/* Supaya filter kotak cari bisa menyembunyikan elemen yang punya display:flex/grid */
+.admin-dashboard [hidden],
+.home-overview .semester-course[hidden] {
+    display: none !important;
+}

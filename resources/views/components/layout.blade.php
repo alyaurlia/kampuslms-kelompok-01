@@ -86,7 +86,13 @@
         {{ $slot }}
     </main>
 
-    @if ($fullFooter)
+    {{-- Footer lengkap aktif lewat <x-layout full-footer>.
+         Dua bentuk dicek ($fullFooter dan 'full-footer') agar aman di semua versi Laravel. --}}
+    @php
+        $footerLengkap = ($fullFooter ?? false) || (${'full-footer'} ?? false);
+    @endphp
+
+    @if ($footerLengkap)
         {{-- Footer lengkap (dipakai dashboard admin / dosen / mahasiswa) --}}
         <footer class="site-footer">
             <div class="site-footer__inner">
@@ -116,6 +122,10 @@
                     </a>
                     <a href="#" aria-label="TikTok">
                         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4v10.5a3 3 0 1 1-3-3"/><path d="M14 4c.3 2.2 1.8 3.7 4 4"/></svg>
+                    </a>
+                    {{-- Tombol ke halaman Tentang --}}
+                    <a href="{{ Route::has('tentang') ? route('tentang') : '#' }}" aria-label="Tentang" title="Tentang">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="7.5" r="0.6" fill="currentColor"/></svg>
                     </a>
                 </div>
 

@@ -6,66 +6,128 @@
         <title>Login - Kampus LMS</title>
 
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
 
         <script src="https://cdn.tailwindcss.com"></script>
 
-        {{-- Warna kustom halaman login dipisah ke resources/css/welcome.css --}}
+        {{-- Style halaman login dipisah ke resources/css/welcome.css --}}
         @vite(['resources/css/welcome.css'])
     </head>
-    <body class="login-body min-h-screen flex items-center justify-center">
+    <body class="login-body">
 
-        <div class="login-card bg-white rounded-2xl shadow-2xl p-10 w-full max-w-md mx-4 border-t-4">
+        <main class="login-shell">
+            <div class="login-card">
 
-            <div class="flex justify-center mb-8">
-                <img src="{{ asset('images/logo.png') }}"
-                     alt="Logo Kampus LMS" class="h-24 object-contain">
+                {{-- ===== Sisi kiri: logo + sapaan ===== --}}
+                <section class="login-aside">
+                    <div class="login-logo">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo Kampus LMS">
+                    </div>
+
+                    <div class="login-welcome">
+                        <p class="login-eyebrow">KAMPUS LMS</p>
+                        <h1 class="login-title">Selamat datang!</h1>
+                        <p class="login-text">
+                            LMS Kampus adalah sistem pembelajaran daring yang membantu dosen dan mahasiswa mengelola mata kuliah, tugas, dan penilaian dalam satu tempat.
+                        </p>
+                    </div>
+                </section>
+
+                {{-- ===== Sisi kanan: form login ===== --}}
+                <section class="login-panel">
+
+                    {{-- Pesan sukses (mis. setelah kata sandi berhasil direset) --}}
+                    @if (session('success'))
+                        <div class="login-alert login-alert--success" role="alert">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                    {{-- Pesan error login --}}
+                    @if ($errors->any())
+                        <div class="login-alert login-alert--error" role="alert">
+                            {{ $errors->first() }}
+                        </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('login.store') }}" class="login-form">
+                        @csrf
+
+                        <div>
+                            <input type="text" name="nim_nip" value="{{ old('nim_nip') }}" placeholder="NIM / NIP"
+                                class="login-input" autocomplete="username">
+                        </div>
+
+                        <div class="login-field">
+                            <input type="password" name="password" id="login-password" placeholder="Kata Sandi"
+                                class="login-input login-input--password" autocomplete="current-password">
+
+                            {{-- Tombol lihat / sembunyikan kata sandi --}}
+                            <button type="button" id="toggle-password" class="login-eye"
+                                aria-label="Tampilkan kata sandi" aria-pressed="false" title="Tampilkan kata sandi">
+                                {{-- mata tertutup: kata sandi sedang disembunyikan --}}
+                                <svg class="login-eye__closed" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12A3 3 0 1 1 9.88 9.88"/><path d="M1 1l22 22"/></svg>
+                                {{-- mata terbuka: kata sandi sedang terlihat --}}
+                                <svg class="login-eye__open" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </button>
+                        </div>
+
+                        <button type="submit" class="login-button">
+                            Masuk
+                        </button>
+
+                        <div class="login-forgot">
+                            <a href="{{ route('password.request') }}" class="login-link">
+                                Lupa kata sandi?
+                            </a>
+                        </div>
+                    </form>
+
+                    {{-- Ikon sosial media + tombol ke halaman Tentang --}}
+                    <div class="login-social">
+                        <a href="#" aria-label="YouTube" title="YouTube">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2C2 8.8 2 12 2 12s0 3.2.4 4.8a2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8c.4-1.6.4-4.8.4-4.8s0-3.2-.4-4.8zM10 15V9l5.2 3z"/></svg>
+                        </a>
+                        <a href="#" aria-label="Instagram" title="Instagram">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+                        </a>
+                        <a href="#" aria-label="Facebook" title="Facebook">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M14 8h2.5V5H14c-2.2 0-3.5 1.6-3.5 3.7V11H8v3h2.5v7h3v-7H16l.5-3h-3V9c0-.6.3-1 1-1z"/></svg>
+                        </a>
+                        <a href="#" aria-label="X" title="X">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 4l16 16M20 4L4 20"/></svg>
+                        </a>
+                        <a href="#" aria-label="TikTok" title="TikTok">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4v10.5a3 3 0 1 1-3-3"/><path d="M14 4c.3 2.2 1.8 3.7 4 4"/></svg>
+                        </a>
+                        <a href="{{ Route::has('tentang') ? route('tentang') : '#' }}" aria-label="Tentang" title="Tentang">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="7.5" r="0.6" fill="currentColor"/></svg>
+                        </a>
+                    </div>
+                </section>
+
             </div>
+        </main>
 
-            {{-- Pesan sukses (mis. setelah kata sandi berhasil direset) --}}
-            @if (session('success'))
-                <div class="mb-4 rounded-lg px-4 py-3 text-sm" role="alert"
-                     style="background:#f1f5e2; border:1px solid #a9bf55; color:#55612b;">
-                    {{ session('success') }}
-                </div>
-            @endif
 
-            {{-- Pesan error login --}}
-            @if ($errors->any())
-                <div class="mb-4 rounded-lg px-4 py-3 text-sm"
-                     style="background:#fdecea; border:1px solid #f5c2c0; color:#b3261e;">
-                    {{ $errors->first() }}
-                </div>
-            @endif
+        <script>
+            (function () {
+                var input = document.getElementById('login-password');
+                var btn   = document.getElementById('toggle-password');
+                if (!input || !btn) return;
 
-            <form method="POST" action="{{ route('login.store') }}" class="space-y-4">
-                @csrf
+                btn.addEventListener('click', function () {
+                    var tampil = input.type === 'password';
+                    input.type = tampil ? 'text' : 'password';
 
-                <div>
-                    <input type="text" name="nim_nip" value="{{ old('nim_nip') }}" placeholder="NIM / NIP"
-                        class="login-input w-full border-2 rounded-full px-5 py-3 focus:outline-none transition"
-                        style="border-color: #DEA249;"
-                        onfocus="this.style.borderColor='#CB125E'; this.style.boxShadow='0 0 0 3px #F8979733'"
-                        onblur="this.style.borderColor='#DEA249'; this.style.boxShadow='none'">
-                </div>
-
-                <div>
-                    <input type="password" name="password" placeholder="Kata Sandi"
-                        class="login-input w-full border-2 rounded-full px-5 py-3 focus:outline-none transition">
-                </div>
-
-                <button type="submit"
-                    class="login-button w-full text-white font-semibold py-3 rounded-full transition hover:opacity-90">
-                    Masuk
-                </button>
-
-                <div class="text-center">
-                    <a href="{{ route('password.request') }}" class="login-link text-sm hover:underline font-medium">
-                        Lupa kata sandi?
-                    </a>
-                </div>
-            </form>
-        </div>
+                    var label = tampil ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi';
+                    btn.setAttribute('aria-pressed', tampil ? 'true' : 'false');
+                    btn.setAttribute('aria-label', label);
+                    btn.setAttribute('title', label);
+                    input.focus();
+                });
+            })();
+        </script>
 
     </body>
 </html>

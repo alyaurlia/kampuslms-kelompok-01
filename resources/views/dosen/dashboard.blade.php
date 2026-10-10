@@ -60,7 +60,7 @@
 
 <x-layout title="Dashboard Dosen" role="dosen" full-footer>
     <section class="dash">
-        <h1 class="page-title">Dashboard Dosen</h1>
+        <x-dash-hero portal="Portal Dosen" title="Dashboard Dosen" :notif="$cards[4]['nilai']" search-label="Cari mata kuliah..." />
 
         <div class="dash-grid">
             @foreach ($cards as $card)
