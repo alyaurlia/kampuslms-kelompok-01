@@ -19,6 +19,8 @@ class AssignmentController extends Controller
     /** GET /courses/{course}/assignments?status=&page= */
     public function index(ListAssignmentsRequest $request, Course $course): AssignmentCollection
     {
+        Gate::authorize('view', $course);
+
         $assignments = $course->assignments()
             ->visibleTo($request->user())
             ->when($request->validated('status'), fn ($q, $status) => $q->where('status', $status))
@@ -29,21 +31,26 @@ class AssignmentController extends Controller
     }
 
     /** POST /assignments -> 201 */
-public function store(StoreAssignmentRequest $request): JsonResponse
-{
-    $assignment = Assignment::create([
-        ...$request->validated(),
-        'created_by' => $request->user()->id,
-    ]);
+    public function store(StoreAssignmentRequest $request): JsonResponse
+    {
+        $course = Course::findOrFail($request->validated('course_id'));
+        Gate::authorize('create', [Assignment::class, $course]);
 
-    return AssignmentResource::make($assignment)
-        ->response()
-        ->setStatusCode(201);
-}
+        $assignment = Assignment::create([
+            ...$request->validated(),
+            'created_by' => $request->user()->id,
+        ]);
+
+        return AssignmentResource::make($assignment)
+            ->response()
+            ->setStatusCode(201);
+    }
 
     /** PUT|PATCH /assignments/{assignment} -> 200 */
     public function update(UpdateAssignmentRequest $request, Assignment $assignment): AssignmentResource
     {
+        Gate::authorize('update', $assignment);
+
         $assignment->update($request->validated());
 
         return new AssignmentResource($assignment);

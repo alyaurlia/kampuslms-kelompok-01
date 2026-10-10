@@ -2,14 +2,21 @@
 
 namespace App\Http\Requests\Api;
 
+use App\Models\Grade;
 use App\Models\Submission;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class GradeSubmissionRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        $submission = $this->route('submission');
+        $grade = $submission->grade;
+
+        return $grade
+            ? Gate::forUser($this->user())->allows('update', $grade)
+            : Gate::forUser($this->user())->allows('create', [Grade::class, $submission]);
     }
 
     public function rules(): array

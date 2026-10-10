@@ -45,7 +45,3 @@ Route::prefix('v1')->group(function () {
         Route::post('notifications/{id}/read', [NotificationController::class, 'markAsRead']); // 15
     });
 });
-
-Route::get('debug/users-raw', function () {
-    return response()->json(User::all());
-});

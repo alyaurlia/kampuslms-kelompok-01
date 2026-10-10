@@ -7,7 +7,9 @@ use App\Http\Requests\Api\StoreSubmissionRequest;
 use App\Http\Resources\SubmissionCollection;
 use App\Http\Resources\SubmissionResource;
 use App\Models\Assignment;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class AssignmentSubmissionController extends Controller
 {
@@ -17,27 +19,29 @@ class AssignmentSubmissionController extends Controller
      * - admin     : semua submission tugas ini
      * - dosen     : semua submission, HANYA kalau dia pengampu mata kuliahnya
      * - mahasiswa : hanya submission miliknya, dan hanya kalau dia terdaftar
+     *               (nilai hanya tampil jika sudah dipublikasikan)
      *
-     * Penyaringan di QUERY; peran tak dikenal => 403.
-     * TODO minggu 7: pindahkan ke SubmissionPolicy::viewAny.
+     * Otorisasi lewat AssignmentPolicy::view; penyaringan di QUERY.
      */
     public function index(Request $request, Assignment $assignment): SubmissionCollection
     {
-        $user   = $request->user();
-        $course = $assignment->course;
+        Gate::authorize('view', $assignment);
 
-        $query = $assignment->submissions()->with(['student', 'grade']);
+        $user = $request->user();
 
-        $query = match ($user->role) {
-            'admin'     => $query,
-            'dosen'     => $course->lecturer_id === $user->id
-                                ? $query
-                                : abort(403),
-            'mahasiswa' => $course->students()->whereKey($user->id)->exists()
-                                ? $query->where('user_id', $user->id)
-                                : abort(403),
-            default     => abort(403),
-        };
+        $query = $assignment->submissions()
+            ->with([
+                'student',
+                'grade' => function ($q) use ($user) {
+                    if ($user->role === 'mahasiswa') {
+                        $q->where('is_published', true);
+                    }
+                },
+            ]);
+
+        if ($user->role === 'mahasiswa') {
+            $query->where('user_id', $user->id);
+        }
 
         $submissions = $query
             ->latest('id')
@@ -56,7 +60,7 @@ class AssignmentSubmissionController extends Controller
      *
      * Respons: 201 + SubmissionResource.
      */
-    public function store(StoreSubmissionRequest $request, Assignment $assignment): \Illuminate\Http\JsonResponse
+    public function store(StoreSubmissionRequest $request, Assignment $assignment): JsonResponse
     {
         $user = $request->user();
 
@@ -79,7 +83,7 @@ class AssignmentSubmissionController extends Controller
             'is_late'       => $submittedAt->gt($assignment->due_at),
         ]);
 
-        $submission->load(['user', 'grade']);
+        $submission->load(['student', 'grade']);
 
         return (new SubmissionResource($submission))
             ->response()
