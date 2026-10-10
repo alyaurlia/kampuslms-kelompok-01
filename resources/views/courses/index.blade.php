@@ -85,6 +85,12 @@
                     <a href="{{ route($routePrefix . '.show', $mk) }}" class="mk-grid-link">
                         <div class="mk-grid-banner mk-pattern-{{ $mkPattern }} mk-bg-{{ $mkIndex }}">
                             <span class="mk-badge">{{ $mk->code }}</span>
+
+                            {{-- Status (draft/active/archived) hanya terlihat oleh admin --}}
+                            @if ($user->role === 'admin')
+                                <span class="mk-status mk-status--{{ $mk->status }}">{{ ucfirst($mk->status) }}</span>
+                            @endif
+
                             <span class="mk-grid-arrow" aria-hidden="true">&#10132;</span>
                         </div>
 

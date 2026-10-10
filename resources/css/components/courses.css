@@ -307,3 +307,40 @@
 .mk-pagination {
     margin-top: 2rem;
 }
+
+/* =========================================================
+   Chip status mata kuliah (draft / active / archived)
+   Tempel di AKHIR resources/css/components/courses.css
+   Tampil di pojok kanan atas banner kartu, hanya untuk admin.
+   ========================================================= */
+
+.mk-status {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--color-ink);
+    font-family: Arial, sans-serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+/* titik berwarna di depan teks status */
+.mk-status::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-ink-soft);
+}
+
+.mk-status--draft::before    { background: #DEA249; } /* kuning: belum dibuka */
+.mk-status--active::before   { background: #5E8B2F; } /* hijau: sedang berjalan */
+.mk-status--archived::before { background: #8A6B75; } /* abu: diarsipkan */
