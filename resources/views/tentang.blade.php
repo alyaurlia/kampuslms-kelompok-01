@@ -11,11 +11,11 @@
     {{-- Tim / Kelompok --}}
     @php
         $anggota = [
-            ['nama' => 'Ade Putri Amanda', 'role' => 'Front-End', 'nim' => '10241002'],
+            ['nama' => 'Ade Putri Amanda', 'role' => 'Front-End Developer', 'nim' => '10241002'],
             ['nama' => 'Adelia Isra Ekaputri', 'role' => 'Full-Stack Developer', 'nim' => '10241004'],
-            ['nama' => 'Adelia Cyntia Renata', 'role' => 'Front-End', 'nim' => '10241003'],
-            ['nama' => 'Alya Auralia', 'role' => 'Back-End', 'nim' => '10241008'],
-            ['nama' => 'Andika Putra Pratama', 'role' => 'Back-End', 'nim' => '10241010'],
+            ['nama' => 'Adelia Cyntia Renata', 'role' => 'Front-End Developer', 'nim' => '10241003'],
+            ['nama' => 'Alya Auralia', 'role' => 'Back-End Developer', 'nim' => '10241008'],
+            ['nama' => 'Andika Putra Pratama', 'role' => 'Back-End Developer', 'nim' => '10241010'],
         ];
     @endphp
     <h2 class="tentang-heading">Kelompok 01</h2>
