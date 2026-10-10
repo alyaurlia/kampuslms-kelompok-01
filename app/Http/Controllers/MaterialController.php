@@ -6,6 +6,7 @@ use App\Http\Requests\StoreMaterialRequest;
 use App\Http\Requests\UpdateMaterialRequest;
 use App\Models\Course;
 use App\Models\Material;
+use Illuminate\Support\Facades\Gate;
 
 class MaterialController extends Controller
 {
@@ -36,8 +37,7 @@ class MaterialController extends Controller
      */
     public function index(Course $course)
     {
-        // SEMENTARA: diganti Gate::authorize('view', ...) di minggu 7.
-        abort_unless($this->canViewCourse($course), 403);
+        Gate::authorize('view', $course);
 
         $materials = $course->materials()
             ->latest()
@@ -56,7 +56,7 @@ class MaterialController extends Controller
      */
     public function create(Course $course)
     {
-        abort_unless($this->canManageCourse($course), 403);
+        Gate::authorize('create', [Material::class, $course]);
 
         return view('materials.create', [
             'course' => $course,
@@ -69,7 +69,7 @@ class MaterialController extends Controller
      */
     public function store(StoreMaterialRequest $request, Course $course)
     {
-        abort_unless($this->canManageCourse($course), 403);
+        Gate::authorize('create', [Material::class, $course]);
 
         // uploaded_by diisi dari server, BUKAN dari input form.
         // Memakai save() lewat relasi, jadi course_id ikut terisi
@@ -88,7 +88,7 @@ class MaterialController extends Controller
      */
     public function show(Material $material)
     {
-        abort_unless($this->canViewCourse($material->course), 403);
+        Gate::authorize('view', $material);
 
         return view('materials.show', [
             'material' => $material,
@@ -102,7 +102,7 @@ class MaterialController extends Controller
      */
     public function edit(Material $material)
     {
-        abort_unless($this->canManageCourse($material->course), 403);
+        Gate::authorize('update', $material);
 
         return view('materials.edit', [
             'material' => $material,
@@ -116,7 +116,7 @@ class MaterialController extends Controller
      */
     public function update(UpdateMaterialRequest $request, Material $material)
     {
-        abort_unless($this->canManageCourse($material->course), 403);
+        Gate::authorize('update', $material);
 
         $material->update($this->cleanData($request->validated()));
 
@@ -130,7 +130,7 @@ class MaterialController extends Controller
      */
     public function destroy(Material $material)
     {
-        abort_unless($this->canManageCourse($material->course), 403);
+        Gate::authorize('delete', $material);
 
         $course = $material->course;
 
