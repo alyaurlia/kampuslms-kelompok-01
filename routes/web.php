@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -58,6 +59,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         return redirect()->route(Auth::user()->role . '.dashboard');
     })->name('dashboard');
+
+    Route::get('/pengumpulan/{submission}/unduh', [SubmissionController::class, 'download'])
+        ->name('pengumpulan.unduh');
 
 
     // =========================================================
@@ -159,9 +163,11 @@ Route::middleware('auth')->group(function () {
                     ])
                     ->shallow();
             });
+
+             Route::post('/tugas/{assignment}/kumpul', [SubmissionController::class, 'store'])
+                ->name('tugas.kumpul');
         });
 });
-
 
 // =========================================================
 // HANYA UNTUK PENGEMBANGAN
