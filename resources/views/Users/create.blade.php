@@ -110,7 +110,7 @@
                 >
 
                 <small class="form-hint">
-                    Wajib untuk dosen (NIP) dan mahasiswa (NIM). Kosongkan untuk admin.
+                    Dipakai sebagai nama pengguna saat login, jadi wajib diisi untuk semua peran.
                 </small>
             </div>
 
