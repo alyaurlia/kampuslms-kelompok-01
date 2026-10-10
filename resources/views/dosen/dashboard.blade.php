@@ -58,7 +58,7 @@
     ];
 @endphp
 
-<x-layout title="Dashboard Dosen" role="dosen">
+<x-layout title="Dashboard Dosen" role="dosen" full-footer>
     <section class="dash">
         <h1 class="page-title">Dashboard Dosen</h1>
 

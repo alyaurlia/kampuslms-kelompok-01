@@ -2,7 +2,7 @@
     $persentaseDinilaiTampilan = number_format($persentaseDinilai, 2, ',', '.');
 @endphp
 
-<x-layout title="Dashboard Admin" role="admin">
+<x-layout title="Dashboard Admin" role="admin" full-footer>
 <style>
 /* Statistik utama — khusus Dashboard Admin */
 .admin-dashboard .admin-metrics {

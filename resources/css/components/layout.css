@@ -127,3 +127,87 @@ footer.app-footer {
     color: var(--color-ink-soft);
     padding: 1.5rem;
 }
+
+/* ---------------------------------------------------------
+   Footer lengkap (dashboard admin / dosen / mahasiswa)
+   Aktif lewat <x-layout full-footer>
+   --------------------------------------------------------- */
+footer.site-footer {
+    background: var(--color-primary-dark);
+    color: var(--color-border);
+    font-family: Arial, Helvetica, sans-serif;
+    margin-top: 1rem;
+}
+
+.site-footer__inner {
+    padding: 3rem 2rem 1.75rem;
+}
+
+/* logo teks + garis pemisah + keterangan */
+.site-footer__brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.site-footer__logo {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 1.9rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #fff;
+}
+
+.site-footer__sep {
+    width: 1px;
+    height: 2.25rem;
+    background: color-mix(in srgb, #fff 30%, transparent);
+}
+
+.site-footer__tagline {
+    font-size: 0.8rem;
+    color: var(--color-border);
+}
+
+.site-footer__desc {
+    max-width: 34rem;
+    margin: 0 0 1.75rem;
+    font-size: 1.05rem;
+    line-height: 1.85;
+}
+
+.site-footer__social {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 3rem;
+}
+
+.site-footer__social a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    color: #fff;
+    background: color-mix(in srgb, #fff 12%, transparent);
+    border-radius: 14px;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.site-footer__social a:hover {
+    background: color-mix(in srgb, #fff 24%, transparent);
+    transform: translateY(-2px);
+}
+
+.site-footer__bottom {
+    padding-top: 1.5rem;
+    border-top: 1px solid color-mix(in srgb, #fff 18%, transparent);
+    font-size: 0.95rem;
+}
+
+@media (max-width: 640px) {
+    .site-footer__inner { padding: 2rem 1.25rem 1.25rem; }
+    .site-footer__brand { flex-wrap: wrap; }
+    .site-footer__social a { width: 46px; height: 46px; }
+}

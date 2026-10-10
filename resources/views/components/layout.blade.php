@@ -1,4 +1,4 @@
-@props(['title' => 'LMS Kampus', 'role' => null])
+@props(['title' => 'LMS Kampus', 'role' => null, 'fullFooter' => false])
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -86,9 +86,49 @@
         {{ $slot }}
     </main>
 
-    <footer class="app-footer">
-        &copy; {{ date('Y') }} LMS Kampus
-    </footer>
+    @if ($fullFooter)
+        {{-- Footer lengkap (dipakai dashboard admin / dosen / mahasiswa) --}}
+        <footer class="site-footer">
+            <div class="site-footer__inner">
+                <div class="site-footer__brand">
+                    <span class="site-footer__logo">LMS Kampus</span>
+                    <span class="site-footer__sep" aria-hidden="true"></span>
+                    <span class="site-footer__tagline">Sistem Pembelajaran Daring</span>
+                </div>
+
+                <p class="site-footer__desc">
+                    LMS Kampus adalah sistem pembelajaran daring yang membantu dosen dan
+                    mahasiswa mengelola mata kuliah, tugas, dan penilaian dalam satu tempat.
+                </p>
+
+                <div class="site-footer__social">
+                    <a href="#" aria-label="YouTube">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2C2 8.8 2 12 2 12s0 3.2.4 4.8a2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8c.4-1.6.4-4.8.4-4.8s0-3.2-.4-4.8zM10 15V9l5.2 3z"/></svg>
+                    </a>
+                    <a href="#" aria-label="Instagram">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+                    </a>
+                    <a href="#" aria-label="Facebook">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M14 8h2.5V5H14c-2.2 0-3.5 1.6-3.5 3.7V11H8v3h2.5v7h3v-7H16l.5-3h-3V9c0-.6.3-1 1-1z"/></svg>
+                    </a>
+                    <a href="#" aria-label="X">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 4l16 16M20 4L4 20"/></svg>
+                    </a>
+                    <a href="#" aria-label="TikTok">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4v10.5a3 3 0 1 1-3-3"/><path d="M14 4c.3 2.2 1.8 3.7 4 4"/></svg>
+                    </a>
+                </div>
+
+                <div class="site-footer__bottom">
+                    &copy; {{ date('Y') }} LMS Kampus &middot; <em>Belajar kapan saja, di mana saja</em>
+                </div>
+            </div>
+        </footer>
+    @else
+        <footer class="app-footer">
+            &copy; {{ date('Y') }} LMS Kampus
+        </footer>
+    @endif
 
 </body>
 </html>

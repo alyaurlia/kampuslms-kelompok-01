@@ -40,7 +40,7 @@
     ];
 @endphp
 
-<x-layout title="Dashboard Mahasiswa" role="mahasiswa">
+<x-layout title="Dashboard Mahasiswa" role="mahasiswa" full-footer>
     <section class="dash">
         <h1 class="page-title">Dashboard Mahasiswa</h1>
 
