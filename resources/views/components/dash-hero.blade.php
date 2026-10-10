@@ -9,6 +9,9 @@
       searchLabel  : placeholder kotak cari
       target       : selector CSS elemen yang difilter kotak cari
                      (default: daftar mata kuliah di Semester overview)
+      notifHref    : tujuan klik lonceng (mis. "#tugas-menunggu-nilai" atau route(...));
+                     kosong = lonceng hanya tombol biasa
+      notifLabel   : teks aksesibilitas lonceng
       sub          : kalimat di bawah sapaan
       status       : teks status kecil dengan titik hijau (mis. "Sistem aktif"), opsional
 --}}
@@ -19,6 +22,8 @@
     'searchLabel' => 'Cari mata kuliah...',
     'sub'         => 'Semoga harimu menyenangkan!',
     'status'      => null,
+    'notifHref'   => null,
+    'notifLabel'  => 'Notifikasi',
     'target'      => '.home-overview .semester-course',
 ])
 
@@ -40,16 +45,32 @@
         </div>
 
         <div class="dash-hero__actions">
-            <button type="button" class="dash-hero__bell" aria-label="Notifikasi">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor"
+            @php
+                $labelLonceng = $notifLabel . ($notif ? ': ' . $notif : '');
+            @endphp
+            @if ($notifHref)
+                <a href="{{ $notifHref }}" class="dash-hero__bell" aria-label="{{ $labelLonceng }}" title="{{ $labelLonceng }}">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor"
                      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
                     <path d="M13.7 21a2 2 0 01-3.4 0"/>
                 </svg>
-                @if ($notif)
-                    <span class="dash-hero__badge">{{ $notif > 99 ? '99+' : $notif }}</span>
-                @endif
-            </button>
+                    @if ($notif)
+                        <span class="dash-hero__badge">{{ $notif > 99 ? '99+' : $notif }}</span>
+                    @endif
+                </a>
+            @else
+                <button type="button" class="dash-hero__bell" aria-label="{{ $notifLabel }}">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor"
+                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.7 21a2 2 0 01-3.4 0"/>
+                </svg>
+                    @if ($notif)
+                        <span class="dash-hero__badge">{{ $notif > 99 ? '99+' : $notif }}</span>
+                    @endif
+                </button>
+            @endif
             <div class="dash-hero__avatar" title="{{ $namaUser }}">{{ $inisial }}</div>
         </div>
     </div>

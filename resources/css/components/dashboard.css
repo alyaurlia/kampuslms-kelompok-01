@@ -2067,3 +2067,54 @@
 .home-overview .semester-course[hidden] {
     display: none !important;
 }
+
+
+/* =========================================================
+   KARTU STATISTIK DOSEN & MAHASISWA
+   Memakai gaya .admin-metric (sama dengan dashboard admin).
+   Susunan: ke kanan dulu, lalu turun; baris terakhir melebar.
+   ========================================================= */
+
+.admin-metrics.admin-metrics--flow {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.admin-metrics--flow > .admin-metric {
+    flex: 1 1 220px;
+}
+
+/* Kotak ikon berwarna sesuai aksen kartu (ikon putih di dalamnya) */
+.admin-metrics--flow .admin-metric--pink   { --accent: #d41463; }
+.admin-metrics--flow .admin-metric--purple { --accent: #7c3aed; }
+.admin-metrics--flow .admin-metric--blue   { --accent: #2563eb; }
+.admin-metrics--flow .admin-metric--orange { --accent: #ea580c; }
+
+.admin-metrics--flow .admin-metric__icon {
+    background: var(--accent);
+    color: #ffffff;
+    box-shadow: 0 7px 15px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+
+/* Lonceng sebagai tautan + sorotan kartu tujuan */
+a.dash-hero__bell { text-decoration: none; }
+
+html { scroll-behavior: smooth; }
+
+.admin-metric[id] { scroll-margin-top: 90px; }
+
+.admin-metric:target {
+    animation: kartuSorot 1.8s ease-out 1;
+}
+
+@keyframes kartuSorot {
+    0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 85%, transparent); transform: translateY(-4px); }
+    60%  { box-shadow: 0 0 0 12px color-mix(in srgb, var(--color-accent) 0%, transparent); }
+    100% { box-shadow: 0 7px 22px rgba(42, 25, 38, 0.035); transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .admin-metric:target { animation: none; outline: 3px solid var(--color-accent); }
+}
