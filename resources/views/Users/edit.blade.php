@@ -3,7 +3,7 @@
     <h1 class="form-title">Edit Pengguna</h1>
 
     @if ($errors->any())
-        <div class="alert-error">
+        <div class="alert alert-error" role="alert">
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -14,7 +14,7 @@
 
     <section class="form-card">
 
-        <form action="{{ route('users.update', $user->id) }}" method="POST">
+        <form action="{{ route('admin.users.update', $user) }}" method="POST" autocomplete="off">
             @csrf
             @method('PUT')
 
@@ -29,6 +29,7 @@
                     name="name"
                     id="name"
                     value="{{ old('name', $user->name) }}"
+                    maxlength="150"
                     class="form-control"
                 >
             </div>
@@ -44,6 +45,8 @@
                     name="email"
                     id="email"
                     value="{{ old('email', $user->email) }}"
+                    maxlength="150"
+                    autocomplete="off"
                     class="form-control"
                 >
             </div>
@@ -59,6 +62,7 @@
                     name="password"
                     id="password"
                     placeholder="Kosongkan jika tidak ingin mengubah"
+                    autocomplete="new-password"
                     class="form-control"
                 >
                 <p class="form-hint">
@@ -76,12 +80,13 @@
                     type="password"
                     name="password_confirmation"
                     id="password_confirmation"
+                    autocomplete="new-password"
                     class="form-control"
                 >
             </div>
 
             {{-- Role --}}
-            <div class="form-group form-group--lg">
+            <div class="form-group">
                 <label for="role" class="form-label">
                     Peran
                 </label>
@@ -92,6 +97,32 @@
                     <option value="dosen" {{ old('role', $user->role) === 'dosen' ? 'selected' : '' }}>Dosen</option>
                     <option value="mahasiswa" {{ old('role', $user->role) === 'mahasiswa' ? 'selected' : '' }}>Mahasiswa</option>
                 </select>
+
+                @if ($user->is(auth()->user()))
+                    <p class="form-hint">
+                        Anda sedang mengedit akun Anda sendiri, jadi peran tidak dapat diubah.
+                    </p>
+                @endif
+            </div>
+
+            {{-- NIM / NIP --}}
+            <div class="form-group form-group--lg">
+                <label for="nim_nip" class="form-label">
+                    NIM / NIP
+                </label>
+
+                <input
+                    type="text"
+                    name="nim_nip"
+                    id="nim_nip"
+                    value="{{ old('nim_nip', $user->nim_nip) }}"
+                    maxlength="30"
+                    class="form-control"
+                >
+
+                <p class="form-hint">
+                    Dipakai sebagai nama pengguna saat login, jadi wajib diisi untuk semua peran.
+                </p>
             </div>
 
             <div class="form-actions">
@@ -100,7 +131,7 @@
                     Simpan Perubahan
                 </button>
 
-                <a href="{{ route('users.index') }}" class="btn btn-secondary">
+                <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">
                     Batal
                 </a>
 

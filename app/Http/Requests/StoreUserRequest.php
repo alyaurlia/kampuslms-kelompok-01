@@ -34,8 +34,8 @@ class StoreUserRequest extends FormRequest
             'email'    => ['required', 'email', 'max:150', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role'     => ['required', 'in:admin,dosen,mahasiswa'],
-            // Wajib untuk dosen & mahasiswa; admin boleh kosong.
-            'nim_nip'  => ['required_if:role,dosen,mahasiswa', 'nullable', 'string', 'max:30', 'unique:users,nim_nip'],
+            // Dipakai sebagai nama pengguna saat login, jadi wajib untuk semua peran.
+            'nim_nip'  => ['required', 'string', 'max:30', 'unique:users,nim_nip'],
         ];
     }
 
@@ -54,7 +54,7 @@ class StoreUserRequest extends FormRequest
             'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
             'role.required'      => 'Peran wajib dipilih.',
             'role.in'            => 'Peran harus salah satu dari: admin, dosen, atau mahasiswa.',
-            'nim_nip.required_if' => 'NIM/NIP wajib diisi untuk dosen dan mahasiswa.',
+            'nim_nip.required'   => 'NIM/NIP wajib diisi.',
             'nim_nip.string'     => 'NIM/NIP harus berupa teks.',
             'nim_nip.max'        => 'NIM/NIP maksimal 30 karakter.',
             'nim_nip.unique'     => 'NIM/NIP ini sudah terdaftar.',
