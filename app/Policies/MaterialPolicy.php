@@ -18,7 +18,13 @@ class MaterialPolicy
     {
         $course = $material->course;
 
-        return $course->isManagedBy($user) || $course->hasStudent($user);
+        // Admin / dosen pengampu: selalu boleh.
+        if ($course->isManagedBy($user)) {
+            return true;
+        }
+
+        // Mahasiswa: hanya bila MK-nya diikuti DAN berstatus active.
+        return $course->status === 'active' && $course->hasStudent($user);
     }
 
     // Course wajib: admin atau dosen pengampu

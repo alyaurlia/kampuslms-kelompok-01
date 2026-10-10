@@ -4,8 +4,10 @@
     Style: resources/css/components/dashboard.css (.home-*, .semester-*, .kal-*)
 
     Props:
-      $semester   : nama semester (string)
+      $semester   : nama semester (string). Kosongkan (null) untuk menampilkan
+                    daftar mata kuliah saja, tanpa judul semester.
       $mataKuliah : daftar mata kuliah, tiap item ['nama' => ..., 'kode' => ...]
+                    dan opsional 'url' (nama menjadi tautan ke halaman detail)
       $events     : tanggal bertanda di kalender, format ['YYYY-MM-DD' => 'event'|'info']
 --}}
 @props([
@@ -20,22 +22,38 @@
     <section class="home-card home-card--semester">
         <h2 class="home-card-title">Semester overview</h2>
 
-        <details class="semester-item" open>
-            <summary class="semester-summary">{{ $semester }}</summary>
+        @if (filled($semester))
+            <details class="semester-item" open>
+                <summary class="semester-summary">{{ $semester }}</summary>
+        @else
+            <div class="semester-item">
+        @endif
 
             @if (count($mataKuliah))
                 <div class="semester-courses">
                     @foreach ($mataKuliah as $mk)
                         <div class="semester-course">
-                            <span class="semester-course-name">{{ $mk['nama'] }} - {{ $mk['kode'] }}</span>
+                            @if (!empty($mk['url']))
+                                <a href="{{ $mk['url'] }}" class="semester-course-name"
+                                   style="color: inherit; text-decoration: none;">{{ $mk['nama'] }} - {{ $mk['kode'] }}</a>
+                            @else
+                                <span class="semester-course-name">{{ $mk['nama'] }} - {{ $mk['kode'] }}</span>
+                            @endif
                             <span class="semester-course-star" aria-hidden="true">&#9734;</span>
                         </div>
                     @endforeach
                 </div>
             @else
-                <p class="semester-empty">Belum ada mata kuliah pada semester ini.</p>
+                <p class="semester-empty">
+                    {{ filled($semester) ? 'Belum ada mata kuliah pada semester ini.' : 'Belum ada mata kuliah yang kamu ikuti.' }}
+                </p>
             @endif
-        </details>
+
+        @if (filled($semester))
+            </details>
+        @else
+            </div>
+        @endif
     </section>
 
     {{-- ===== Calendar ===== --}}

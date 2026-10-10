@@ -44,18 +44,22 @@
             class="mk-filter-input"
         >
 
-        <select name="status" class="mk-filter-select">
-            <option value="">-- Semua Status --</option>
-            @foreach (['draft' => 'Draft', 'active' => 'Active', 'archived' => 'Archived'] as $value => $label)
-                <option value="{{ $value }}" @selected(request('status') === $value)>{{ $label }}</option>
-            @endforeach
-        </select>
+        {{-- Filter status hanya untuk admin & dosen. Mahasiswa hanya melihat MK active,
+             jadi dropdown ini tidak ada gunanya bagi mereka. --}}
+        @if ($showStatus)
+            <select name="status" class="mk-filter-select">
+                <option value="">-- Semua Status --</option>
+                @foreach (['draft' => 'Draft', 'active' => 'Active', 'archived' => 'Archived'] as $value => $label)
+                    <option value="{{ $value }}" @selected(request('status') === $value)>{{ $label }}</option>
+                @endforeach
+            </select>
+        @endif
 
         <button type="submit" class="mk-filter-btn">
             Cari
         </button>
 
-        @if (request('q') || request('status'))
+        @if (request('q') || ($showStatus && request('status')))
             <a href="{{ route($routePrefix . '.index') }}" class="mk-filter-reset">
                 Reset
             </a>
@@ -138,4 +142,4 @@
         </div>
     @endif
 
-</x-layout>x
+</x-layout>
