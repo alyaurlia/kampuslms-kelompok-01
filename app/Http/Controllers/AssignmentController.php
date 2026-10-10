@@ -102,10 +102,21 @@ class AssignmentController extends Controller
     {
         Gate::authorize('view', $assignment);
 
+        $user = auth()->user();
+
+        // Pengumpulan milik mahasiswa yang login (null untuk dosen/admin)
+        $mySubmission = $user->role === 'mahasiswa'
+            ? $assignment->submissions()
+                ->where('user_id', $user->id)
+                ->with('grade')
+                ->first()
+            : null;
+
         return view('assignments.show', [
-            'assignment' => $assignment,
-            'course'     => $assignment->course,
-            'role'       => $this->role(),
+            'assignment'   => $assignment,
+            'course'       => $assignment->course,
+            'mySubmission' => $mySubmission,
+            'role'         => $this->role(),
         ]);
     }
 
