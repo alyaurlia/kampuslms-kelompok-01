@@ -4,8 +4,12 @@
     (didefinisikan di resources/css/components/dashboard.css).
 --}}
 @php
-    // Data kartu. Masih angka statis seperti sebelumnya (belum ada query-nya),
-    // ganti dengan data asli jika sudah tersedia.
+    // Variabel dari MahasiswaDashboardController@index: $courses
+    // (koleksi mata kuliah aktif yang diikuti mahasiswa yang sedang login).
+    $courses = $courses ?? collect();
+
+    // Data kartu. IPK dan Total SKS masih angka statis (belum ada query-nya);
+    // jumlah mata kuliah diambil dari data asli.
     $cards = [
         [
             'no'    => 1,
@@ -25,18 +29,18 @@
             'no'    => 3,
             'ikon'  => 'buku',
             'judul' => 'Mata Kuliah Diambil',
-            'nilai' => 6,
+            'nilai' => $courses->count(),
             'desc'  => 'Mata kuliah yang sedang kamu ikuti pada semester berjalan.',
         ],
     ];
-    // Data blok "Semester overview" & kalender. Masih statis seperti dashboard awal,
-    // ganti dengan data asli jika sudah tersedia.
-    $mataKuliahSemester = [
-        ['nama' => 'Pemrograman Dasar',         'kode' => 'IF101'],
-        ['nama' => 'Struktur Data',             'kode' => 'IF205'],
-        ['nama' => 'Basis Data',                'kode' => 'IF310'],
-        ['nama' => 'Rekayasa Perangkat Lunak',  'kode' => 'IF420'],
-    ];
+    // Blok "Semester overview": daftar mata kuliah yang diikuti mahasiswa ini,
+    // dikirim dari MahasiswaDashboardController sebagai $courses.
+    $mataKuliahSemester = $courses->map(fn ($c) => [
+        'nama' => $c->name,
+        'kode' => $c->code,
+        'url'  => route('mahasiswa.mata-kuliah.show', $c),
+    ])->all();
+    // Kalender: masih statis seperti dashboard awal.
     $eventKalender = [
         '2026-09-07' => 'event',
         '2026-09-23' => 'info',
@@ -76,8 +80,10 @@
         </div>
     </section>
 
+    {{-- semester="" (string kosong) = tanpa judul semester, hanya daftar mata kuliah.
+         Jangan pakai null: null membuat @props memakai nilai bawaan komponen. --}}
     <x-home-overview
-        semester="Semester Gasal (A) 2026/2027"
+        semester=""
         :mata-kuliah="$mataKuliahSemester"
         :events="$eventKalender"
     />

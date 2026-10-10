@@ -39,7 +39,8 @@
                             {{ $assignment->title }}
                         </a>
                         <p class="mk-list-meta">
-                            @if ($role === 'dosen')
+                            {{-- Status (draft/published) terlihat oleh dosen dan admin --}}
+                            @if (in_array($role, ['dosen', 'admin']))
                                 <span class="mk-chip mk-chip--{{ $assignment->status }}">{{ ucfirst($assignment->status) }}</span>
                             @endif
                             Batas: {{ $assignment->due_at->translatedFormat('d F Y, H:i') }}

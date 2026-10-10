@@ -62,13 +62,15 @@ class Course extends Model
     }
 
 
-/** dosen: MK yang diajar; mahasiswa: MK yang diikuti. */
+/** dosen: MK yang diajar; mahasiswa: MK AKTIF yang diikuti (draft/archived disembunyikan). */
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
         return match ($user->role) {
             'admin' => $query,
             'dosen' => $query->where('lecturer_id', $user->id),
-            'mahasiswa' => $query->whereHas('students', fn (Builder $q) => $q->whereKey($user->id)),
+            'mahasiswa' => $query
+                ->where('status', 'active')
+                ->whereHas('students', fn (Builder $q) => $q->whereKey($user->id)),
             default => $query->whereRaw('1 = 0'),
         };
     }

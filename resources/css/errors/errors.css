@@ -1,5 +1,6 @@
 /* =========================================================
-   errors.css — halaman error mandiri (errors/403.blade.php)
+   errors.css — halaman error mandiri
+   (errors/401.blade.php, errors/403.blade.php, dan errors/404.blade.php)
    Halaman ini tidak memakai <x-layout>, jadi punya CSS sendiri.
    ========================================================= */
 

@@ -33,7 +33,8 @@
                     <span class="mk-meta-label">Terlambat</span>
                     <span class="mk-meta-value">{{ $assignment->allow_late ? 'Diizinkan' : 'Tidak diizinkan' }}</span>
                 </div>
-                @if ($role === 'dosen')
+                {{-- Status (draft/published) terlihat oleh dosen dan admin; mahasiswa hanya melihat tugas published --}}
+                @if (in_array($role, ['dosen', 'admin']))
                     <div class="mk-meta-item">
                         <span class="mk-meta-label">Status</span>
                         <span class="mk-meta-value">{{ ucfirst($assignment->status) }}</span>

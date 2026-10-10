@@ -18,7 +18,10 @@ public function view(User $user, Assignment $assignment): bool
     $course = $assignment->course;
 
     if ($user->role === 'mahasiswa') {
-        return $assignment->status === 'published' && $course->hasStudent($user);
+        // Tugas harus published, MK-nya diikuti, DAN MK berstatus active.
+        return $assignment->status === 'published'
+            && $course->status === 'active'
+            && $course->hasStudent($user);
     }
 
     return $course->isManagedBy($user);
@@ -40,10 +43,11 @@ public function view(User $user, Assignment $assignment): bool
         return $assignment->course->isManagedBy($user);
     }
 
-    // Mengumpulkan tugas: mahasiswa terdaftar, tugas harus published
+    // Mengumpulkan tugas: mahasiswa terdaftar, tugas published, MK active
     public function submit(User $user, Assignment $assignment): bool
     {
         return $assignment->status === 'published'
+            && $assignment->course->status === 'active'
             && $assignment->course->hasStudent($user);
     }
 }

@@ -14,7 +14,14 @@ class CoursePolicy
 
     public function view(User $user, Course $course): bool
     {
-        return $course->isManagedBy($user) || $course->hasStudent($user);
+        // Admin / dosen pengampu: selalu boleh (termasuk draft & archived).
+        if ($course->isManagedBy($user)) {
+            return true;
+        }
+
+        // Mahasiswa: hanya MK yang diikuti DAN berstatus active.
+        // MK draft / archived disembunyikan (sejalan dengan Course::scopeVisibleTo).
+        return $course->status === 'active' && $course->hasStudent($user);
     }
 
     public function create(User $user): bool

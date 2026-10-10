@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseEnrollmentController;
 use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\MahasiswaDashboardController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\UserController;
@@ -89,6 +90,35 @@ Route::middleware('auth')->group(function () {
             Route::delete('mata-kuliah/{mata_kuliah}/mahasiswa/{student}', [CourseEnrollmentController::class, 'destroy'])
                 ->whereNumber('student')
                 ->name('mata-kuliah.mahasiswa.destroy');
+
+            // Materi & tugas yang diposting dosen: admin HANYA MELIHAT
+            // (index + show). Membuat/mengubah/menghapus tetap wewenang dosen.
+            // Nama lengkap: admin.mata-kuliah.materi.index, admin.materi.show,
+            //               admin.mata-kuliah.tugas.index,  admin.tugas.show
+            Route::scopeBindings()->group(function () {
+
+                Route::resource('mata-kuliah.materi', MaterialController::class)
+                    ->only([
+                        'index',
+                        'show',
+                    ])
+                    ->parameters([
+                        'mata-kuliah' => 'course',
+                        'materi' => 'material',
+                    ])
+                    ->shallow();
+
+                Route::resource('mata-kuliah.tugas', AssignmentController::class)
+                    ->only([
+                        'index',
+                        'show',
+                    ])
+                    ->parameters([
+                        'mata-kuliah' => 'course',
+                        'tugas' => 'assignment',
+                    ])
+                    ->shallow();
+            });
         });
 
 
@@ -140,7 +170,7 @@ Route::middleware('auth')->group(function () {
         ->name('mahasiswa.')
         ->group(function () {
 
-            Route::view('/dashboard', 'mahasiswa.dashboard')
+            Route::get('/dashboard', [MahasiswaDashboardController::class, 'index'])
                 ->name('dashboard');
 
             Route::resource('mata-kuliah', CourseController::class)
@@ -174,7 +204,7 @@ Route::middleware('auth')->group(function () {
                     ->shallow();
             });
 
-             Route::post('/tugas/{assignment}/kumpul', [SubmissionController::class, 'store'])
+            Route::post('/tugas/{assignment}/kumpul', [SubmissionController::class, 'store'])
                 ->name('tugas.kumpul');
         });
 });
