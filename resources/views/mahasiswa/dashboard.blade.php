@@ -22,7 +22,7 @@
             'no'    => 2,
             'ikon'  => 'tumpuk',
             'judul' => 'Total SKS',
-            'nilai' => 84,
+            'nilai' => 7,
             'desc'  => 'Jumlah satuan kredit semester yang sudah kamu kumpulkan sampai saat ini.',
         ],
         [

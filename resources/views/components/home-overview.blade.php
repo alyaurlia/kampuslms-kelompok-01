@@ -24,19 +24,33 @@
 
 <div class="home-layout home-overview {{ $showCalendar ? '' : 'home-layout--single' }}" style="margin-top: 2.5rem;">
 
-    {{-- ===== Semester overview ===== --}}
-    <section class="home-card home-card--semester">
-        <h2 class="home-card-title">Semester overview</h2>
+    {{-- ===== Semester overview: kartu + dropdown daftar mata kuliah ===== --}}
+    <section class="home-card home-card--semester so-card">
+        <div class="so-head">
+            <h2 class="home-card-title so-title">Semester overview</h2>
+            <span class="so-count">{{ count($mataKuliah) }}</span>
+        </div>
 
-        @if (filled($semester))
-            <details class="semester-item" open>
-                <summary class="semester-summary">{{ $semester }}</summary>
-        @else
-            <div class="semester-item">
-        @endif
+        {{-- Dropdown (tertutup bawaan). Judulnya nama semester; bila semester kosong
+             dipakai teks "Daftar Mata Kuliah". Kotak cari di banner membuka dropdown ini otomatis. --}}
+        <details class="semester-item so-drop">
+            <summary class="semester-summary so-summary">
+                <span class="so-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                         stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16z"></path>
+                        <path d="M4 5.5v16"></path><path d="M8 7h8"></path><path d="M8 11h6"></path>
+                    </svg>
+                </span>
+                <span class="so-label">{{ filled($semester) ? $semester : 'Daftar Mata Kuliah' }}</span>
+                <span class="so-meta">{{ count($mataKuliah) }} mata kuliah</span>
+                <svg class="so-chevron" viewBox="0 0 24 24" width="20" height="20" fill="none"
+                     stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+                     stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+            </summary>
 
             @if (count($mataKuliah))
-                <div class="semester-courses">
+                <div class="semester-courses so-body">
                     @foreach ($mataKuliah as $mk)
                         <div class="semester-course">
                             @if (!empty($mk['url']))
@@ -50,16 +64,11 @@
                     @endforeach
                 </div>
             @else
-                <p class="semester-empty">
+                <p class="semester-empty so-body">
                     {{ $emptyText ?? (filled($semester) ? 'Belum ada mata kuliah pada semester ini.' : 'Belum ada mata kuliah yang kamu ikuti.') }}
                 </p>
             @endif
-
-        @if (filled($semester))
-            </details>
-        @else
-            </div>
-        @endif
+        </details>
     </section>
 
     @if ($showCalendar)
