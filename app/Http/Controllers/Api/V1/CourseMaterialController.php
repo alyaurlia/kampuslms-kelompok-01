@@ -13,33 +13,23 @@ class CourseMaterialController extends Controller
     /**
      * GET /api/v1/courses/{course}/materials?page=&per_page=
      *
-     * Boleh dilihat: admin, dosen pengampu, dan mahasiswa yang terdaftar
-     * di mata kuliah ini (CoursePolicy::view).
+     * Boleh dilihat: admin, dosen pengampu, dan mahasiswa yang terdaftar di
+     * mata kuliah ini DAN berstatus active (CoursePolicy::view). Selain itu 403.
+     *
+     * Gate di bawah sudah mencakup seluruh aturan akses per peran, jadi query
+     * tidak perlu disaring lagi per peran: yang lolos Gate pasti berhak
+     * melihat semua materi di mata kuliah ini.
      */
-public function index(Request $request, Course $course): MaterialCollection
-{
-    $user = $request->user();
+    public function index(Request $request, Course $course): MaterialCollection
+    {
+        Gate::authorize('view', $course);
 
-    Gate::authorize('view', $course);
+        $materials = $course->materials()
+            ->latest('id')
+            ->paginate(
+                min(max($request->integer('per_page', 15), 1), 100)
+            );
 
-    $query = $course->materials();
-
-    if ($user->role === 'dosen') {
-        $query->whereHas('course', function ($q) use ($user) {
-            $q->where('lecturer_id', $user->id);
-        });
-    } elseif ($user->role === 'mahasiswa') {
-        $query->whereHas('course.students', function ($q) use ($user) {
-            $q->whereKey($user->id);
-        });
-    }
-
-    $materials = $query
-        ->latest('id')
-        ->paginate(
-            min(max($request->integer('per_page', 15), 1), 100)
-        );
-
-    return new MaterialCollection($materials);
+        return new MaterialCollection($materials);
     }
 }

@@ -38,9 +38,10 @@
     <div class="mk-field">
         <label for="attachment" class="mk-label">Lampiran Soal (opsional)</label>
         @if ($editing && $assignment->file_path)
+            {{-- Tautan ini = route unduh (berkas dikirim sebagai lampiran), tanpa tab baru. --}}
             <p class="mk-hint">
                 Lampiran saat ini:
-                <a href="{{ $assignment->attachment_url }}" target="_blank" rel="noopener">{{ $assignment->original_name }}</a>.
+                <a href="{{ $assignment->attachment_url }}">{{ $assignment->original_name }}</a>.
                 Pilih berkas baru hanya jika ingin menggantinya.
             </p>
             <label class="mk-check">

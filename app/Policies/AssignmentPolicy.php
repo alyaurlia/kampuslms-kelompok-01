@@ -13,19 +13,20 @@ class AssignmentPolicy
         return true; // daftar disaring di query
     }
 
-public function view(User $user, Assignment $assignment): bool
-{
-    $course = $assignment->course;
+    // Termasuk unduh lampiran soal
+    public function view(User $user, Assignment $assignment): bool
+    {
+        $course = $assignment->course;
 
-    if ($user->role === 'mahasiswa') {
-        // Tugas harus published, MK-nya diikuti, DAN MK berstatus active.
-        return $assignment->status === 'published'
-            && $course->status === 'active'
-            && $course->hasStudent($user);
+        if ($user->role === 'mahasiswa') {
+            // Tugas harus published, MK-nya diikuti, DAN MK berstatus active.
+            return $assignment->status === 'published'
+                && $course->status === 'active'
+                && $course->hasStudent($user);
+        }
+
+        return $course->isManagedBy($user);
     }
-
-    return $course->isManagedBy($user);
-}
 
     // Course wajib. Admin atau dosen pengampu MK tersebut.
     public function create(User $user, Course $course): bool
@@ -43,11 +44,13 @@ public function view(User $user, Assignment $assignment): bool
         return $assignment->course->isManagedBy($user);
     }
 
-    // Mengumpulkan tugas: mahasiswa terdaftar, tugas published, MK active
+    // Mengumpulkan tugas: mahasiswa terdaftar, tugas published, MK active,
+    // dan (bila deadline sudah lewat) tugas harus mengizinkan keterlambatan.
     public function submit(User $user, Assignment $assignment): bool
     {
         return $assignment->status === 'published'
             && $assignment->course->status === 'active'
+            && ($assignment->allow_late || now()->lte($assignment->due_at))
             && $assignment->course->hasStudent($user);
     }
 }

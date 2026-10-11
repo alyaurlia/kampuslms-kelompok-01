@@ -57,14 +57,11 @@
                     Kata Sandi Baru
                 </label>
 
-                <input
-                    type="password"
+                <x-password-input
                     name="password"
-                    id="password"
                     placeholder="Kosongkan jika tidak ingin mengubah"
-                    autocomplete="new-password"
-                    class="form-control"
-                >
+                />
+
                 <p class="form-hint">
                     Biarkan kosong jika tidak ingin mengganti kata sandi.
                 </p>
@@ -76,13 +73,7 @@
                     Konfirmasi Kata Sandi Baru
                 </label>
 
-                <input
-                    type="password"
-                    name="password_confirmation"
-                    id="password_confirmation"
-                    autocomplete="new-password"
-                    class="form-control"
-                >
+                <x-password-input name="password_confirmation" />
             </div>
 
             {{-- Role --}}

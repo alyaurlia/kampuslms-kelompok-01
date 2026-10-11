@@ -1,4 +1,4 @@
-{{-- Variabel dari AssignmentController@show: $assignment, $course, $role --}}
+{{-- Variabel dari AssignmentController@show: $assignment, $course, $role, $mySubmission, $submissions --}}
 <x-layout :title="$assignment->title">
 
 @php
@@ -47,8 +47,9 @@
 
             @if ($assignment->attachment_url)
                 <h2 class="mk-desc-label mk-desc-label--spaced">Lampiran</h2>
+                {{-- attachment_url = route unduh (tugas.lampiran), berkas dikirim sebagai lampiran: tanpa tab baru --}}
                 <p class="mk-desc-text">
-                    <a href="{{ $assignment->attachment_url }}" target="_blank" rel="noopener">
+                    <a href="{{ $assignment->attachment_url }}">
                         {{ $assignment->original_name }}
                     </a>
                     @if ($assignment->file_size)
@@ -75,6 +76,11 @@
             @endif
         </div>
     </article>
+
+    {{-- Daftar pengumpulan + penilaian: hanya dosen & admin ($submissions dari controller) --}}
+    @if (in_array($role, ['dosen', 'admin']))
+        @include('assignments._grading')
+    @endif
 
     @if ($role === 'mahasiswa')
     <section class="mk-card">
@@ -121,6 +127,11 @@
                         <textarea name="note" placeholder="Catatan (opsional)">{{ old('note') }}</textarea>
                         <button type="submit" class="mk-btn-primary">Kumpulkan</button>
                     </form>
+                @else
+                    {{-- Form disembunyikan oleh AssignmentPolicy::submit. Beri tahu alasannya bila karena deadline. --}}
+                    @if (! $assignment->allow_late && now()->gt($assignment->due_at))
+                        <p><strong>Batas waktu sudah lewat dan pengumpulan terlambat tidak diizinkan.</strong></p>
+                    @endif
                 @endcan
             @endif
         </div>

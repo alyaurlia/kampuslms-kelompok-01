@@ -19,7 +19,10 @@ class StoreMaterialRequest extends FormRequest
             'title'        => ['required', 'string', 'max:255'],
             'description'  => ['nullable', 'string'],
             'type'         => ['required', Rule::in(['file', 'link'])],
-            'external_url' => ['required_if:type,link', 'nullable', 'url', 'max:255'],
+            // url:http,https -> hanya skema http/https. external_url dirender
+            // sebagai href dan dibuka mahasiswa, jadi skema lain (mis. javascript:)
+            // tidak boleh ikut tersimpan.
+            'external_url' => ['required_if:type,link', 'nullable', 'url:http,https', 'max:255'],
             'file'         => [
                 'required_if:type,file', 'nullable', 'file',
                 'mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,txt,jpg,jpeg,png',

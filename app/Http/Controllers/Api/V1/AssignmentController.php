@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\StoreAssignmentRequest;
+use App\Http\Requests\Api\UpdateAssignmentRequest;
 use App\Http\Requests\ListAssignmentsRequest;
-use App\Http\Requests\StoreAssignmentRequest;
-use App\Http\Requests\UpdateAssignmentRequest;
 use App\Http\Resources\AssignmentCollection;
 use App\Http\Resources\AssignmentResource;
 use App\Models\Assignment;
@@ -13,6 +13,7 @@ use App\Models\Course;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 
 class AssignmentController extends Controller
 {
@@ -33,9 +34,12 @@ class AssignmentController extends Controller
     /** POST /assignments -> 201 */
     public function store(StoreAssignmentRequest $request): JsonResponse
     {
+        // course_id sudah lolos 'exists' di request, jadi findOrFail aman.
         $course = Course::findOrFail($request->validated('course_id'));
         Gate::authorize('create', [Assignment::class, $course]);
 
+        // created_by dari server, BUKAN dari input. Field yang tidak dikirim
+        // memakai default model (status=draft, max_score=100, allow_late=true).
         $assignment = Assignment::create([
             ...$request->validated(),
             'created_by' => $request->user()->id,
@@ -60,6 +64,12 @@ class AssignmentController extends Controller
     public function destroy(Assignment $assignment): Response
     {
         Gate::authorize('delete', $assignment);
+
+        // Lampiran soal (bila ada, diunggah lewat web) ikut dihapus di sini
+        // supaya tidak menjadi berkas yatim di disk.
+        if ($assignment->file_path) {
+            Storage::disk('local')->delete($assignment->file_path);
+        }
 
         $assignment->delete();
 

@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Support\Facades\Storage;
 
 class Assignment extends Model
 {
@@ -61,18 +60,22 @@ class Assignment extends Model
         return $this->hasManyThrough(Grade::class, Submission::class);
     }
 
-    /** URL lampiran soal (null kalau dosen tidak melampirkan berkas). */
+    /**
+     * Tautan unduh lampiran soal (null kalau dosen tidak melampirkan berkas).
+     * Berkas disimpan di disk privat, jadi TIDAK ada URL langsung ke berkasnya:
+     * tautan ini mengarah ke route tugas.lampiran yang memeriksa hak akses.
+     */
     public function getAttachmentUrlAttribute(): ?string
     {
         return $this->file_path
-            ? Storage::disk('public')->url($this->file_path)
+            ? route('tugas.lampiran', $this)
             : null;
     }
 
-    /** Mahasiswa tidak melihat tugas draft; dosen melihat semuanya. */
+    /** Mahasiswa tidak melihat tugas draft; admin dan dosen melihat semuanya. */
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
-        return $user->role === 'dosen'
+        return in_array($user->role, ['admin', 'dosen'], true)
             ? $query
             : $query->where('status', '!=', 'draft');
     }

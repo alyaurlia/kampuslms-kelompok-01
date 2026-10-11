@@ -28,7 +28,8 @@ class GradeSubmissionRequest extends FormRequest
 
         return [
             'score' => ['required', 'numeric', 'min:0', 'max:' . $maxScore],
-            'feedback' => ['nullable', 'string'],
+            'feedback' => ['nullable', 'string', 'max:2000'],
+            'is_published' => ['sometimes', 'boolean'],
         ];
     }
 
@@ -40,6 +41,8 @@ class GradeSubmissionRequest extends FormRequest
             'score.min'      => 'Nilai tidak boleh kurang dari 0.',
             'score.max'      => 'Nilai tidak boleh melebihi nilai maksimum tugas.',
             'feedback.string'=> 'Feedback harus berupa teks.',
+            'feedback.max'   => 'Feedback maksimal 2000 karakter.',
+            'is_published.boolean' => 'Status tampil nilai harus berupa true atau false.',
         ];
     }
 }

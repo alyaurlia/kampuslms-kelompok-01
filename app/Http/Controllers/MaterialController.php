@@ -13,8 +13,16 @@ use Illuminate\Support\Facades\Storage;
 class MaterialController extends Controller
 {
     /**
-     * Prefix peran untuk nama route: 'dosen' atau 'mahasiswa'.
-     * Cocok dengan ->name('dosen.') / ->name('mahasiswa.') di routes/web.php.
+     * Disk PRIVAT: storage/app/private (lihat config/filesystems.php).
+     * Berkas di sini TIDAK dapat dijangkau lewat URL, hanya lewat
+     * method download() di bawah yang memeriksa hak akses.
+     */
+    private const DISK = 'local';
+
+    /**
+     * Prefix peran untuk nama route: 'admin', 'dosen', atau 'mahasiswa'.
+     * Cocok dengan ->name('admin.') / ->name('dosen.') / ->name('mahasiswa.')
+     * di routes/web.php.
      */
     private function role(): string
     {
@@ -23,21 +31,18 @@ class MaterialController extends Controller
 
     /**
      * Rapikan data hasil validasi sebelum disimpan:
-     *  - tipe 'link' : buang berkas lama (kalau ada), kosongkan kolom berkas
+     *  - tipe 'link' : kosongkan semua kolom berkas
      *  - tipe 'file' : kosongkan external_url, simpan berkas baru bila diunggah
      *
-     * Berkas disimpan di disk 'public' (storage/app/public/materials/{course_id}).
-     * Jalankan sekali: php artisan storage:link
+     * Method ini TIDAK menghapus berkas lama. Penghapusan dilakukan pemanggil
+     * setelah simpan ke database berhasil, supaya kegagalan di tengah jalan
+     * tidak membuat materi kehilangan berkasnya.
      */
-    private function prepareData(array $data, ?UploadedFile $file, Course $course, ?Material $existing = null): array
+    private function prepareData(array $data, ?UploadedFile $file, Course $course): array
     {
         unset($data['file']);
 
         if ($data['type'] === 'link') {
-            if ($existing?->file_path) {
-                Storage::disk('public')->delete($existing->file_path);
-            }
-
             return $data + [
                 'file_path'     => null,
                 'original_name' => null,
@@ -49,18 +54,17 @@ class MaterialController extends Controller
         $data['external_url'] = null;
 
         if ($file) {
-            // Ambil metadata SEBELUM store(), lalu hapus berkas lama.
+            // Ambil metadata SEBELUM store().
+            // getMimeType() = hasil deteksi isi berkas di server (tepercaya),
+            // getClientMimeType() = klaim browser (bisa dipalsukan), hanya cadangan.
             $meta = [
                 'original_name' => $file->getClientOriginalName(),
                 'file_size'     => $file->getSize(),
-                'mime_type'     => $file->getClientMimeType(),
+                'mime_type'     => $file->getMimeType() ?? $file->getClientMimeType(),
             ];
 
-            if ($existing?->file_path) {
-                Storage::disk('public')->delete($existing->file_path);
-            }
-
-            $data['file_path'] = $file->store("materials/{$course->id}", 'public');
+            // store() memberi nama acak, jadi nama asli tidak dipakai di disk.
+            $data['file_path'] = $file->store("materials/{$course->id}", self::DISK);
             $data = array_merge($data, $meta);
         }
 
@@ -74,7 +78,10 @@ class MaterialController extends Controller
     {
         Gate::authorize('view', $course);
 
+        // with('course'): MaterialPolicy memanggil $material->course untuk tiap
+        // baris (tombol edit/hapus). Tanpa ini terjadi N+1 query.
         $materials = $course->materials()
+            ->with('course')
             ->latest()
             ->paginate(10)
             ->withQueryString();
@@ -87,7 +94,7 @@ class MaterialController extends Controller
     }
 
     /**
-     * GET /dosen/mata-kuliah/{course}/materi/create
+     * GET /{admin|dosen}/mata-kuliah/{course}/materi/create
      */
     public function create(Course $course)
     {
@@ -100,7 +107,7 @@ class MaterialController extends Controller
     }
 
     /**
-     * POST /dosen/mata-kuliah/{course}/materi
+     * POST /{admin|dosen}/mata-kuliah/{course}/materi
      */
     public function store(StoreMaterialRequest $request, Course $course)
     {
@@ -113,7 +120,17 @@ class MaterialController extends Controller
         // tanpa perlu masuk $fillable.
         $material = new Material($data);
         $material->uploaded_by = auth()->id();
-        $course->materials()->save($material);
+
+        try {
+            $course->materials()->save($material);
+        } catch (\Throwable $e) {
+            // Gagal simpan ke database: jangan tinggalkan berkas yatim di disk.
+            if (! empty($data['file_path'])) {
+                Storage::disk(self::DISK)->delete($data['file_path']);
+            }
+
+            throw $e;
+        }
 
         return redirect()
             ->route($this->role() . '.mata-kuliah.materi.index', $course)
@@ -135,7 +152,7 @@ class MaterialController extends Controller
     }
 
     /**
-     * GET /dosen/materi/{material}/edit
+     * GET /{admin|dosen}/materi/{material}/edit
      */
     public function edit(Material $material)
     {
@@ -149,15 +166,23 @@ class MaterialController extends Controller
     }
 
     /**
-     * PUT/PATCH /dosen/materi/{material}
+     * PUT/PATCH /{admin|dosen}/materi/{material}
      */
     public function update(UpdateMaterialRequest $request, Material $material)
     {
         Gate::authorize('update', $material);
 
+        $oldPath = $material->file_path;
+
         $material->update(
-            $this->prepareData($request->validated(), $request->file('file'), $material->course, $material)
+            $this->prepareData($request->validated(), $request->file('file'), $material->course)
         );
+
+        // Hapus berkas lama SETELAH update berhasil, dan hanya bila memang
+        // sudah tidak dipakai (diganti berkas baru, atau materi jadi tipe link).
+        if ($oldPath && $oldPath !== $material->file_path) {
+            Storage::disk(self::DISK)->delete($oldPath);
+        }
 
         return redirect()
             ->route($this->role() . '.materi.show', $material)
@@ -165,7 +190,7 @@ class MaterialController extends Controller
     }
 
     /**
-     * DELETE /dosen/materi/{material}
+     * DELETE /{admin|dosen}/materi/{material}
      */
     public function destroy(Material $material)
     {
@@ -174,7 +199,7 @@ class MaterialController extends Controller
         $course = $material->course;
 
         if ($material->file_path) {
-            Storage::disk('public')->delete($material->file_path);
+            Storage::disk(self::DISK)->delete($material->file_path);
         }
 
         $material->delete();
@@ -182,5 +207,32 @@ class MaterialController extends Controller
         return redirect()
             ->route($this->role() . '.mata-kuliah.materi.index', $course)
             ->with('success', 'Materi berhasil dihapus.');
+    }
+
+    /**
+     * GET /materi/{material}/unduh   (nama route: materi.unduh)
+     *
+     * Satu-satunya pintu untuk mengambil berkas materi. Aturan akses ada di
+     * MaterialPolicy::view: admin, dosen pengampu, atau mahasiswa yang
+     * terdaftar di MK itu dan MK-nya berstatus active.
+     * Pengguna lain mendapat 403 walau menebak ID materi.
+     */
+    public function download(Material $material)
+    {
+        Gate::authorize('view', $material);
+
+        abort_unless($material->type === 'file' && $material->file_path, 404);
+
+        $disk = Storage::disk(self::DISK);
+
+        abort_unless($disk->exists($material->file_path), 404, 'Berkas tidak ditemukan di server.');
+
+        // download() = selalu sebagai lampiran (attachment), tidak dirender
+        // di browser; nosniff mencegah browser menebak ulang tipe berkas.
+        return $disk->download(
+            $material->file_path,
+            $material->original_name ?? basename($material->file_path),
+            ['X-Content-Type-Options' => 'nosniff']
+        );
     }
 }

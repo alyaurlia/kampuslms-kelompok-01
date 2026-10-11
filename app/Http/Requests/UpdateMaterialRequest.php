@@ -21,7 +21,8 @@ class UpdateMaterialRequest extends FormRequest
             'title'        => ['required', 'string', 'max:255'],
             'description'  => ['nullable', 'string'],
             'type'         => ['required', Rule::in(['file', 'link'])],
-            'external_url' => ['required_if:type,link', 'nullable', 'url', 'max:255'],
+            // url:http,https -> hanya skema http/https (lihat StoreMaterialRequest).
+            'external_url' => ['required_if:type,link', 'nullable', 'url:http,https', 'max:255'],
             'file'         => [
                 Rule::requiredIf(fn () => $this->input('type') === 'file' && empty($material?->file_path)),
                 'nullable', 'file',

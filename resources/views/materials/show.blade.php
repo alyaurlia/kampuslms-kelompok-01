@@ -43,8 +43,15 @@
 
             <div class="mk-form-actions">
                 @if ($material->url)
-                    <a href="{{ $material->url }}" target="_blank" rel="noopener" class="mk-btn-primary">
-                        {{ $material->type === 'file' ? 'Unduh / Buka Berkas' : 'Buka Tautan' }}
+                    {{--
+                        type=file : $material->url = route unduh (materi.unduh), berkas
+                                    dikirim sebagai lampiran, jadi TIDAK perlu tab baru.
+                        type=link : tautan luar, buka di tab baru dengan rel aman.
+                    --}}
+                    <a href="{{ $material->url }}"
+                       @if ($material->type === 'link') target="_blank" rel="noopener noreferrer" @endif
+                       class="mk-btn-primary">
+                        {{ $material->type === 'file' ? 'Unduh Berkas' : 'Buka Tautan' }}
                     </a>
                 @endif
 

@@ -23,6 +23,19 @@ class SubmissionPolicy
         return $submission->assignment->course->isManagedBy($user);
     }
 
+    // Memberi / memperbarui nilai (dipakai form web dan @can di Blade).
+    // Aturannya TIDAK ditulis ulang di sini: didelegasikan ke GradePolicy, yang juga
+    // dipakai API, supaya web dan API tidak pernah berbeda perilaku.
+    // GradePolicy: hanya dosen pengampu MK; admin tidak boleh memberi nilai.
+    public function grade(User $user, Submission $submission): bool
+    {
+        $policy = app(GradePolicy::class);
+
+        return $submission->grade
+            ? $policy->update($user, $submission->grade)
+            : $policy->create($user, $submission);
+    }
+
     // Mengumpulkan (termasuk mengumpulkan ulang sebagai revisi baru)
     public function create(User $user, Assignment $assignment): bool
     {
