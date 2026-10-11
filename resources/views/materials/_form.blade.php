@@ -1,6 +1,6 @@
 {{--
     Form materi (dipakai create & edit).
-    Variabel: $action, $course, $material (opsional, hanya saat edit)
+    Variabel: $action, $course, $material (opsional, hanya saat edit), $cancelUrl
 --}}
 @php
     $editing = isset($material);
@@ -46,9 +46,10 @@
     <div class="mk-field" id="field-file">
         <label for="file" class="mk-label">Berkas</label>
         @if ($editing && $material->file_path)
+            {{-- Tautan ini = route unduh (berkas dikirim sebagai lampiran), tanpa tab baru. --}}
             <p class="mk-hint">
                 Berkas saat ini:
-                <a href="{{ $material->url }}" target="_blank" rel="noopener">{{ $material->original_name }}</a>.
+                <a href="{{ $material->url }}">{{ $material->original_name }}</a>.
                 Pilih berkas baru hanya jika ingin menggantinya.
             </p>
         @endif

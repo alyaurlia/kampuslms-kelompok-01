@@ -21,6 +21,10 @@
 
         // Status (draft/active/archived) hanya ditampilkan untuk admin dan dosen.
         $showStatus = in_array($user->role, ['admin', 'dosen']);
+
+        // Sedang mencari / memfilter? Dipakai untuk membedakan "tidak ada hasil"
+        // dari "memang belum ada data".
+        $isFiltering = request()->filled('q') || ($showStatus && request()->filled('status'));
     @endphp
 
     <div class="mk-page-header">
@@ -59,7 +63,7 @@
             Cari
         </button>
 
-        @if (request('q') || ($showStatus && request('status')))
+        @if ($isFiltering)
             <a href="{{ route($routePrefix . '.index') }}" class="mk-filter-reset">
                 Reset
             </a>
@@ -68,7 +72,15 @@
 
     @if ($mataKuliah->isEmpty())
         <section class="mk-empty">
-            <p>Belum ada data mata kuliah.</p>
+            @if ($isFiltering)
+                <p>Tidak ada mata kuliah yang cocok dengan pencarian Anda.</p>
+            @elseif ($user->role === 'mahasiswa')
+                <p>Belum ada mata kuliah aktif yang Anda ikuti.</p>
+            @elseif ($user->role === 'dosen')
+                <p>Anda belum ditugaskan mengampu mata kuliah mana pun.</p>
+            @else
+                <p>Belum ada data mata kuliah.</p>
+            @endif
         </section>
     @else
         <div class="mk-grid">
@@ -118,9 +130,11 @@
                             @endif
 
                             @if ($canDelete)
+                                {{-- Menghapus MK ikut menghapus materi, tugas, pengumpulan, nilai,
+                                     dan berkas di disk (lihat CourseController@destroy). Tidak bisa dibatalkan. --}}
                                 <form action="{{ route($routePrefix . '.destroy', $mk) }}" method="POST"
                                       class="mk-action-form"
-                                      onsubmit="return confirm('Yakin ingin menghapus mata kuliah ini?');">
+                                      onsubmit="return confirm('Hapus mata kuliah ini? Semua materi, tugas, pengumpulan, nilai, dan berkas di dalamnya ikut terhapus permanen.');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="mk-action-delete">

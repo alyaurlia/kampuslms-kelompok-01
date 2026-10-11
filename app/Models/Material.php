@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Storage;
 
 class Material extends Model
 {
@@ -32,7 +31,13 @@ class Material extends Model
         return $this->belongsTo(User::class, 'uploaded_by');
     }
 
-    /** URL berkas (type=file) atau tautan luar (type=link). */
+    /**
+     * Tautan untuk pengguna:
+     *  - type=link : tautan luar apa adanya
+     *  - type=file : route unduh (materi.unduh) yang memeriksa hak akses.
+     *                Berkas disimpan di disk privat, jadi TIDAK ada URL
+     *                langsung ke berkasnya.
+     */
     public function getUrlAttribute(): ?string
     {
         if ($this->type === 'link') {
@@ -40,7 +45,7 @@ class Material extends Model
         }
 
         return $this->file_path
-            ? Storage::disk('public')->url($this->file_path)
+            ? route('materi.unduh', $this)
             : null;
     }
 }

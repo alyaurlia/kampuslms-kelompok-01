@@ -12,26 +12,34 @@ use Illuminate\Support\Facades\Storage;
 
 class AssignmentController extends Controller
 {
-    /** Prefix peran untuk nama route: 'dosen' atau 'mahasiswa'. */
+    /**
+     * Disk PRIVAT: storage/app/private (lihat config/filesystems.php).
+     * Lampiran soal hanya dapat diambil lewat download() yang memeriksa hak akses.
+     */
+    private const DISK = 'local';
+
+    /** Prefix peran untuk nama route: 'admin', 'dosen', atau 'mahasiswa'. */
     private function role(): string
     {
         return auth()->user()->role;
     }
 
     /**
-     * Simpan lampiran soal ke disk 'public' (storage/app/public/assignments/{course_id})
+     * Simpan lampiran soal ke disk privat (storage/app/private/assignments/{course_id})
      * dan kembalikan kolom metadata-nya.
      */
     private function storeAttachment(UploadedFile $file, Course $course): array
     {
+        // getMimeType() = hasil deteksi isi berkas di server (tepercaya);
+        // getClientMimeType() = klaim browser, hanya cadangan.
         $meta = [
             'original_name' => $file->getClientOriginalName(),
             'file_size'     => $file->getSize(),
-            'mime_type'     => $file->getClientMimeType(),
+            'mime_type'     => $file->getMimeType() ?? $file->getClientMimeType(),
         ];
 
         return $meta + [
-            'file_path' => $file->store("assignments/{$course->id}", 'public'),
+            'file_path' => $file->store("assignments/{$course->id}", self::DISK),
         ];
     }
 
@@ -50,7 +58,10 @@ class AssignmentController extends Controller
     {
         Gate::authorize('view', $course);
 
+        // with('course'): AssignmentPolicy memanggil $assignment->course untuk
+        // tiap baris (tombol edit/hapus). Tanpa ini terjadi N+1 query.
         $assignments = $course->assignments()
+            ->with('course')
             ->when($this->role() === 'mahasiswa',
                 fn ($q) => $q->where('status', 'published'))
             ->orderBy('due_at')
@@ -64,7 +75,7 @@ class AssignmentController extends Controller
         ]);
     }
 
-    // GET /dosen/mata-kuliah/{course}/tugas/create
+    // GET /{admin|dosen}/mata-kuliah/{course}/tugas/create
     public function create(Course $course)
     {
         Gate::authorize('create', [Assignment::class, $course]);
@@ -75,7 +86,7 @@ class AssignmentController extends Controller
         ]);
     }
 
-    // POST /dosen/mata-kuliah/{course}/tugas
+    // POST /{admin|dosen}/mata-kuliah/{course}/tugas
     public function store(StoreAssignmentRequest $request, Course $course)
     {
         Gate::authorize('create', [Assignment::class, $course]);
@@ -90,7 +101,17 @@ class AssignmentController extends Controller
         // created_by diisi dari server; course_id ikut terisi lewat relasi.
         $assignment = new Assignment($data);
         $assignment->created_by = auth()->id();
-        $course->assignments()->save($assignment);
+
+        try {
+            $course->assignments()->save($assignment);
+        } catch (\Throwable $e) {
+            // Gagal simpan ke database: jangan tinggalkan berkas yatim di disk.
+            if (! empty($data['file_path'])) {
+                Storage::disk(self::DISK)->delete($data['file_path']);
+            }
+
+            throw $e;
+        }
 
         return redirect()
             ->route($this->role() . '.mata-kuliah.tugas.index', $course)
@@ -112,15 +133,34 @@ class AssignmentController extends Controller
                 ->first()
             : null;
 
+        // Daftar pengumpulan untuk admin/dosen. Mahasiswa TIDAK pernah memuatnya,
+        // jadi pengumpulan mahasiswa lain tidak mungkin bocor ke halaman.
+        // student & grade di-eager load; relasi balik (assignment, grade->submission)
+        // diisi manual supaya @can('grade', $submission) di dalam loop tidak memicu N+1.
+        $submissions = collect();
+
+        if ($user->role !== 'mahasiswa') {
+            $submissions = $assignment->submissions()
+                ->with(['student', 'grade'])
+                ->orderBy('submitted_at')
+                ->get()
+                ->each(function ($submission) use ($assignment) {
+                    $submission->setRelation('assignment', $assignment);
+                    // GradePolicy::update membaca $grade->submission->assignment->course.
+                    $submission->grade?->setRelation('submission', $submission);
+                });
+        }
+
         return view('assignments.show', [
             'assignment'   => $assignment,
             'course'       => $assignment->course,
             'mySubmission' => $mySubmission,
+            'submissions'  => $submissions,
             'role'         => $this->role(),
         ]);
     }
 
-    // GET /dosen/tugas/{assignment}/edit
+    // GET /{admin|dosen}/tugas/{assignment}/edit
     public function edit(Assignment $assignment)
     {
         Gate::authorize('update', $assignment);
@@ -132,7 +172,7 @@ class AssignmentController extends Controller
         ]);
     }
 
-    // PUT/PATCH /dosen/tugas/{assignment}
+    // PUT/PATCH /{admin|dosen}/tugas/{assignment}
     public function update(UpdateAssignmentRequest $request, Assignment $assignment)
     {
         Gate::authorize('update', $assignment);
@@ -140,27 +180,29 @@ class AssignmentController extends Controller
         $data = $request->validated();
         unset($data['attachment'], $data['remove_attachment']);
 
-        $file   = $request->file('attachment');
-        $remove = $request->boolean('remove_attachment');
+        $oldPath = $assignment->file_path;
 
-        if ($file || $remove) {
-            if ($assignment->file_path) {
-                Storage::disk('public')->delete($assignment->file_path);
-            }
-
-            $data += $file
-                ? $this->storeAttachment($file, $assignment->course)
-                : $this->clearAttachment();
+        // Berkas baru menang atas "hapus lampiran" bila keduanya dikirim.
+        if ($file = $request->file('attachment')) {
+            $data += $this->storeAttachment($file, $assignment->course);
+        } elseif ($request->boolean('remove_attachment')) {
+            $data += $this->clearAttachment();
         }
 
         $assignment->update($data);
+
+        // Hapus berkas lama SETELAH update berhasil, dan hanya bila memang
+        // sudah tidak dipakai (diganti berkas baru, atau lampiran dihapus).
+        if ($oldPath && $oldPath !== $assignment->file_path) {
+            Storage::disk(self::DISK)->delete($oldPath);
+        }
 
         return redirect()
             ->route($this->role() . '.tugas.show', $assignment)
             ->with('success', 'Tugas berhasil diperbarui.');
     }
 
-    // DELETE /dosen/tugas/{assignment}
+    // DELETE /{admin|dosen}/tugas/{assignment}
     public function destroy(Assignment $assignment)
     {
         Gate::authorize('delete', $assignment);
@@ -168,7 +210,7 @@ class AssignmentController extends Controller
         $course = $assignment->course;
 
         if ($assignment->file_path) {
-            Storage::disk('public')->delete($assignment->file_path);
+            Storage::disk(self::DISK)->delete($assignment->file_path);
         }
 
         $assignment->delete();
@@ -176,5 +218,30 @@ class AssignmentController extends Controller
         return redirect()
             ->route($this->role() . '.mata-kuliah.tugas.index', $course)
             ->with('success', 'Tugas berhasil dihapus.');
+    }
+
+    /**
+     * GET /tugas/{assignment}/lampiran   (nama route: tugas.lampiran)
+     *
+     * Satu-satunya pintu untuk mengambil lampiran soal. Aturan akses ada di
+     * AssignmentPolicy::view: admin, dosen pengampu, atau mahasiswa terdaftar
+     * dengan tugas published dan MK active. Lampiran tugas draft TIDAK dapat
+     * diunduh mahasiswa, bahkan bila ID-nya ditebak.
+     */
+    public function download(Assignment $assignment)
+    {
+        Gate::authorize('view', $assignment);
+
+        abort_unless($assignment->file_path, 404);
+
+        $disk = Storage::disk(self::DISK);
+
+        abort_unless($disk->exists($assignment->file_path), 404, 'Berkas tidak ditemukan di server.');
+
+        return $disk->download(
+            $assignment->file_path,
+            $assignment->original_name ?? basename($assignment->file_path),
+            ['X-Content-Type-Options' => 'nosniff']
+        );
     }
 }

@@ -19,6 +19,7 @@ class GradeResource extends JsonResource
             'submission_id' => $this->submission_id,
             'score'         => (float) $this->score,
             'feedback'      => $this->feedback,
+            'is_published'  => (bool) $this->is_published,
             'graded_by'     => $this->graded_by,
             'graded_at'     => $this->graded_at
                                 ? Carbon::parse($this->graded_at)->toIso8601String()
