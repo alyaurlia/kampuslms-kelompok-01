@@ -241,3 +241,69 @@
     .auth-wrap { margin: 1rem auto; }
     .auth-card { padding: 1.9rem 1.35rem 1.6rem; border-radius: 26px; }
 }
+
+/* =========================================================
+   Input kata sandi dengan tombol tampilkan/sembunyikan
+   Tempel di AKHIR resources/css/courses/forms.css
+   (dipakai oleh components/password-input.blade.php)
+   ========================================================= */
+
+.password-field {
+    position: relative;
+}
+
+/* ruang di kanan input supaya teks tidak tertutup ikon */
+.password-field .form-control {
+    padding-right: 2.75rem;
+}
+
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 0.4rem;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+    background: none;
+    color: var(--color-ink-soft);
+    cursor: pointer;
+}
+
+.password-toggle:hover {
+    color: var(--color-primary);
+}
+
+.password-toggle:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 1px;
+}
+
+.password-toggle svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* ikon: mata biasa saat tersembunyi, mata dicoret saat terlihat */
+.password-toggle .icon-eye-off {
+    display: none;
+}
+
+.password-toggle[aria-pressed="true"] .icon-eye {
+    display: none;
+}
+
+.password-toggle[aria-pressed="true"] .icon-eye-off {
+    display: block;
+}
+
+/* Edge/IE punya ikon "mata" bawaan sendiri; sembunyikan agar tidak dobel */
+.password-field input[type="password"]::-ms-reveal,
+.password-field input[type="password"]::-ms-clear {
+    display: none;
+}

@@ -40,11 +40,6 @@
         'kode' => $c->code,
         'url'  => route('mahasiswa.mata-kuliah.show', $c),
     ])->all();
-    // Kalender: masih statis seperti dashboard awal.
-    $eventKalender = [
-        '2026-09-07' => 'event',
-        '2026-09-23' => 'info',
-    ];
     // Ikon kartu (gambar garis, warna ikut aksen kartu)
     $ikonSvg = [
         'buku'  => '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16z"></path><path d="M4 5.5v16"></path><path d="M8 7h8"></path><path d="M8 11h6"></path>',
@@ -85,6 +80,6 @@
     <x-home-overview
         semester=""
         :mata-kuliah="$mataKuliahSemester"
-        :events="$eventKalender"
+        :show-calendar="false"
     />
 </x-layout>

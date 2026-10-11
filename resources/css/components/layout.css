@@ -77,6 +77,29 @@ header.app-header nav a.active {
     text-decoration: underline;
 }
 
+/* Tombol Keluar (berupa <button> di dalam form POST, jadi tidak kena
+   aturan "nav a" di atas). Efek hover-nya disamakan dengan menu lain. */
+.logout-form {
+    display: inline;
+    margin-left: 1.5rem;
+}
+
+.logout-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: #F3D9C4;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.9rem;
+}
+
+.logout-btn:hover,
+.logout-btn:focus-visible {
+    color: #fff;
+    text-decoration: underline;
+}
+
 /* Label peran di samping nama brand */
 .role-badge {
     font-family: Arial, Helvetica, sans-serif;

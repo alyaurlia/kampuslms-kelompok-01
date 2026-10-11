@@ -9,14 +9,20 @@
       $mataKuliah : daftar mata kuliah, tiap item ['nama' => ..., 'kode' => ...]
                     dan opsional 'url' (nama menjadi tautan ke halaman detail)
       $events     : tanggal bertanda di kalender, format ['YYYY-MM-DD' => 'event'|'info']
+      $showCalendar : tampilkan blok kalender? (bawaan true; false = hanya Semester overview,
+                    kartunya melebar penuh)
+      $emptyText  : teks bila daftar mata kuliah kosong (opsional; bawaan menyesuaikan
+                    ada/tidaknya judul semester)
 --}}
 @props([
     'semester'   => 'Semester Gasal (A) 2026/2027',
     'mataKuliah' => [],
     'events'     => [],
+    'emptyText'  => null,
+    'showCalendar' => true,
 ])
 
-<div class="home-layout home-overview" style="margin-top: 2.5rem;">
+<div class="home-layout home-overview {{ $showCalendar ? '' : 'home-layout--single' }}" style="margin-top: 2.5rem;">
 
     {{-- ===== Semester overview ===== --}}
     <section class="home-card home-card--semester">
@@ -45,7 +51,7 @@
                 </div>
             @else
                 <p class="semester-empty">
-                    {{ filled($semester) ? 'Belum ada mata kuliah pada semester ini.' : 'Belum ada mata kuliah yang kamu ikuti.' }}
+                    {{ $emptyText ?? (filled($semester) ? 'Belum ada mata kuliah pada semester ini.' : 'Belum ada mata kuliah yang kamu ikuti.') }}
                 </p>
             @endif
 
@@ -56,6 +62,7 @@
         @endif
     </section>
 
+    @if ($showCalendar)
     {{-- ===== Calendar ===== --}}
     <section class="home-card home-card--calendar">
         <h2 class="home-card-title">Calendar</h2>
@@ -74,8 +81,10 @@
 
         <div id="kal-grid"></div>
     </section>
+    @endif
 </div>
 
+@if ($showCalendar)
 <script>
     (function () {
         const events = @json($events);
@@ -143,3 +152,4 @@
         render();
     })();
 </script>
+@endif
