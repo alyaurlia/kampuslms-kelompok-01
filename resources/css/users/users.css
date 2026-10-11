@@ -240,3 +240,259 @@
         gap: 0.2rem;
     }
 }
+
+/* =========================================================
+   Tambahan untuk halaman Kelola User (index & show)
+   Tempel di AKHIR resources/css/users/users.css
+   ========================================================= */
+
+/* ---------- Header halaman ---------- */
+.users-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.users-header .form-title {
+    margin-bottom: 0.25rem;
+}
+
+.users-subtitle {
+    margin: 0;
+    color: var(--color-ink-soft);
+    font-size: 0.95rem;
+}
+
+/* ---------- Pencarian & filter ---------- */
+.users-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 1.25rem;
+}
+
+.users-filter input[type="search"] {
+    flex: 1 1 220px;
+}
+
+.users-filter select {
+    flex: 0 0 160px;
+}
+
+/* ---------- Tabel ---------- */
+/* .form-card (forms.css) membatasi lebar 600px; di sini kartu tabel dibuat
+   selebar halaman supaya sejajar dengan header dan baris pencarian.
+   Selektor ganda (.form-card.users-card) menang atas .form-card tanpa
+   tergantung urutan pemuatan CSS. */
+.form-card.users-card {
+    max-width: none;
+    padding: 0.5rem 1.25rem 1.25rem;
+}
+
+/* tombol di header & baris filter: satu gaya (tanpa garis bawah pada tautan) */
+.users-header .btn,
+.users-filter .btn {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.9rem;
+}
+
+.users-table th {
+    text-align: left;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+    padding: 0.9rem 0.75rem;
+    border-bottom: 2px solid var(--color-border);
+}
+
+.users-table td {
+    padding: 0.85rem 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: middle;
+}
+
+.users-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.users-table tbody tr:hover {
+    background: var(--color-bg);
+}
+
+.users-name {
+    font-weight: 700;
+    color: var(--color-ink);
+    text-decoration: none;
+}
+
+.users-name:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
+.users-email {
+    font-size: 0.8rem;
+    color: var(--color-ink-soft);
+}
+
+.users-self {
+    display: inline-block;
+    margin-left: 0.4rem;
+    padding: 1px 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    border-radius: 999px;
+    background: var(--color-border);
+    color: var(--color-primary-dark);
+    vertical-align: middle;
+}
+
+.col-actions {
+    white-space: nowrap;
+    text-align: right;
+}
+
+/* ---------- Badge peran ---------- */
+.badge {
+    display: inline-block;
+    padding: 2px 10px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 999px;
+}
+
+.badge--admin     { background: #FDE8F0; color: #8F0D42; }
+.badge--dosen     { background: #FBF0DC; color: #8A5A12; }
+.badge--mahasiswa { background: #F1F5E2; color: #55612B; }
+
+/* ---------- Aksi di tabel (link teks) ---------- */
+.link-action {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: 0.9rem;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.85rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.link-action:hover {
+    text-decoration: underline;
+}
+
+.link-action--danger {
+    color: var(--color-primary-dark);
+    font-weight: 700;
+}
+
+.inline-form {
+    display: inline;
+}
+
+/* ---------- Info jumlah & pagination ---------- */
+.users-count {
+    margin: 1rem 0 0;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.8rem;
+    color: var(--color-ink-soft);
+}
+
+.users-empty {
+    margin: 1.5rem 0;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--color-ink-soft);
+}
+
+.pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.3rem;
+    list-style: none;
+    padding: 0;
+    margin: 0.75rem 0 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.85rem;
+}
+
+.pagination .page-link {
+    display: block;
+    min-width: 2rem;
+    padding: 0.3rem 0.6rem;
+    text-align: center;
+    color: var(--color-primary);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+.pagination a.page-link:hover {
+    background: var(--color-bg);
+}
+
+.pagination .active .page-link {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+}
+
+.pagination .disabled .page-link {
+    color: var(--color-ink-soft);
+    opacity: 0.5;
+}
+
+/* ---------- Halaman detail (show) ---------- */
+.user-detail {
+    margin: 0 0 1.5rem;
+}
+
+.user-detail > div {
+    display: flex;
+    gap: 1rem;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--color-border);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.95rem;
+}
+
+.user-detail dt {
+    flex: 0 0 11rem;
+    color: var(--color-ink-soft);
+}
+
+.user-detail dd {
+    margin: 0;
+    font-weight: 700;
+}
+
+@media (max-width: 600px) {
+    .users-header {
+        flex-direction: column;
+    }
+
+    .user-detail > div {
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+}

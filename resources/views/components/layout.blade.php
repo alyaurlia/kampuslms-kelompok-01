@@ -60,22 +60,18 @@
                 </a>
             @endforeach
 
-            {{-- Pengunjung belum login (mis. di halaman Tentang): "Keluar" kembali ke halaman login,
-                 tampilannya sama dengan tombol Keluar di dashboard --}}
+            {{-- Pengunjung belum login (mis. di halaman Tentang): "Keluar" kembali ke halaman login.
+                 Berupa tautan biasa di dalam <nav>, jadi otomatis ikut gaya dan hover menu lain. --}}
             @guest
-                <a href="{{ Route::has('login') ? route('login') : url('/') }}"
-                   style="display:inline; margin-left:1.5rem; padding:0; text-decoration:none; color:#F3D9C4; font-family:Arial, Helvetica, sans-serif; font-size:0.9rem;">
-                    Keluar
-                </a>
+                <a href="{{ Route::has('login') ? route('login') : url('/') }}">Keluar</a>
             @endguest
 
+            {{-- Sudah login: logout harus POST (dengan @csrf), jadi berupa tombol di dalam form.
+                 Gaya dan efek hover-nya ada di layout.css (.logout-form, .logout-btn). --}}
             @auth
-                <form method="POST" action="{{ route('logout') }}" style="display:inline; margin-left:1.5rem;">
+                <form method="POST" action="{{ route('logout') }}" class="logout-form">
                     @csrf
-                    <button type="submit"
-                            style="background:none; border:none; padding:0; cursor:pointer; color:#F3D9C4; font-family:Arial, Helvetica, sans-serif; font-size:0.9rem;">
-                        Keluar
-                    </button>
+                    <button type="submit" class="logout-btn">Keluar</button>
                 </form>
             @endauth
         </nav>

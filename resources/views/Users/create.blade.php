@@ -56,13 +56,7 @@
                     Kata Sandi
                 </label>
 
-                <input
-                    type="password"
-                    name="password"
-                    id="password"
-                    autocomplete="new-password"
-                    class="form-control"
-                >
+                <x-password-input name="password" />
             </div>
 
             {{-- Konfirmasi Password --}}
@@ -71,13 +65,7 @@
                     Konfirmasi Kata Sandi
                 </label>
 
-                <input
-                    type="password"
-                    name="password_confirmation"
-                    id="password_confirmation"
-                    autocomplete="new-password"
-                    class="form-control"
-                >
+                <x-password-input name="password_confirmation" />
             </div>
 
             {{-- Role --}}

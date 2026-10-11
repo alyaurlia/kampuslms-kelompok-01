@@ -10,8 +10,18 @@
     $totalAktif   = (clone $mkDiampu)->where('status', 'active')->count();
     $totalPeserta = (clone $mkDiampu)->withCount('students')->get()->sum('students_count');
 
-    // Data kartu. Total Mahasiswa & Tugas Menunggu Nilai masih angka statis
-    // seperti sebelumnya (belum ada query-nya), ganti jika datanya sudah tersedia.
+    // Seluruh mahasiswa yang terdata di sistem (sama dengan kartu Mahasiswa di dashboard admin).
+    $totalMahasiswa = \App\Models\User::where('role', 'mahasiswa')->count();
+
+    // Pengumpulan pada tugas di mata kuliah yang diampu dosen ini yang belum punya nilai.
+    // Angkanya turun sendiri begitu pengumpulan dinilai.
+    $menungguNilai = \App\Models\Submission::query()
+        ->whereIn('assignment_id',
+            \App\Models\Assignment::whereIn('course_id', (clone $mkDiampu)->select('id'))->select('id'))
+        ->whereDoesntHave('grade')
+        ->count();
+
+    // Data kartu (semua angka berasal dari database).
     $cards = [
         [
             'no'    => 1,
@@ -38,7 +48,7 @@
             'no'    => 4,
             'ikon'  => 'topi',
             'judul' => 'Total Mahasiswa',
-            'nilai' => 120,
+            'nilai' => $totalMahasiswa,
             'desc'  => 'Jumlah seluruh mahasiswa yang terdata di dalam sistem LMS Kampus.',
         ],
         [
@@ -46,22 +56,20 @@
             'ikon'  => 'berkas',
             'id'    => 'tugas-menunggu-nilai',
             'judul' => 'Tugas Menunggu Nilai',
-            'nilai' => 18,
+            'nilai' => $menungguNilai,
             'desc'  => 'Pengumpulan tugas mahasiswa yang belum kamu beri penilaian.',
         ],
     ];
-    // Data blok "Semester overview" & kalender. Masih statis seperti dashboard awal,
-    // ganti dengan data asli jika sudah tersedia.
-    $mataKuliahSemester = [
-        ['nama' => 'Pemrograman Dasar',         'kode' => 'IF101'],
-        ['nama' => 'Struktur Data',             'kode' => 'IF205'],
-        ['nama' => 'Basis Data',                'kode' => 'IF310'],
-        ['nama' => 'Rekayasa Perangkat Lunak',  'kode' => 'IF420'],
-    ];
-    $eventKalender = [
-        '2026-09-07' => 'event',
-        '2026-09-23' => 'info',
-    ];
+    // Blok "Semester overview": mata kuliah yang diampu dosen ini, sama seperti
+    // dashboard mahasiswa (tanpa judul semester, nama menjadi tautan ke detail).
+    // Untuk hanya menampilkan yang aktif: tambahkan ->where('status', 'active').
+    $courses = (clone $mkDiampu)->orderBy('name')->get(['id', 'code', 'name', 'sks']);
+
+    $mataKuliahSemester = $courses->map(fn ($c) => [
+        'nama' => $c->name,
+        'kode' => $c->code,
+        'url'  => route('dosen.mata-kuliah.show', $c),
+    ])->all();
     // Ikon kartu (gambar garis, warna ikut aksen kartu)
     $ikonSvg = [
         'buku'  => '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16z"></path><path d="M4 5.5v16"></path><path d="M8 7h8"></path><path d="M8 11h6"></path>',
@@ -97,9 +105,12 @@
         </div>
     </section>
 
+    {{-- semester="" (string kosong) = tanpa judul semester, hanya daftar mata kuliah.
+         Jangan pakai null: null membuat @props memakai nilai bawaan komponen. --}}
     <x-home-overview
-        semester="Semester Gasal (A) 2026/2027"
+        semester=""
         :mata-kuliah="$mataKuliahSemester"
-        :events="$eventKalender"
+        :show-calendar="false"
+        empty-text="Belum ada mata kuliah yang kamu ampu."
     />
 </x-layout>
