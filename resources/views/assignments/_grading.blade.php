@@ -4,41 +4,70 @@
     Dosen pengampu : form nilai tampil lewat @can('grade').
     Admin          : hanya melihat nilai (tanpa form).
     Mahasiswa      : TIDAK memakai partial ini (blok "Pengumpulan Saya" di show.blade.php).
+
+    Tampilan: tiap mahasiswa berupa dropdown (<details>) yang bisa dibuka/tutup.
+    Dropdown otomatis terbuka bila pengiriman nilai mahasiswa itu gagal validasi,
+    supaya pesan errornya langsung terlihat. Gaya ada di css/components/courses.css (blok .gr-*).
 --}}
 @php
     $max = $assignment->max_score;
     $bag = $errors->getBag('grade');
 @endphp
 
-<section class="mk-card">
+<section class="mk-card gr-panel">
     <div class="mk-body">
-        <h2 class="mk-desc-label">Pengumpulan Mahasiswa ({{ $submissions->count() }})</h2>
+        <div class="gr-head">
+            <h2 class="gr-title">Pengumpulan Mahasiswa</h2>
+            <span class="gr-count">{{ $submissions->count() }}</span>
+        </div>
 
         @if (session('grade_success'))
-            <p><strong>{{ session('grade_success') }}</strong></p>
+            <p class="gr-flash"><strong>{{ session('grade_success') }}</strong></p>
         @endif
 
         @if ($submissions->isEmpty())
-            <p>Belum ada pengumpulan untuk tugas ini.</p>
+            <p class="gr-empty">Belum ada pengumpulan untuk tugas ini.</p>
         @else
-            <div class="mk-list">
+            <div class="gr-list">
                 @foreach ($submissions as $submission)
                     @php
                         $grade  = $submission->grade;
                         $isThis = (string) old('_submission') === (string) $submission->id;
                         $stale  = $grade && $grade->graded_at && $submission->submitted_at->gt($grade->graded_at);
+                        $bukaDropdown = $isThis && $bag->any();
+                        $inisial = collect(preg_split('/\s+/', trim($submission->student->name)))
+                            ->filter()->map(fn ($k) => mb_strtoupper(mb_substr($k, 0, 1)))->take(2)->join('');
                     @endphp
 
-                    <div class="mk-list-item">
-                        <div class="mk-list-main">
-                            <span class="mk-list-title">
-                                {{ $submission->student->name }}
+                    <details class="gr-item" @if ($bukaDropdown) open @endif>
+                        <summary class="gr-summary">
+                            <span class="gr-avatar" aria-hidden="true">{{ $inisial }}</span>
+
+                            <span class="gr-who">
+                                <span class="gr-name">{{ $submission->student->name }}</span>
                                 @if ($submission->student->nim_nip)
-                                    <small>({{ $submission->student->nim_nip }})</small>
+                                    <span class="gr-nim">{{ $submission->student->nim_nip }}</span>
                                 @endif
                             </span>
 
-                            <p class="mk-list-meta">
+                            {{-- penanda status nilai (terlihat saat dropdown tertutup) --}}
+                            @if ($stale)
+                                <span class="gr-status gr-status--stale">Perlu dinilai ulang</span>
+                            @elseif ($grade)
+                                <span class="gr-status {{ $grade->is_published ? 'gr-status--done' : 'gr-status--draft' }}">
+                                    Nilai {{ $grade->score }}
+                                </span>
+                            @else
+                                <span class="gr-status gr-status--none">Belum dinilai</span>
+                            @endif
+
+                            <svg class="gr-chevron" viewBox="0 0 24 24" width="20" height="20" fill="none"
+                                 stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+                        </summary>
+
+                        <div class="gr-body">
+                            <p class="mk-list-meta gr-meta">
                                 Dikumpulkan {{ $submission->submitted_at->translatedFormat('d F Y, H:i') }}
                                 @if ($submission->is_late)
                                     <strong>(Terlambat)</strong>
@@ -112,7 +141,7 @@
                                 @endif
                             @endcan
                         </div>
-                    </div>
+                    </details>
                 @endforeach
             </div>
         @endif
