@@ -1,0 +1,222 @@
+/* =========================================================
+   grading.css — pengumpulan & penilaian (assignments/_grading.blade.php)
+   Hanya dosen / admin. Bergantung pada .mk-body, .mk-form, .mk-input
+   (courses.css, materials.css) dan .mk-btn-primary (buttons.css).
+   ========================================================= */
+
+.gr-panel {
+    position: relative;
+    margin-top: 1.5rem;
+    border-radius: 28px;
+    box-shadow: 0 14px 34px color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+.gr-panel::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 5px;
+    background: linear-gradient(90deg, var(--color-card-4-from), var(--color-primary));
+}
+.gr-panel .mk-body { padding: 1.9rem 1.75rem 1.6rem; }
+
+.gr-head {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 1.25rem;
+}
+.gr-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--color-ink);
+}
+.gr-count {
+    min-width: 34px;
+    padding: 0.2rem 0.7rem;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 10%, white);
+    border: 1px solid color-mix(in srgb, var(--color-primary) 25%, white);
+    border-radius: 999px;
+}
+
+.gr-flash {
+    margin: 0 0 1rem;
+    padding: 0.8rem 1rem;
+    color: #1e7e34;
+    background: #e6f4ea;
+    border: 1px solid #b7dfc2;
+    border-radius: 14px;
+    font-size: 0.9rem;
+}
+.gr-empty {
+    margin: 0;
+    padding: 1.5rem;
+    text-align: center;
+    color: var(--color-ink-soft);
+    background: var(--color-bg);
+    border: 1px dashed var(--color-border);
+    border-radius: 18px;
+}
+
+.gr-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+/* --- satu mahasiswa = satu dropdown --- */
+.gr-item {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.gr-item:hover {
+    box-shadow: 0 8px 20px color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+.gr-item[open] {
+    border-color: color-mix(in srgb, var(--color-primary) 30%, var(--color-border));
+    box-shadow: 0 10px 24px color-mix(in srgb, var(--color-primary) 10%, transparent);
+}
+
+.gr-summary {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.95rem 1.1rem;
+    cursor: pointer;
+    list-style: none;
+    border-radius: 20px;
+}
+.gr-summary::-webkit-details-marker { display: none; }
+.gr-summary:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--color-accent) 70%, transparent);
+    outline-offset: 2px;
+}
+
+.gr-avatar {
+    flex: 0 0 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px; height: 44px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #fff;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-card-4-from));
+    border-radius: 50%;
+}
+
+.gr-who {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+.gr-name {
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: var(--color-primary);
+    overflow-wrap: anywhere;
+}
+.gr-nim {
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    color: var(--color-ink-soft);
+}
+
+.gr-status {
+    flex-shrink: 0;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+.gr-status--none  { color: #8a5d12; background: #f8ecd3; }
+.gr-status--stale { color: #b3261e; background: #fdecea; }
+.gr-status--draft { color: #2c4f85; background: #e1e9f5; }
+.gr-status--done  { color: #3f6b1c; background: #e3eed7; }
+
+.gr-chevron {
+    flex-shrink: 0;
+    color: var(--color-ink-soft);
+    transition: transform 0.25s ease;
+}
+.gr-item[open] .gr-chevron { transform: rotate(180deg); }
+
+/* --- isi dropdown --- */
+.gr-body {
+    padding: 0 1.1rem 1.2rem;
+    border-top: 1px solid var(--color-border);
+}
+.gr-meta {
+    margin: 0.9rem 0 1rem;
+    line-height: 1.6;
+}
+.gr-meta a { color: var(--color-primary); font-weight: 600; }
+
+/* form nilai tidak perlu kotak bertumpuk lagi di dalam dropdown */
+.gr-body .mk-form {
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: 0;
+}
+.gr-body .mk-form-errors { border-radius: 14px; }
+
+.gr-body .mk-input {
+    padding: 0.7rem 0.9rem;
+    border: 1.5px solid var(--color-accent);
+    border-radius: 14px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.gr-body .mk-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+
+.gr-body .mk-check input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--color-primary);
+}
+
+.gr-body .mk-form-actions { margin-top: 1.1rem; }
+.gr-body .mk-btn-primary {
+    padding: 0.7rem 1.4rem;
+    font-weight: 700;
+    border-radius: 14px;
+    background: linear-gradient(90deg, var(--color-card-4-from), var(--color-primary));
+    box-shadow: 0 8px 18px color-mix(in srgb, var(--color-primary) 25%, transparent);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.gr-body .mk-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px color-mix(in srgb, var(--color-primary) 32%, transparent);
+}
+
+@media (max-width: 560px) {
+    .gr-panel .mk-body { padding: 1.5rem 1.1rem 1.2rem; }
+    .gr-summary {
+        display: grid;
+        grid-template-columns: 44px minmax(0, 1fr) 20px;
+        gap: 0.5rem 0.8rem;
+        align-items: center;
+    }
+    .gr-avatar { grid-column: 1; grid-row: 1; }
+    .gr-who { grid-column: 2; grid-row: 1; }
+    .gr-chevron { grid-column: 3; grid-row: 1; }
+    .gr-status { grid-column: 2 / 4; grid-row: 2; justify-self: start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gr-item, .gr-chevron, .gr-body .mk-btn-primary { transition: none; }
+}

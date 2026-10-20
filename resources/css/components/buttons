@@ -1,0 +1,34 @@
+/* =========================================================
+   buttons.css — tombol .mk-btn-primary / -ghost / -danger
+   Dipakai halaman materi, tugas, penilaian. Muat SEBELUM
+   courses/grading.css dan courses/assignments.css karena
+   keduanya menimpa tampilan tombol ini di dalam kartunya.
+   ========================================================= */
+
+/* --- tombol --- */
+.mk-btn-primary,
+.mk-btn-ghost,
+.mk-btn-danger {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-family: Arial, sans-serif;
+    font-size: 0.85rem;
+    text-decoration: none;
+    cursor: pointer;
+}
+.mk-btn-primary {
+    border: none;
+    background: var(--color-card-1-from);
+    color: #fff;
+}
+.mk-btn-ghost {
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: inherit;
+}
+.mk-btn-danger {
+    border: 1px solid #f5c2c0;
+    background: #fdecea;
+    color: #b3261e;
+}

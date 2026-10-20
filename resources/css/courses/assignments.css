@@ -1,0 +1,212 @@
+/* =========================================================
+   assignments.css — detail tugas (assignments/show.blade.php)
+   Dipakai semua role. Bergantung pada .mk-body (courses.css) dan
+   .mk-btn-primary / .mk-btn-danger (buttons.css).
+   ========================================================= */
+
+.as-card {
+    position: relative;
+    border-radius: 28px;
+    box-shadow: 0 14px 34px color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+.as-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 5px;
+    background: linear-gradient(90deg, var(--color-card-4-from), var(--color-primary));
+}
+.as-card .mk-body { padding: 1.9rem 1.75rem 1.7rem; }
+
+/* --- kepala --- */
+.as-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.as-head__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 52px;
+    width: 52px;
+    height: 52px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--color-card-4-from), var(--color-primary));
+    border-radius: 16px;
+    box-shadow: 0 8px 18px color-mix(in srgb, var(--color-primary) 28%, transparent);
+}
+.as-head__icon svg,
+.as-info__icon svg,
+.as-file__icon svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.as-head__icon svg { width: 24px; height: 24px; }
+.as-head__text { flex: 1; min-width: 0; }
+.as-eyebrow {
+    margin: 0 0 0.25rem;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+}
+.as-card .as-title {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 800;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+.as-status {
+    flex-shrink: 0;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.78rem;
+    font-weight: 800;
+    border-radius: 999px;
+}
+
+/* --- baris info (menyatu di dalam kartu) --- */
+.as-info {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-bottom: 1.6rem;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+}
+.as-info__item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+    padding: 1rem 1.1rem;
+}
+.as-info__item + .as-info__item { border-left: 1px solid var(--color-border); }
+.as-info__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    color: var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 10%, white);
+    border-radius: 11px;
+}
+.as-info__icon svg { width: 18px; height: 18px; }
+.as-info__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+.as-info__label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+}
+.as-info__value {
+    font-size: 0.95rem;
+    font-weight: 800;
+    line-height: 1.35;
+    color: var(--color-ink);
+    overflow-wrap: anywhere;
+}
+
+/* --- instruksi & lampiran --- */
+.as-section { margin-bottom: 1.4rem; }
+.as-text {
+    padding: 1.05rem 1.2rem;
+    line-height: 1.75;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 18px;
+}
+.as-file {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    max-width: 100%;
+    padding: 0.6rem 1rem 0.6rem 0.65rem;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--color-ink);
+    text-decoration: none;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.as-file:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
+    box-shadow: 0 10px 22px color-mix(in srgb, var(--color-primary) 12%, transparent);
+}
+.as-file__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    color: var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 10%, white);
+    border-radius: 10px;
+}
+.as-file__icon svg { width: 17px; height: 17px; }
+.as-file__name { min-width: 0; overflow-wrap: anywhere; }
+.as-file__size {
+    flex-shrink: 0;
+    padding: 0.15rem 0.55rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--color-ink-soft);
+    background: var(--color-bg);
+    border-radius: 999px;
+}
+
+/* --- tombol aksi (hanya di dalam kartu ini) --- */
+.as-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.7rem;
+    margin-top: 0.4rem;
+    padding-top: 1.3rem;
+    border-top: 1px solid var(--color-border);
+}
+.as-actions form { margin: 0; }
+.as-card .mk-btn-primary,
+.as-card .mk-btn-danger {
+    padding: 0.6rem 1.35rem;
+    font-weight: 700;
+    border-radius: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.as-card .mk-btn-primary { box-shadow: 0 8px 16px color-mix(in srgb, var(--color-primary) 22%, transparent); }
+.as-card .mk-btn-primary:hover,
+.as-card .mk-btn-danger:hover { transform: translateY(-2px); }
+
+@media (max-width: 900px) {
+    .as-info { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .as-info__item:nth-child(3) { border-left: 0; }
+    .as-info__item:nth-child(n+3) { border-top: 1px solid var(--color-border); }
+}
+@media (max-width: 560px) {
+    .as-card .mk-body { padding: 1.5rem 1.2rem 1.3rem; }
+    .as-head { flex-wrap: wrap; }
+    .as-card .as-title { font-size: 1.3rem; }
+    .as-info { grid-template-columns: 1fr; }
+    .as-info__item + .as-info__item { border-left: 0; border-top: 1px solid var(--color-border); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .as-file, .as-card .mk-btn-primary, .as-card .mk-btn-danger { transition: none; }
+}
