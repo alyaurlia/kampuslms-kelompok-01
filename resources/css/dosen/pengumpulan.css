@@ -1,0 +1,954 @@
+
+/* =====================================================
+   DAFTAR PENGUMPULAN - PORTAL DOSEN
+   Palet merah, dekorasi dinamis, dan layout responsif
+   ===================================================== */
+
+.submission-page {
+    --submission-primary: #c2185b;
+    --submission-dark: #8f123f;
+    --submission-deep: #650b2d;
+    --submission-light: #fff0f5;
+    --submission-text: #30212a;
+    --submission-muted: #806d77;
+    --submission-border: #f1dce5;
+    --submission-surface: #ffffff;
+
+    width: min(1180px, calc(100% - 40px));
+    margin: 34px auto 56px;
+    color: var(--submission-text);
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.submission-page *,
+.submission-page *::before,
+.submission-page *::after {
+    box-sizing: border-box;
+}
+
+.submission-page a {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* ===================== HEADER HERO ===================== */
+
+.submission-page .submission-hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    min-height: 220px;
+    margin-bottom: 28px;
+    padding: 36px 38px;
+    overflow: hidden;
+    border-radius: 26px;
+    isolation: isolate;
+    background:
+        radial-gradient(circle at 82% 20%, rgb(255 255 255 / 16%), transparent 24%),
+        linear-gradient(120deg, #6e0b32 0%, #a40f4d 48%, #d81b60 100%);
+    box-shadow: 0 16px 40px rgb(143 18 63 / 20%);
+}
+
+.submission-page .submission-hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 650px;
+}
+
+.submission-page .submission-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 12px;
+    color: #ffe0eb;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.8px;
+}
+
+.submission-page .eyebrow-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ffb6d0;
+    box-shadow: 0 0 0 5px rgb(255 255 255 / 12%);
+    animation: submission-pulse 2s infinite;
+}
+
+.submission-page .submission-hero h1 {
+    margin: 0 0 10px;
+    color: #ffffff;
+    font-size: clamp(28px, 4vw, 39px);
+    font-weight: 850;
+    letter-spacing: -1px;
+    line-height: 1.2;
+}
+
+.submission-page .submission-hero p {
+    max-width: 520px;
+    margin: 0;
+    color: #ffe4ed;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.submission-page .submission-hero .submission-eyebrow {
+    color: #ffe0eb;
+}
+
+.submission-page .submission-back {
+    position: relative;
+    z-index: 3;
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 46px;
+    padding: 12px 17px;
+    border: 1px solid rgb(255 255 255 / 40%);
+    border-radius: 14px;
+    background: rgb(255 255 255 / 12%);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 750;
+    text-decoration: none;
+    backdrop-filter: blur(8px);
+    transition:
+        background .25s ease,
+        color .25s ease,
+        transform .25s ease,
+        box-shadow .25s ease;
+}
+
+.submission-page .submission-back span {
+    font-size: 18px;
+}
+
+.submission-page .submission-back:hover {
+    transform: translateY(-3px);
+    background: #ffffff;
+    color: var(--submission-primary);
+    box-shadow: 0 10px 24px rgb(54 0 22 / 20%);
+}
+
+.submission-page .hero-decoration {
+    display: flex;
+    gap: 7px;
+    margin-top: 23px;
+}
+
+.submission-page .hero-decoration-dot {
+    width: 24px;
+    height: 4px;
+    border-radius: 10px;
+    background: #ffffff;
+    opacity: .8;
+}
+
+.submission-page .hero-decoration-dot:nth-child(2) {
+    width: 13px;
+    opacity: .5;
+}
+
+.submission-page .hero-decoration-dot:nth-child(3) {
+    width: 7px;
+    opacity: .3;
+}
+
+.submission-page .hero-orb {
+    position: absolute;
+    z-index: -1;
+    display: block;
+    border: 1px solid rgb(255 255 255 / 15%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: submission-float 8s ease-in-out infinite;
+}
+
+.submission-page .hero-orb-one {
+    top: -85px;
+    right: 18%;
+    width: 230px;
+    height: 230px;
+    background: rgb(255 255 255 / 4%);
+}
+
+.submission-page .hero-orb-two {
+    right: 4%;
+    bottom: -110px;
+    width: 280px;
+    height: 280px;
+    animation-delay: -3s;
+    background: rgb(255 255 255 / 5%);
+}
+
+.submission-page .hero-orb-three {
+    right: 38%;
+    bottom: -80px;
+    width: 160px;
+    height: 160px;
+    animation-delay: -5s;
+}
+
+/* ===================== KARTU STATISTIK ===================== */
+
+.submission-page .submission-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 30px;
+}
+
+.submission-page .submission-stat {
+    --stat-color: #c2185b;
+    --stat-soft: #fff0f5;
+
+    position: relative;
+    min-width: 0;
+    min-height: 218px;
+    padding: 23px;
+    overflow: hidden;
+    border: 1px solid var(--submission-border);
+    border-radius: 21px;
+    background: #ffffff;
+    box-shadow: 0 7px 24px rgb(77 24 48 / 5%);
+    isolation: isolate;
+    transition:
+        transform .3s cubic-bezier(.2, .8, .2, 1),
+        box-shadow .3s ease,
+        border-color .3s ease;
+}
+
+.submission-page .submission-stat::before {
+    position: absolute;
+    z-index: -1;
+    top: -50px;
+    right: -42px;
+    width: 145px;
+    height: 145px;
+    border-radius: 50%;
+    background: var(--stat-soft);
+    content: "";
+    opacity: .9;
+    transition: transform .5s ease, opacity .4s ease;
+}
+
+.submission-page .submission-stat::after {
+    position: absolute;
+    z-index: -1;
+    right: -20px;
+    bottom: -62px;
+    width: 120px;
+    height: 120px;
+    border: 17px solid var(--stat-color);
+    border-radius: 50%;
+    content: "";
+    opacity: .06;
+    transition: transform .5s ease;
+    animation: submission-orbit 12s linear infinite;
+}
+
+.submission-page .submission-stat:hover {
+    transform: translateY(-7px);
+    border-color: color-mix(in srgb, var(--stat-color) 35%, white);
+    box-shadow: 0 18px 35px rgb(77 24 48 / 12%);
+}
+
+.submission-page .submission-stat:hover::before {
+    transform: scale(1.22);
+    opacity: 1;
+}
+
+.submission-page .submission-stat:hover::after {
+    transform: scale(1.2) rotate(25deg);
+    opacity: .11;
+}
+
+.submission-page .stat-total {
+    --stat-color: #a5104b;
+    --stat-soft: #ffedf4;
+}
+
+.submission-page .stat-submitted {
+    --stat-color: #16764b;
+    --stat-soft: #e7f8ef;
+}
+
+.submission-page .stat-pending {
+    --stat-color: #a9630b;
+    --stat-soft: #fff3df;
+}
+
+.submission-page .stat-late {
+    --stat-color: #c21f42;
+    --stat-soft: #ffe9ef;
+}
+
+.submission-page .stat-top {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 22px;
+}
+
+.submission-page .stat-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 47px;
+    height: 47px;
+    border-radius: 15px;
+    background: var(--stat-color);
+    color: #ffffff;
+    box-shadow: 0 8px 17px color-mix(in srgb, var(--stat-color) 24%, transparent);
+    transition: transform .3s ease, border-radius .3s ease;
+}
+
+.submission-page .submission-stat:hover .stat-icon {
+    transform: rotate(-7deg) scale(1.08);
+    border-radius: 18px;
+}
+
+.submission-page .stat-icon svg {
+    display: block;
+    width: 22px;
+    height: 22px;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.submission-page .stat-tag {
+    display: inline-block;
+    padding: 5px 9px;
+    border: 1px solid color-mix(in srgb, var(--stat-color) 12%, white);
+    border-radius: 999px;
+    background: var(--stat-soft);
+    color: var(--stat-color);
+    font-size: 10px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.submission-page .stat-label,
+.submission-page .submission-stat strong,
+.submission-page .submission-stat small {
+    position: relative;
+    z-index: 1;
+    display: block;
+}
+
+.submission-page .stat-label {
+    margin-bottom: 7px;
+    color: #65505b;
+    font-size: 12px;
+    font-weight: 750;
+    line-height: 1.5;
+}
+
+.submission-page .submission-stat strong {
+    margin-bottom: 6px;
+    color: var(--stat-color);
+    font-size: 36px;
+    font-weight: 850;
+    letter-spacing: -1.2px;
+    line-height: 1.1;
+}
+
+.submission-page .submission-stat small {
+    color: #806d77;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.submission-page .stat-bottom-line {
+    position: absolute;
+    right: 23px;
+    bottom: 0;
+    left: 23px;
+    height: 3px;
+    border-radius: 10px 10px 0 0;
+    background: var(--stat-color);
+    transform: scaleX(.35);
+    transform-origin: left;
+    transition: transform .35s ease;
+}
+
+.submission-page .submission-stat:hover .stat-bottom-line {
+    transform: scaleX(1);
+}
+
+.submission-page .stat-progress {
+    position: relative;
+    z-index: 1;
+    height: 5px;
+    margin-top: 12px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #e7f2eb;
+}
+
+.submission-page .stat-progress span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #188354, #48bd83);
+    transition: width .8s ease;
+}
+
+/* ===================== PANEL TABEL ===================== */
+
+.submission-page .submission-panel {
+    overflow: hidden;
+    border: 1px solid var(--submission-border);
+    border-radius: 23px;
+    background: var(--submission-surface);
+    box-shadow: 0 10px 35px rgb(77 24 48 / 5%);
+}
+
+.submission-page .submission-panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 27px 30px;
+    border-bottom: 1px solid #f4e5eb;
+    background: linear-gradient(120deg, #ffffff, #fff9fb);
+}
+
+.submission-page .submission-panel-heading .submission-eyebrow {
+    margin-bottom: 7px;
+    color: var(--submission-primary);
+    font-size: 10px;
+}
+
+.submission-page .submission-panel-heading h2 {
+    margin: 0 0 7px;
+    color: var(--submission-text);
+    font-size: 22px;
+    font-weight: 850;
+    letter-spacing: -.4px;
+    line-height: 1.35;
+}
+
+.submission-page .submission-panel-heading p {
+    margin: 0;
+    color: var(--submission-muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.submission-page .submission-total {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 13px;
+    border: 1px solid #f5d6e2;
+    border-radius: 999px;
+    background: #fff0f5;
+    color: var(--submission-dark);
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.submission-page .total-indicator,
+.submission-page .footer-status-dot {
+    width: 8px;
+    height: 8px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: #d81b60;
+}
+
+.submission-page .total-indicator {
+    box-shadow: 0 0 0 4px rgb(216 27 96 / 10%);
+}
+
+/* ===================== PENCARIAN DAN FILTER ===================== */
+
+.submission-page .submission-toolbar {
+    display: flex;
+    align-items: flex-end;
+    gap: 15px;
+    padding: 23px 30px;
+}
+
+.submission-page .submission-search {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 11px;
+    min-width: 0;
+    min-height: 47px;
+    padding: 0 15px;
+    border: 1px solid #eadbe2;
+    border-radius: 13px;
+    background: #fffdfd;
+    transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.submission-page .submission-search:focus-within {
+    border-color: var(--submission-primary);
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgb(194 24 91 / 9%);
+}
+
+.submission-page .submission-search svg {
+    flex: 0 0 auto;
+    width: 21px;
+    height: 21px;
+    stroke: var(--submission-primary);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+}
+
+.submission-page .submission-search input {
+    width: 100%;
+    min-width: 0;
+    min-height: 45px;
+    padding: 10px 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: var(--submission-text);
+    font: inherit;
+    font-size: 13px;
+}
+
+.submission-page .submission-search input::placeholder {
+    color: #a3939c;
+}
+
+.submission-page .submission-filter-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    color: #76616c;
+    font-size: 11px;
+    font-weight: 750;
+}
+
+.submission-page #submissionFilter {
+    width: 210px;
+    max-width: 100%;
+    min-height: 47px;
+    padding: 0 34px 0 13px;
+    border: 1px solid #eadbe2;
+    border-radius: 13px;
+    outline: none;
+    background: #ffffff;
+    color: var(--submission-text);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.submission-page #submissionFilter:focus {
+    border-color: var(--submission-primary);
+    box-shadow: 0 0 0 4px rgb(194 24 91 / 9%);
+}
+
+/* ===================== TABEL ===================== */
+
+.submission-page .submission-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.submission-page .submission-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    text-align: left;
+}
+
+.submission-page .submission-table thead {
+    background: #fff5f9;
+}
+
+.submission-page .submission-table th {
+    padding: 16px 20px;
+    border-top: 1px solid #f5e6ec;
+    border-bottom: 1px solid #f1e1e8;
+    color: #806674;
+    font-size: 10px;
+    font-weight: 850;
+    letter-spacing: .7px;
+    white-space: nowrap;
+}
+
+.submission-page .submission-table th:first-child,
+.submission-page .submission-table td:first-child {
+    padding-left: 30px;
+}
+
+.submission-page .submission-table th:last-child,
+.submission-page .submission-table td:last-child {
+    padding-right: 30px;
+}
+
+.submission-page .submission-table td {
+    padding: 18px 20px;
+    border-bottom: 1px solid #f5eaf0;
+    color: #54434c;
+    font-size: 12px;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.submission-page .submission-table tbody tr {
+    transition: background .2s ease;
+}
+
+.submission-page .submission-table tbody tr:hover {
+    background: #fff8fb;
+}
+
+.submission-page .submission-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.submission-page .submission-table tbody tr[hidden] {
+    display: none !important;
+}
+
+.submission-page .student-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 175px;
+}
+
+.submission-page .student-avatar {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border: 1px solid #f7d8e5;
+    border-radius: 14px;
+    background: linear-gradient(145deg, #ffeaf2, #ffd5e5);
+    color: #a5104b;
+    font-size: 12px;
+    font-weight: 850;
+    line-height: 1;
+    transition: transform .25s ease, border-radius .25s ease;
+}
+
+.submission-page .submission-table tbody tr:hover .student-avatar {
+    transform: rotate(-5deg);
+    border-radius: 50%;
+}
+
+.submission-page .student-cell strong,
+.submission-page .student-cell small {
+    display: block;
+}
+
+.submission-page .student-cell strong {
+    margin-bottom: 4px;
+    color: #34222d;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.submission-page .student-cell small {
+    color: #97838e;
+    font-size: 10px;
+}
+
+.submission-page .assignment-name {
+    display: inline-block;
+    color: #5c3949;
+    font-weight: 700;
+}
+
+/* ===================== LABEL STATUS ===================== */
+
+.submission-page .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 10px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+.submission-page .status-pill > span {
+    width: 6px;
+    height: 6px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.submission-page .status-submitted {
+    border-color: #d4f0df;
+    background: #eaf8ef;
+    color: #187447;
+}
+
+.submission-page .status-pending {
+    border-color: #f7e6c7;
+    background: #fff5e4;
+    color: #98600c;
+}
+
+.submission-page .status-late {
+    border-color: #f7d5df;
+    background: #ffedf2;
+    color: #b91f43;
+}
+
+/* ===================== KONDISI KOSONG ===================== */
+
+.submission-page .submission-empty {
+    padding: 42px 20px;
+    color: var(--submission-muted);
+    text-align: center;
+}
+
+.submission-page .submission-empty[hidden] {
+    display: none !important;
+}
+
+.submission-page .empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 12px;
+    border-radius: 16px;
+    background: #fff0f5;
+    color: var(--submission-primary);
+    font-size: 29px;
+}
+
+.submission-page .submission-empty strong {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--submission-text);
+    font-size: 14px;
+}
+
+.submission-page .submission-empty p {
+    margin: 0;
+    font-size: 12px;
+}
+
+/* ===================== FOOTER PANEL ===================== */
+
+.submission-page .submission-panel-footer {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 16px 30px;
+    border-top: 1px solid #f5e6ec;
+    background: #fffafd;
+    color: #8c7581;
+    font-size: 11px;
+}
+
+.submission-page .footer-status-dot {
+    width: 7px;
+    height: 7px;
+    background: #a5104b;
+}
+
+/* ===================== ANIMASI ===================== */
+
+@keyframes submission-float {
+    0%, 100% {
+        transform: translate3d(0, 0, 0);
+    }
+    50% {
+        transform: translate3d(-12px, 16px, 0);
+    }
+}
+
+@keyframes submission-orbit {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes submission-pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 5px rgb(255 255 255 / 12%);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgb(255 255 255 / 5%);
+    }
+}
+
+/* ===================== RESPONSIF ===================== */
+
+@media (max-width: 1050px) {
+    .submission-page .submission-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .submission-page .submission-table {
+        min-width: 850px;
+    }
+}
+
+@media (max-width: 700px) {
+    .submission-page {
+        width: calc(100% - 24px);
+        margin-top: 22px;
+        margin-bottom: 32px;
+    }
+
+    .submission-page .submission-hero {
+        align-items: flex-start;
+        flex-direction: column;
+        min-height: 0;
+        padding: 27px 23px;
+        border-radius: 21px;
+    }
+
+    .submission-page .submission-hero h1 {
+        font-size: 29px;
+    }
+
+    .submission-page .submission-hero p {
+        font-size: 13px;
+    }
+
+    .submission-page .submission-back {
+        min-height: 42px;
+        font-size: 12px;
+    }
+
+    .submission-page .submission-stats {
+        gap: 12px;
+        margin-bottom: 22px;
+    }
+
+    .submission-page .submission-stat {
+        min-height: 200px;
+        padding: 17px;
+        border-radius: 17px;
+    }
+
+    .submission-page .stat-top {
+        align-items: flex-start;
+        flex-direction: column;
+        margin-bottom: 17px;
+    }
+
+    .submission-page .stat-icon {
+        width: 41px;
+        height: 41px;
+        border-radius: 13px;
+    }
+
+    .submission-page .stat-tag {
+        font-size: 9px;
+    }
+
+    .submission-page .stat-label {
+        font-size: 11px;
+    }
+
+    .submission-page .submission-stat strong {
+        font-size: 30px;
+    }
+
+    .submission-page .submission-stat small {
+        font-size: 10px;
+    }
+
+    .submission-page .submission-panel {
+        border-radius: 19px;
+    }
+
+    .submission-page .submission-panel-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 22px;
+    }
+
+    .submission-page .submission-panel-heading h2 {
+        font-size: 20px;
+    }
+
+    .submission-page .submission-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+        padding: 18px 20px;
+    }
+
+    .submission-page .submission-filter-wrap {
+        width: 100%;
+    }
+
+    .submission-page #submissionFilter {
+        width: 100%;
+    }
+
+    .submission-page .submission-table {
+        min-width: 850px;
+    }
+
+    .submission-page .submission-table th:first-child,
+    .submission-page .submission-table td:first-child {
+        padding-left: 20px;
+    }
+
+    .submission-page .submission-table th:last-child,
+    .submission-page .submission-table td:last-child {
+        padding-right: 20px;
+    }
+
+    .submission-page .submission-panel-footer {
+        padding: 15px 20px;
+    }
+}
+
+@media (max-width: 380px) {
+    .submission-page .submission-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .submission-page .submission-stat {
+        min-height: 175px;
+    }
+
+    .submission-page .stat-top {
+        align-items: center;
+        flex-direction: row;
+    }
+}
+
+/* Hormati pengaturan pengurangan animasi pada perangkat pengguna. */
+@media (prefers-reduced-motion: reduce) {
+    .submission-page *,
+    .submission-page *::before,
+    .submission-page *::after {
+        animation: none !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+    }
+}
