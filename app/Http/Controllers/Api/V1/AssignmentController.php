@@ -13,7 +13,6 @@ use App\Models\Course;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Storage;
 
 class AssignmentController extends Controller
 {
@@ -65,12 +64,9 @@ class AssignmentController extends Controller
     {
         Gate::authorize('delete', $assignment);
 
-        // Lampiran soal (bila ada, diunggah lewat web) ikut dihapus di sini
-        // supaya tidak menjadi berkas yatim di disk.
-        if ($assignment->file_path) {
-            Storage::disk('local')->delete($assignment->file_path);
-        }
-
+        // Berkas fisik (lampiran soal + seluruh berkas pengumpulan beserta revisinya)
+        // dibersihkan oleh Assignment::booted() setelah baris berhasil dihapus,
+        // sehingga hasilnya sama persis dengan penghapusan lewat web.
         $assignment->delete();
 
         return response()->noContent();

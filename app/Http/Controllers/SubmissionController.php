@@ -2,51 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\SubmitAssignment;
+use App\Http\Requests\StoreSubmissionRequest;
 use App\Models\Assignment;
 use App\Models\Submission;
-use Illuminate\Http\Request;
+use App\Models\SubmissionRevision;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 class SubmissionController extends Controller
 {
+    private const DISK = 'local'; // storage/app/private
+
     /**
      * POST /mahasiswa/tugas/{assignment}/kumpul
-     * Satu pengumpulan per tugas. Telat tetap diterima, ditandai is_late.
+     * Otorisasi + validasi di StoreSubmissionRequest, penyimpanan di
+     * SubmitAssignment. Kumpul ulang menimpa pengumpulan lama.
      */
-    public function store(Request $request, Assignment $assignment)
+    public function store(StoreSubmissionRequest $request, Assignment $assignment, SubmitAssignment $submit)
     {
-        // Mahasiswa terdaftar di MK tugas ini dan tugas published
-        Gate::authorize('submit', $assignment);
-
-        $request->validate([
-            'file' => ['required', 'file', 'max:10240'],
-            'note' => ['nullable', 'string', 'max:1000'],
-        ], [
-            'file.required' => 'Berkas tugas wajib diunggah.',
-            'file.file'     => 'Berkas yang diunggah tidak valid.',
-            'file.max'      => 'Ukuran berkas maksimal 10 MB.',
-        ]);
-
-        $user = $request->user();
-
-        if ($assignment->submissions()->where('user_id', $user->id)->exists()) {
-            return back()->withErrors(['file' => 'Anda sudah mengumpulkan tugas ini.']);
-        }
-
-        $file = $request->file('file');
-        $submittedAt = now();
-
-        // Disk 'local' = storage/app/private (bukan public)
-        $assignment->submissions()->create([
-            'user_id'       => $user->id,
-            'file_path'     => $file->store("submissions/{$assignment->id}", 'local'),
-            'original_name' => $file->getClientOriginalName(),
-            'file_size'     => $file->getSize(),
-            'note'          => $request->input('note'),
-            'submitted_at'  => $submittedAt,
-            'is_late'       => $assignment->due_at !== null && $submittedAt->gt($assignment->due_at),
-        ]);
+        $submit->handle(
+            $assignment,
+            $request->user(),
+            $request->file('file'),
+            $request->input('note'),
+        );
 
         return back()->with('success', 'Tugas berhasil dikumpulkan.');
     }
@@ -59,9 +39,40 @@ class SubmissionController extends Controller
     {
         Gate::authorize('view', $submission);
 
-        return Storage::disk('local')->download(
+        $disk = Storage::disk(self::DISK);
+
+        abort_unless($disk->exists($submission->file_path), 404, 'Berkas tidak ditemukan di server.');
+
+        // download() = selalu sebagai lampiran; nosniff mencegah browser
+        // menebak ulang tipe berkas.
+        return $disk->download(
             $submission->file_path,
-            $submission->original_name
+            $submission->original_name,
+            ['X-Content-Type-Options' => 'nosniff']
+        );
+    }
+
+    /**
+     * GET /pengumpulan/{submission}/revisi/{revision}/unduh
+     * Berkas versi lama. Aturan akses sama dengan versi terbaru:
+     * pemilik, dosen pengampu, dan admin (SubmissionPolicy::view).
+     */
+    public function downloadRevision(Submission $submission, SubmissionRevision $revision)
+    {
+        Gate::authorize('view', $submission);
+
+        // Cegah akses silang: revisi harus milik submission yang diotorisasi.
+        // Tanpa ini, pemilik submission A bisa meminta revisi submission B.
+        abort_unless($revision->submission_id === $submission->id, 404);
+
+        $disk = Storage::disk(self::DISK);
+
+        abort_unless($disk->exists($revision->file_path), 404, 'Berkas tidak ditemukan di server.');
+
+        return $disk->download(
+            $revision->file_path,
+            $revision->original_name,
+            ['X-Content-Type-Options' => 'nosniff']
         );
     }
 }

@@ -174,9 +174,18 @@ class MaterialController extends Controller
 
         $oldPath = $material->file_path;
 
-        $material->update(
-            $this->prepareData($request->validated(), $request->file('file'), $material->course)
-        );
+        $data = $this->prepareData($request->validated(), $request->file('file'), $material->course);
+
+        try {
+            $material->update($data);
+        } catch (\Throwable $e) {
+            // Gagal simpan: berkas BARU yang sudah tersimpan di disk menjadi yatim.
+            if (! empty($data['file_path']) && $data['file_path'] !== $oldPath) {
+                Storage::disk(self::DISK)->delete($data['file_path']);
+            }
+
+            throw $e;
+        }
 
         // Hapus berkas lama SETELAH update berhasil, dan hanya bila memang
         // sudah tidak dipakai (diganti berkas baru, atau materi jadi tipe link).
@@ -197,12 +206,15 @@ class MaterialController extends Controller
         Gate::authorize('delete', $material);
 
         $course = $material->course;
+        $path   = $material->file_path;
 
-        if ($material->file_path) {
-            Storage::disk(self::DISK)->delete($material->file_path);
-        }
-
+        // Hapus baris DULU, berkas fisik SETELAH berhasil. Kalau urutannya terbalik
+        // dan delete() gagal, materi tetap ada tapi berkasnya sudah hilang.
         $material->delete();
+
+        if ($path) {
+            Storage::disk(self::DISK)->delete($path);
+        }
 
         return redirect()
             ->route($this->role() . '.mata-kuliah.materi.index', $course)

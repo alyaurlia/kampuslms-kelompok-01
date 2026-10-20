@@ -1,4 +1,3 @@
-
 <?php
 
 use App\Http\Controllers\AdminDashboardController;
@@ -11,6 +10,7 @@ use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\MahasiswaDashboardController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\SubmissionController;
+use App\Http\Controllers\SubmissionListController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -64,8 +64,17 @@ Route::middleware('auth')->group(function () {
         return redirect()->route(Auth::user()->role . '.dashboard');
     })->name('dashboard');
 
+    // Unduh berkas pengumpulan versi TERBARU (disk privat).
+    // Hak akses diperiksa di SubmissionController@download (SubmissionPolicy::view).
     Route::get('/pengumpulan/{submission}/unduh', [SubmissionController::class, 'download'])
         ->name('pengumpulan.unduh');
+
+    // Unduh berkas pengumpulan versi LAMA (riwayat revisi).
+    // scopeBindings(): {revision} hanya di-resolve dari revisi milik {submission}.
+    // SubmissionController@downloadRevision juga memeriksa kepemilikannya.
+    Route::get('/pengumpulan/{submission}/revisi/{revision}/unduh', [SubmissionController::class, 'downloadRevision'])
+        ->scopeBindings()
+        ->name('pengumpulan.revisi.unduh');
 
     // Unduh berkas materi (disimpan di disk privat).
     // Hak akses diperiksa di MaterialController@download.
@@ -134,8 +143,10 @@ Route::middleware('auth')->group(function () {
             Route::view('/dashboard', 'dosen.dashboard')
                 ->name('dashboard');
 
-            // Halaman Daftar Pengumpulan untuk dosen.
-            Route::view('/pengumpulan', 'dosen.pengumpulan.index')
+            // Halaman Daftar Pengumpulan untuk dosen:
+            // siapa sudah / belum mengumpulkan, ditandai terlambat.
+            // Query string: ?tugas={id}&status={semua|belum|sudah|terlambat}
+            Route::get('/pengumpulan', [SubmissionListController::class, 'index'])
                 ->name('pengumpulan.index');
 
             // Dosen hanya melihat mata kuliah yang diampu.

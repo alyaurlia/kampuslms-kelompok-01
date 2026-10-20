@@ -46,7 +46,7 @@
                     </span>
                     <div class="as-info__text">
                         <span class="as-info__label">Batas Waktu</span>
-                        <span class="as-info__value">{{ $assignment->due_at->translatedFormat('d F Y, H:i') }}</span>
+                        <span class="as-info__value">{{ $assignment->due_at?->translatedFormat('d F Y, H:i') ?? 'Tanpa batas waktu' }}</span>
                     </div>
                 </div>
                 <div class="as-info__item">
@@ -83,8 +83,8 @@
                             <svg viewBox="0 0 24 24"><path d="M21 12.5l-8.6 8.6a5 5 0 0 1-7.1-7.1l8.6-8.6a3.3 3.3 0 0 1 4.7 4.7l-8.6 8.6a1.7 1.7 0 0 1-2.4-2.4l7.9-7.9"></path></svg>
                         </span>
                         <span class="as-file__name">{{ $assignment->original_name }}</span>
-                        @if ($assignment->file_size)
-                            <span class="as-file__size">{{ number_format($assignment->file_size / 1024, 0) }} KB</span>
+                        @if ($assignment->file_size_human)
+                            <span class="as-file__size">{{ $assignment->file_size_human }}</span>
                         @endif
                     </a>
                 </div>
@@ -115,6 +115,12 @@
     @endif
 
     @if ($role === 'mahasiswa')
+    @php
+        // Nilai "basi": mahasiswa mengumpulkan ulang SETELAH dinilai.
+        $myGrade = $mySubmission?->grade;
+        $staleGrade = $myGrade && $myGrade->graded_at
+            && $mySubmission->submitted_at->gt($myGrade->graded_at);
+    @endphp
     <section class="mk-card as-card">
         <div class="mk-body">
             <h2 class="mk-desc-label">Pengumpulan Saya</h2>
@@ -137,35 +143,69 @@
                     <a href="{{ route('pengumpulan.unduh', $mySubmission) }}">
                         {{ $mySubmission->original_name }}
                     </a>
+                    @if ($mySubmission->file_size_human)
+                        <small>({{ $mySubmission->file_size_human }})</small>
+                    @endif
                 </p>
 
-                @if ($mySubmission->grade && $mySubmission->grade->is_published)
-                    <p>Nilai: {{ $mySubmission->grade->score }} / {{ $assignment->max_score }}</p>
-                    @if ($mySubmission->grade->feedback)
-                        <p>{!! nl2br(e($mySubmission->grade->feedback)) !!}</p>
+                @if ($mySubmission->revisions->count() > 1)
+                    <p><strong>Riwayat pengumpulan</strong></p>
+                    <ul>
+                        @foreach ($mySubmission->revisions->sortByDesc('version_number') as $revision)
+                            <li>
+                                Versi {{ $revision->version_number }} &middot;
+                                {{ $revision->submitted_at->translatedFormat('d F Y, H:i') }}
+                                @if ($revision->is_late)
+                                    <strong>(Terlambat)</strong>
+                                @endif
+                                &middot;
+                                <a href="{{ route('pengumpulan.revisi.unduh', [$mySubmission, $revision]) }}">{{ $revision->original_name }}</a>
+                                @if ($revision->file_size_human)
+                                    ({{ $revision->file_size_human }})
+                                @endif
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+
+                @if ($myGrade && $myGrade->is_published)
+                    <p>Nilai: {{ $myGrade->score }} / {{ $assignment->max_score }}</p>
+                    @if ($staleGrade)
+                        <p><em>Nilai ini untuk pengumpulan sebelumnya. Pengumpulan terbaru Anda menunggu dinilai ulang.</em></p>
+                    @endif
+                    @if ($myGrade->feedback)
+                        <p>{!! nl2br(e($myGrade->feedback)) !!}</p>
                     @endif
                 @endif
-            @else
-                @can('submit', $assignment)
-                    @if (now()->gt($assignment->due_at))
-                        <p><strong>Batas waktu sudah lewat. Pengumpulan akan ditandai terlambat.</strong></p>
-                    @endif
-
-                    <form method="POST"
-                          action="{{ route('mahasiswa.tugas.kumpul', $assignment) }}"
-                          enctype="multipart/form-data">
-                        @csrf
-                        <input type="file" name="file" required>
-                        <textarea name="note" placeholder="Catatan (opsional)">{{ old('note') }}</textarea>
-                        <button type="submit" class="mk-btn-primary">Kumpulkan</button>
-                    </form>
-                @else
-                    {{-- Form disembunyikan oleh AssignmentPolicy::submit. Beri tahu alasannya bila karena deadline. --}}
-                    @if (! $assignment->allow_late && now()->gt($assignment->due_at))
-                        <p><strong>Batas waktu sudah lewat dan pengumpulan terlambat tidak diizinkan.</strong></p>
-                    @endif
-                @endcan
             @endif
+
+            {{-- Form kumpul / kumpul ulang. Muncul selama AssignmentPolicy::submit mengizinkan
+                 (terdaftar, published, MK active, belum lewat deadline atau allow_late). --}}
+            @can('submit', $assignment)
+                @if ($assignment->isLateAt(now()))
+                    <p><strong>Batas waktu sudah lewat. Pengumpulan akan ditandai terlambat.</strong></p>
+                @endif
+
+                @if ($mySubmission)
+                    <p><em>Mengumpulkan ulang menambah versi baru. Versi sebelumnya tetap tersimpan di riwayat.</em></p>
+                @endif
+
+                <form method="POST"
+                      action="{{ route('mahasiswa.tugas.kumpul', $assignment) }}"
+                      enctype="multipart/form-data">
+                    @csrf
+                    <input type="file" name="file" accept=".pdf,.doc,.docx" required>
+                    <textarea name="note" placeholder="Catatan (opsional)">{{ old('note', $mySubmission?->note) }}</textarea>
+                    <button type="submit" class="mk-btn-primary">
+                        {{ $mySubmission ? 'Kumpulkan Ulang' : 'Kumpulkan' }}
+                    </button>
+                </form>
+            @else
+                {{-- Form disembunyikan oleh AssignmentPolicy::submit. Beri tahu alasannya bila karena deadline. --}}
+                @if (! $assignment->allow_late && $assignment->isLateAt(now()))
+                    <p><strong>Batas waktu sudah lewat dan pengumpulan terlambat tidak diizinkan.</strong></p>
+                @endif
+            @endcan
         </div>
     </section>
 @endif

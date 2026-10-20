@@ -27,6 +27,7 @@ class SubmissionResource extends JsonResource
                                 ? Carbon::parse($this->submitted_at)->toIso8601String()
                                 : null,
             'is_late'       => (bool) $this->is_late,
+            'revisions_count' => $this->whenCounted('revisions'),
             'grade'         => $this->whenLoaded(
                 'grade',
                 fn () => ($this->grade && (! $isStudent || $this->grade->is_published))

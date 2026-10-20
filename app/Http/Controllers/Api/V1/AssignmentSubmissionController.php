@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Actions\SubmitAssignment;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\StoreSubmissionRequest;
 use App\Http\Resources\SubmissionCollection;
@@ -30,6 +31,7 @@ class AssignmentSubmissionController extends Controller
         $user = $request->user();
 
         $query = $assignment->submissions()
+            ->withCount('revisions')
             ->with([
                 'student',
                 'grade' => function ($q) use ($user) {
@@ -51,42 +53,29 @@ class AssignmentSubmissionController extends Controller
     }
 
     /**
-     * POST /api/v1/assignments/{assignment}/submissions   (multipart, field "file")
+     * POST /api/v1/assignments/{assignment}/submissions   (multipart, field "file", opsional "note")
      *
-     * - hanya mahasiswa yang terdaftar di mata kuliah tugas ini
-     *   (dicek di StoreSubmissionRequest::authorize() lewat AssignmentPolicy::submit)
-     * - satu mahasiswa satu pengumpulan per tugas => 409 kalau sudah ada
-     * - berkas disimpan di disk privat (bukan public)
+     * - hanya mahasiswa terdaftar di MK tugas ini, tugas published, MK active,
+     *   dan tugas masih menerima pengumpulan (AssignmentPolicy::submit lewat
+     *   StoreSubmissionRequest::authorize())
+     * - kumpul ulang MENIMPA pengumpulan lama (sama seperti web)
+     * - berkas disimpan di disk privat
      *
-     * Respons: 201 + SubmissionResource.
+     * Respons: 201 + SubmissionResource bila pertama kali, 200 bila menimpa.
      */
-    public function store(StoreSubmissionRequest $request, Assignment $assignment): JsonResponse
+    public function store(StoreSubmissionRequest $request, Assignment $assignment, SubmitAssignment $submit): JsonResponse
     {
-        $user = $request->user();
+        $submission = $submit->handle(
+            $assignment,
+            $request->user(),
+            $request->file('file'),
+            $request->input('note'),
+        );
 
-        if ($assignment->submissions()->where('user_id', $user->id)->exists()) {
-            return response()->json([
-                'message' => 'Anda sudah mengumpulkan tugas ini.',
-            ], 409);
-        }
-
-        $file = $request->file('file');
-
-        $submittedAt = now();
-
-        $submission = $assignment->submissions()->create([
-            'user_id'       => $user->id,
-            'file_path'     => $file->store("submissions/{$assignment->id}"),
-            'original_name' => $file->getClientOriginalName(),
-            'file_size'     => $file->getSize(),
-            'submitted_at'  => $submittedAt,
-            'is_late'       => $submittedAt->gt($assignment->due_at),
-        ]);
-
-        $submission->load(['student', 'grade']);
+        $submission->load(['student', 'grade'])->loadCount('revisions');
 
         return (new SubmissionResource($submission))
             ->response()
-            ->setStatusCode(201);
+            ->setStatusCode($submission->wasRecentlyCreated ? 201 : 200);
     }
 }

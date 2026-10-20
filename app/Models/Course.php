@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Course extends Model
 {
@@ -21,6 +22,40 @@ class Course extends Model
         'lecturer_id',
         'status',
     ];
+
+    /** Folder yang dihapus setelah baris terhapus; diisi saat event `deleting`. */
+    protected array $directoriesToDelete = [];
+
+    /**
+     * Bersihkan berkas fisik saat mata kuliah dihapus: materials/{id},
+     * assignments/{id}, dan submissions/{id tiap tugas}.
+     *
+     * Materi, tugas, dan submission terhapus oleh cascade di DATABASE (tanpa event
+     * model). Lokasi berkas dikumpulkan di `deleting`, SEBELUM baris hilang, karena
+     * setelah cascade id tugasnya tidak bisa dicari lagi. Folder baru dihapus di
+     * `deleted`, yaitu hanya bila baris berhasil dihapus.
+     */
+    protected static function booted(): void
+    {
+        static::deleting(function (Course $course) {
+            $course->directoriesToDelete = [
+                "materials/{$course->id}",
+                "assignments/{$course->id}",
+                ...$course->assignments()
+                    ->pluck('id')
+                    ->map(fn ($id) => "submissions/{$id}")
+                    ->all(),
+            ];
+        });
+
+        static::deleted(function (Course $course) {
+            $disk = Storage::disk('local');
+
+            foreach ($course->directoriesToDelete as $directory) {
+                $disk->deleteDirectory($directory);
+            }
+        });
+    }
 
     public function lecturer(): BelongsTo
     {

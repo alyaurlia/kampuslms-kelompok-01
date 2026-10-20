@@ -44,13 +44,24 @@ class AssignmentPolicy
         return $assignment->course->isManagedBy($user);
     }
 
+    // Melihat daftar pengumpulan sebuah tugas (siapa sudah / belum / terlambat).
+    // Admin atau dosen pengampu MK tersebut. Mahasiswa tidak pernah boleh:
+    // isManagedBy() hanya meloloskan admin dan dosen pengampu.
+    // Dipakai SubmissionListController::index lewat Gate::authorize('viewSubmissions', ...).
+    public function viewSubmissions(User $user, Assignment $assignment): bool
+    {
+        return $assignment->course->isManagedBy($user);
+    }
+
     // Mengumpulkan tugas: mahasiswa terdaftar, tugas published, MK active,
-    // dan (bila deadline sudah lewat) tugas harus mengizinkan keterlambatan.
+    // dan tugas masih menerima pengumpulan (belum lewat deadline, atau
+    // keterlambatan diizinkan). Aturan deadline ada di
+    // Assignment::acceptsSubmissionsAt, dipakai bersama oleh web dan API.
     public function submit(User $user, Assignment $assignment): bool
     {
         return $assignment->status === 'published'
             && $assignment->course->status === 'active'
-            && ($assignment->allow_late || now()->lte($assignment->due_at))
+            && $assignment->acceptsSubmissionsAt(now())
             && $assignment->course->hasStudent($user);
     }
 }

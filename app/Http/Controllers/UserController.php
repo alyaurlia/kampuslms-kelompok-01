@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
@@ -92,7 +93,22 @@ class UserController extends Controller
                 ->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
         }
 
-        $user->delete();
+        // submissions.user_id, materials.uploaded_by, assignments.created_by, dan
+        // courses.lecturer_id TIDAK cascade (restrict). Pengguna yang masih punya
+        // data tidak dihapus, sehingga tidak ada berkas pengumpulan atau materi
+        // yang jadi yatim, dan tidak muncul error 500.
+        try {
+            $user->delete();
+        } catch (QueryException $e) {
+            // 23000 = pelanggaran integritas. Error lain dilempar ulang.
+            if ($e->getCode() !== '23000') {
+                throw $e;
+            }
+
+            return redirect()
+                ->route('admin.users.index')
+                ->with('error', 'Pengguna tidak dapat dihapus karena masih memiliki data terkait (mata kuliah, materi, tugas, atau pengumpulan).');
+        }
 
         return redirect()
             ->route('admin.users.index')

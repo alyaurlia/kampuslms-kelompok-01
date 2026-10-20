@@ -27,7 +27,7 @@ class UpdateMaterialRequest extends FormRequest
                 Rule::requiredIf(fn () => $this->input('type') === 'file' && empty($material?->file_path)),
                 'nullable', 'file',
                 'mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,txt,jpg,jpeg,png',
-                'max:10240',
+                'max:20480',
             ],
         ];
     }
