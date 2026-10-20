@@ -1,3 +1,4 @@
+
 <?php
 
 use App\Http\Controllers\AdminDashboardController;
@@ -66,13 +67,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/pengumpulan/{submission}/unduh', [SubmissionController::class, 'download'])
         ->name('pengumpulan.unduh');
 
-    // Unduh berkas materi (disimpan di disk privat). Semua peran yang login
-    // boleh mencoba; hak akses sebenarnya diperiksa di MaterialController@download.
+    // Unduh berkas materi (disimpan di disk privat).
+    // Hak akses diperiksa di MaterialController@download.
     Route::get('/materi/{material}/unduh', [MaterialController::class, 'download'])
         ->name('materi.unduh');
 
-    // Unduh lampiran soal tugas (disk privat). Hak akses sebenarnya diperiksa
-    // di AssignmentController@download (AssignmentPolicy::view).
+    // Unduh lampiran soal tugas (disk privat).
+    // Hak akses diperiksa di AssignmentController@download.
     Route::get('/tugas/{assignment}/lampiran', [AssignmentController::class, 'download'])
         ->name('tugas.lampiran');
 
@@ -94,7 +95,6 @@ Route::middleware('auth')->group(function () {
             Route::resource('mata-kuliah', CourseController::class);
 
             // Pendaftaran mahasiswa ke mata kuliah (admin: semua MK).
-            // Nama lengkap: admin.mata-kuliah.mahasiswa.store / .destroy
             Route::post('mata-kuliah/{mata_kuliah}/mahasiswa', [CourseEnrollmentController::class, 'store'])
                 ->name('mata-kuliah.mahasiswa.store');
 
@@ -102,13 +102,7 @@ Route::middleware('auth')->group(function () {
                 ->whereNumber('student')
                 ->name('mata-kuliah.mahasiswa.destroy');
 
-            // Materi: admin CRUD penuh (sesuai matriks hak akses). Otorisasi per
-            // MK diperiksa di MaterialPolicy (admin lolos lewat isManagedBy).
-            // Nama lengkap: admin.mata-kuliah.materi.{index,create,store},
-            //               admin.materi.{show,edit,update,destroy}
-            // Tugas: admin CRUD penuh (sesuai matriks hak akses), otorisasi di AssignmentPolicy.
-            //               admin.mata-kuliah.tugas.{index,create,store},
-            //               admin.tugas.{show,edit,update,destroy}
+            // Materi dan tugas: admin CRUD penuh.
             Route::scopeBindings()->group(function () {
 
                 Route::resource('mata-kuliah.materi', MaterialController::class)
@@ -140,19 +134,18 @@ Route::middleware('auth')->group(function () {
             Route::view('/dashboard', 'dosen.dashboard')
                 ->name('dashboard');
 
-            // Dosen hanya melihat MK yang diampu. Mengubah MK = admin saja
-            // (CoursePolicy::update), jadi edit/update tidak dibuka di sini.
+            // Halaman Daftar Pengumpulan untuk dosen.
+            Route::view('/pengumpulan', 'dosen.pengumpulan.index')
+                ->name('pengumpulan.index');
+
+            // Dosen hanya melihat mata kuliah yang diampu.
             Route::resource('mata-kuliah', CourseController::class)
                 ->only([
                     'index',
                     'show',
                 ]);
 
-            // Dosen mengelola peserta MK yang diampunya SENDIRI.
-            // Middleware role:dosen hanya memastikan perannya; kepemilikan MK
-            // diperiksa di CourseEnrollmentController lewat
-            // Gate::authorize('manageEnrollment') -> dosen lain mendapat 403.
-            // Nama lengkap: dosen.mata-kuliah.mahasiswa.store / .destroy
+            // Dosen mengelola peserta mata kuliah yang diampunya.
             Route::post('mata-kuliah/{mata_kuliah}/mahasiswa', [CourseEnrollmentController::class, 'store'])
                 ->name('mata-kuliah.mahasiswa.store');
 
@@ -160,10 +153,7 @@ Route::middleware('auth')->group(function () {
                 ->whereNumber('student')
                 ->name('mata-kuliah.mahasiswa.destroy');
 
-            // Penilaian pengumpulan: hanya dosen. Kepemilikan MK diperiksa di
-            // StoreGradeRequest lewat SubmissionPolicy::grade -> dosen lain dan
-            // admin mendapat 403 (admin hanya boleh MELIHAT nilai).
-            // Nama lengkap: dosen.pengumpulan.nilai
+            // Penilaian pengumpulan: hanya dosen.
             Route::put('pengumpulan/{submission}/nilai', [GradeController::class, 'update'])
                 ->name('pengumpulan.nilai');
 
