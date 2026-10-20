@@ -21,6 +21,18 @@
         ->whereDoesntHave('grade')
         ->count();
 
+    // Status tugas pada mata kuliah yang diampu dosen ini (kartu Pengelolaan Tugas).
+    // Hanya tugas dari mata kuliah miliknya, bukan seluruh tugas di sistem.
+    $tugasDosen = \App\Models\Assignment::whereIn('course_id', (clone $mkDiampu)->select('id'));
+
+    $totalTugas     = (clone $tugasDosen)->count();
+    $tugasPublished = (clone $tugasDosen)->where('status', 'published')->count();
+    $tugasDraft     = (clone $tugasDosen)->where('status', 'draft')->count();
+
+    $persentasePublished = $totalTugas > 0
+        ? round(($tugasPublished / $totalTugas) * 100)
+        : 0;
+
     // Data kartu (semua angka berasal dari database).
     $cards = [
         [
@@ -103,6 +115,68 @@
                 </article>
             @endforeach
         </div>
+
+        {{-- PENGELOLAAN TUGAS (dipindah dari dashboard admin) --}}
+        <section class="admin-task-panel">
+            <div class="admin-task-panel__heading">
+                <div>
+                    <p class="admin-section-eyebrow">PENGELOLAAN</p>
+                    <h2 class="admin-section-title">Tugas</h2>
+                    <p class="admin-section-description">
+                        Melihat tugas di mata kuliah yang kamu ampu: yang sudah siap dikerjakan dan yang masih disimpan sebagai draf.
+                    </p>
+                </div>
+
+                <div class="admin-task-total">
+                    <span>Jumlah tugas</span>
+                    <strong>{{ $totalTugas }}</strong>
+                </div>
+            </div>
+
+            <div class="admin-task-progress">
+                <div class="admin-task-progress__top">
+                    <span>Tugas yang sudah diterbitkan</span>
+                    <strong>{{ $persentasePublished }}%</strong>
+                </div>
+                <div class="admin-task-progress__track">
+                    <div
+                        class="admin-task-progress__bar"
+                        style="width: {{ $persentasePublished }}%;"
+                    ></div>
+                </div>
+            </div>
+
+            <div class="admin-task-row">
+                <div class="admin-task-row__identity">
+                    <div class="admin-task-row__icon admin-task-row__icon--published">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M20 6L9 17l-5-5"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3>Tugas diterbitkan</h3>
+                        <p>Sudah dapat dilihat dan dikerjakan mahasiswa.</p>
+                    </div>
+                </div>
+                <div class="admin-task-row__count">{{ $tugasPublished }}</div>
+            </div>
+
+            <div class="admin-task-row admin-task-row--draft">
+                <div class="admin-task-row__identity">
+                    <div class="admin-task-row__icon admin-task-row__icon--draft">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3>Tersimpan sebagai draf</h3>
+                        <p>Masih disiapkan dan belum diberikan kepada mahasiswa.</p>
+                    </div>
+                </div>
+                <div class="admin-task-row__count">{{ $tugasDraft }}</div>
+            </div>
+        </section>
     </section>
 
     {{-- semester="" (string kosong) = tanpa judul semester, hanya daftar mata kuliah.

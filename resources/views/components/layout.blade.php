@@ -14,6 +14,7 @@
         'resources/css/components/dashboard.css',
         'resources/css/dashboard/admin.css',
         'resources/css/dashboard/dosen-mahasiswa.css',
+        'resources/css/dashboard/task-panel.css',
         'resources/css/components/courses.css',
         'resources/css/components/buttons.css',
         'resources/css/courses/materials.css',
