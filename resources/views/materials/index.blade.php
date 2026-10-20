@@ -45,6 +45,9 @@
                             Diunggah {{ $material->created_at->translatedFormat('d F Y') }}
                             @if ($material->type === 'file' && $material->original_name)
                                 &middot; {{ $material->original_name }}
+                                @if ($material->file_size_human)
+                                    ({{ $material->file_size_human }})
+                                @endif
                             @endif
                         </p>
                     </div>

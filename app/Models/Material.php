@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\FileSize;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -29,6 +30,15 @@ class Material extends Model
     public function uploader(): BelongsTo
     {
         return $this->belongsTo(User::class, 'uploaded_by');
+    }
+
+    /**
+     * Ukuran berkas materi dalam teks yang terbaca manusia ("2,3 MB").
+     * null untuk materi bertipe link (tidak punya berkas).
+     */
+    public function getFileSizeHumanAttribute(): ?string
+    {
+        return FileSize::format($this->file_size);
     }
 
     /**

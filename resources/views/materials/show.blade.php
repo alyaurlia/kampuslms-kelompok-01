@@ -72,8 +72,8 @@
             @if ($material->type === 'file' && $material->original_name)
                 <p class="mk-hint">
                     {{ $material->original_name }}
-                    @if ($material->file_size)
-                        ({{ number_format($material->file_size / 1024, 0) }} KB)
+                    @if ($material->file_size_human)
+                        ({{ $material->file_size_human }})
                     @endif
                 </p>
             @endif

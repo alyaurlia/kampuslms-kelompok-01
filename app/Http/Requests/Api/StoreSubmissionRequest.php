@@ -2,33 +2,11 @@
 
 namespace App\Http\Requests\Api;
 
-use App\Models\Assignment;
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Gate;
+use App\Http\Requests\StoreSubmissionRequest as BaseStoreSubmissionRequest;
 
-class StoreSubmissionRequest extends FormRequest
+// Aturan, pesan, dan otorisasi sama persis dengan versi web supaya
+// web dan API tidak pernah berbeda perilaku. Respons error otomatis
+// berupa JSON (403 / 422) karena Laravel mendeteksi request API.
+class StoreSubmissionRequest extends BaseStoreSubmissionRequest
 {
-    public function authorize(): bool
-    {
-        $assignment = $this->route('assignment');
-
-        return $assignment instanceof Assignment
-            && Gate::allows('submit', $assignment);
-    }
-
-    public function rules(): array
-    {
-        return [
-            'file' => ['required', 'file', 'max:10240'],
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'file.required' => 'Berkas tugas wajib diunggah.',
-            'file.file'     => 'Berkas yang diunggah tidak valid.',
-            'file.max'      => 'Ukuran berkas maksimal 10 MB.',
-        ];
-    }
 }

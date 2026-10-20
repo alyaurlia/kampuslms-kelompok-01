@@ -74,10 +74,33 @@
                                 @endif
                                 &middot;
                                 <a href="{{ route('pengumpulan.unduh', $submission) }}">{{ $submission->original_name }}</a>
+                                @if ($submission->file_size_human)
+                                    ({{ $submission->file_size_human }})
+                                @endif
                                 @if ($stale)
                                     &middot; Dikumpulkan ulang setelah dinilai
                                 @endif
                             </p>
+
+                            @if ($submission->revisions->count() > 1)
+                                <p class="mk-list-meta gr-meta">Riwayat pengumpulan ({{ $submission->revisions->count() }} versi):</p>
+                                <ul>
+                                    @foreach ($submission->revisions->sortByDesc('version_number') as $revision)
+                                        <li>
+                                            Versi {{ $revision->version_number }} &middot;
+                                            {{ $revision->submitted_at->translatedFormat('d F Y, H:i') }}
+                                            @if ($revision->is_late)
+                                                <strong>(Terlambat)</strong>
+                                            @endif
+                                            &middot;
+                                            <a href="{{ route('pengumpulan.revisi.unduh', [$submission, $revision]) }}">{{ $revision->original_name }}</a>
+                                            @if ($revision->file_size_human)
+                                                ({{ $revision->file_size_human }})
+                                            @endif
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @endif
 
                             @can('grade', $submission)
                                 <form method="POST" action="{{ route('dosen.pengumpulan.nilai', $submission) }}" class="mk-form">
@@ -146,4 +169,4 @@
             </div>
         @endif
     </div>
-</section>
+</section>  

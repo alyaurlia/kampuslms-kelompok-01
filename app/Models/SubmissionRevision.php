@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\FileSize;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -29,6 +30,12 @@ class SubmissionRevision extends Model
             'submitted_at' => 'datetime',
             'is_late' => 'boolean',
         ];
+    }
+
+    /** Ukuran berkas versi ini dalam teks yang terbaca manusia ("850 KB"). */
+    public function getFileSizeHumanAttribute(): ?string
+    {
+        return FileSize::format($this->file_size);
     }
 
     public function submission(): BelongsTo

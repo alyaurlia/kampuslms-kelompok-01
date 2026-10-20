@@ -26,7 +26,7 @@ class StoreMaterialRequest extends FormRequest
             'file'         => [
                 'required_if:type,file', 'nullable', 'file',
                 'mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,txt,jpg,jpeg,png',
-                'max:10240', // 10 MB
+                'max:20480', // 20 MB
             ],
         ];
     }

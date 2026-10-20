@@ -54,7 +54,7 @@
             </p>
         @endif
         <input type="file" id="file" name="file" class="mk-input">
-        <p class="mk-hint">PDF, Word, PowerPoint, Excel, ZIP, TXT, JPG, PNG. Maksimal 10 MB.</p>
+        <p class="mk-hint">PDF, Word, PowerPoint, Excel, ZIP, TXT, JPG, PNG. Maksimal 20 MB.</p>
     </div>
 
     <div class="mk-field" id="field-link">

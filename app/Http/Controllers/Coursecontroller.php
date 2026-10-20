@@ -10,7 +10,6 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class CourseController extends Controller
@@ -162,23 +161,13 @@ class CourseController extends Controller
      * DELETE /admin/mata-kuliah/{mata_kuliah}
      *
      * Baris materials / assignments (dan turunannya) ikut terhapus oleh
-     * cascade di DATABASE, yang tidak memicu event model. Berkasnya di disk
-     * privat harus dibersihkan di sini, kalau tidak jadi berkas yatim.
+     * cascade di DATABASE, yang tidak memicu event model. Berkas di disk
+     * privat dibersihkan oleh Course::booted() setelah baris berhasil dihapus.
+     * Bila delete() gagal (QueryException di bawah), berkasnya tetap utuh.
      */
     public function destroy(Request $request, Course $mata_kuliah)
     {
         Gate::authorize('delete', $mata_kuliah);
-
-        // Kumpulkan lokasi berkas SEBELUM baris dihapus, karena setelah cascade
-        // id tugas tidak bisa dicari lagi.
-        $directories = [
-            "materials/{$mata_kuliah->id}",
-            "assignments/{$mata_kuliah->id}",
-            ...$mata_kuliah->assignments()
-                ->pluck('id')
-                ->map(fn ($id) => "submissions/{$id}")
-                ->all(),
-        ];
 
         try {
             $mata_kuliah->delete();
@@ -192,14 +181,6 @@ class CourseController extends Controller
             return redirect()
                 ->route($this->routePrefix($request) . '.index')
                 ->with('error', 'Mata kuliah tidak dapat dihapus karena masih memiliki data terkait.');
-        }
-
-        // Hapus berkas SETELAH baris berhasil dihapus: kalau penghapusan di
-        // database gagal, berkasnya tetap utuh.
-        $disk = Storage::disk('local');
-
-        foreach ($directories as $directory) {
-            $disk->deleteDirectory($directory);
         }
 
         return redirect()

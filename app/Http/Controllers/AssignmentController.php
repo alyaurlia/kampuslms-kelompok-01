@@ -129,7 +129,7 @@ class AssignmentController extends Controller
         $mySubmission = $user->role === 'mahasiswa'
             ? $assignment->submissions()
                 ->where('user_id', $user->id)
-                ->with('grade')
+                ->with(['grade', 'revisions'])
                 ->first()
             : null;
 
@@ -141,7 +141,7 @@ class AssignmentController extends Controller
 
         if ($user->role !== 'mahasiswa') {
             $submissions = $assignment->submissions()
-                ->with(['student', 'grade'])
+                ->with(['student', 'grade', 'revisions'])
                 ->orderBy('submitted_at')
                 ->get()
                 ->each(function ($submission) use ($assignment) {
@@ -189,7 +189,16 @@ class AssignmentController extends Controller
             $data += $this->clearAttachment();
         }
 
-        $assignment->update($data);
+        try {
+            $assignment->update($data);
+        } catch (\Throwable $e) {
+            // Gagal simpan: berkas BARU yang sudah tersimpan di disk menjadi yatim.
+            if (! empty($data['file_path']) && $data['file_path'] !== $oldPath) {
+                Storage::disk(self::DISK)->delete($data['file_path']);
+            }
+
+            throw $e;
+        }
 
         // Hapus berkas lama SETELAH update berhasil, dan hanya bila memang
         // sudah tidak dipakai (diganti berkas baru, atau lampiran dihapus).
@@ -209,10 +218,9 @@ class AssignmentController extends Controller
 
         $course = $assignment->course;
 
-        if ($assignment->file_path) {
-            Storage::disk(self::DISK)->delete($assignment->file_path);
-        }
-
+        // Berkas fisik (lampiran soal + folder submissions/{id}) dibersihkan oleh
+        // Assignment::booted() SETELAH baris berhasil dihapus, supaya web dan API
+        // memakai logika yang sama.
         $assignment->delete();
 
         return redirect()
