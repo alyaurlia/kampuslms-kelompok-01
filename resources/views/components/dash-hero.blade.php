@@ -1,16 +1,22 @@
 {{--
-    Banner atas dashboard (dosen & mahasiswa).
+    Banner atas dashboard (admin, dosen & mahasiswa).
     Pemakaian:
-      <x-dash-hero portal="Portal Dosen" title="Dashboard Dosen" :notif="18" search-label="Cari mata kuliah..." />
+      <x-dash-hero portal="Portal Dosen" title="Dashboard Dosen" :live="true" search-label="Cari mata kuliah..." />
     Props:
       portal       : teks kecil di atas judul
       title        : judul halaman (h1)
-      notif        : angka badge lonceng (kosongkan/null = tanpa badge)
+      bell         : false = lonceng di banner disembunyikan (dipakai dashboard admin,
+                     yang lonceng-nya sudah ada di navbar)
+      live         : true = angka lonceng adalah jumlah notifikasi belum dibaca milik
+                     user yang login, dan ikut diperbarui oleh polling milik
+                     <x-notification-bell> di navbar. Isi `notif` diabaikan.
+      notif        : angka badge lonceng bila `live` = false (kosongkan/null = tanpa badge)
       searchLabel  : placeholder kotak cari
       target       : selector CSS elemen yang difilter kotak cari
                      (default: daftar mata kuliah di Semester overview)
       notifHref    : tujuan klik lonceng (mis. "#tugas-menunggu-nilai" atau route(...));
-                     kosong = lonceng hanya tombol biasa
+                     kosong = lonceng hanya tombol biasa. Pada mode `live`, bawaannya
+                     halaman daftar notifikasi bila route-nya sudah ada.
       notifLabel   : teks aksesibilitas lonceng
       sub          : kalimat di bawah sapaan
       status       : teks status kecil dengan titik hijau (mis. "Sistem aktif"), opsional
@@ -18,6 +24,8 @@
 @props([
     'portal'      => 'Portal',
     'title'       => 'Dashboard',
+    'bell'        => true,
+    'live'        => false,
     'notif'       => null,
     'searchLabel' => 'Cari mata kuliah...',
     'sub'         => 'Semoga harimu menyenangkan!',
@@ -32,6 +40,16 @@
     $inisial  = collect(preg_split('/\s+/', trim($namaUser)))
         ->filter()->map(fn ($k) => mb_strtoupper(mb_substr($k, 0, 1)))->take(2)->join('');
     $namaDepan = explode(' ', trim($namaUser))[0];
+
+    if ($live) {
+        $notif      = auth()->user()->unreadNotifications()->count();
+        $notifHref  = $notifHref ?? (Route::has('notifikasi.index') ? route('notifikasi.index') : null);
+        $labelLonceng = "{$notifLabel}, {$notif} belum dibaca";
+    } else {
+        $labelLonceng = $notifLabel . ($notif ? ': ' . $notif : '');
+    }
+
+    $ikonLonceng = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>';
 @endphp
 
 <header class="dash-hero">
@@ -45,31 +63,28 @@
         </div>
 
         <div class="dash-hero__actions">
-            @php
-                $labelLonceng = $notifLabel . ($notif ? ': ' . $notif : '');
-            @endphp
-            @if ($notifHref)
-                <a href="{{ $notifHref }}" class="dash-hero__bell" aria-label="{{ $labelLonceng }}" title="{{ $labelLonceng }}">
-                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor"
-                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
-                    <path d="M13.7 21a2 2 0 01-3.4 0"/>
-                </svg>
-                    @if ($notif)
-                        <span class="dash-hero__badge">{{ $notif > 99 ? '99+' : $notif }}</span>
-                    @endif
-                </a>
-            @else
-                <button type="button" class="dash-hero__bell" aria-label="{{ $notifLabel }}">
-                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor"
-                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
-                    <path d="M13.7 21a2 2 0 01-3.4 0"/>
-                </svg>
-                    @if ($notif)
-                        <span class="dash-hero__badge">{{ $notif > 99 ? '99+' : $notif }}</span>
-                    @endif
-                </button>
+            @if ($bell)
+                @if ($notifHref)
+                    <a href="{{ $notifHref }}" class="dash-hero__bell" aria-label="{{ $labelLonceng }}" title="{{ $notifLabel }}"
+                       @if ($live) data-bell data-label="{{ $notifLabel }}" data-url="{{ route('notifikasi.belum-dibaca') }}" @endif>
+                        {!! $ikonLonceng !!}
+                        @if ($live)
+                            <span class="dash-hero__badge" data-bell-badge @if (! $notif) hidden @endif>{{ $notif > 99 ? '99+' : $notif }}</span>
+                        @elseif ($notif)
+                            <span class="dash-hero__badge">{{ $notif > 99 ? '99+' : $notif }}</span>
+                        @endif
+                    </a>
+                @else
+                    <button type="button" class="dash-hero__bell" aria-label="{{ $labelLonceng }}" title="{{ $notifLabel }}"
+                            @if ($live) data-bell data-label="{{ $notifLabel }}" data-url="{{ route('notifikasi.belum-dibaca') }}" @endif>
+                        {!! $ikonLonceng !!}
+                        @if ($live)
+                            <span class="dash-hero__badge" data-bell-badge @if (! $notif) hidden @endif>{{ $notif > 99 ? '99+' : $notif }}</span>
+                        @elseif ($notif)
+                            <span class="dash-hero__badge">{{ $notif > 99 ? '99+' : $notif }}</span>
+                        @endif
+                    </button>
+                @endif
             @endif
             <div class="dash-hero__avatar" title="{{ $namaUser }}">{{ $inisial }}</div>
         </div>

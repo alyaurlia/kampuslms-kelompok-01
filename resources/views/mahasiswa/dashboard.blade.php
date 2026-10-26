@@ -55,7 +55,7 @@
 
 <x-layout title="Dashboard Mahasiswa" role="mahasiswa" full-footer>
     <section class="dash">
-        <x-dash-hero portal="Portal Mahasiswa" title="Dashboard Mahasiswa"  search-label="Cari mata kuliah..." />
+        <x-dash-hero portal="Portal Mahasiswa" title="Dashboard Mahasiswa" :bell="false" search-label="Cari mata kuliah..." />
 
         <div class="admin-metrics admin-metrics--flow">
             @foreach ($cards as $card)
