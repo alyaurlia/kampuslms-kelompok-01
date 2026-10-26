@@ -208,6 +208,9 @@ main:has(.notif) {
 .notif-search input::placeholder { color: var(--color-ink-soft); }
 
 .notif-select {
+    min-width: 0;
+    max-width: 220px;
+    text-overflow: ellipsis;
     padding: 0.7rem 0.9rem;
     font: inherit;
     font-size: 0.9rem;

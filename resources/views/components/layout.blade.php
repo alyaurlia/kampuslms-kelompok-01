@@ -49,6 +49,28 @@
             ],
         ];
 
+        // Lonceng notifikasi di navbar. Muncul hanya jika halaman notifikasi role itu ada
+        // (mahasiswa otomatis muncul begitu route 'mahasiswa.notifikasi' dibuat).
+        $routeLonceng = $role ? $role . '.notifikasi' : null;
+        $punyaLonceng = auth()->check() && $routeLonceng && Route::has($routeLonceng);
+        $jumlahLonceng = 0;
+
+        if ($punyaLonceng && $role === 'admin') {
+            // Aktivitas hari ini: materi diunggah + tugas terbit + pengumpulan masuk
+            $hariIni = now()->startOfDay();
+            $jumlahLonceng = \App\Models\Material::where('created_at', '>=', $hariIni)->count()
+                + \App\Models\Assignment::where('status', 'published')->where('created_at', '>=', $hariIni)->count()
+                + \App\Models\Submission::where('submitted_at', '>=', $hariIni)->count();
+        } elseif ($punyaLonceng && $role === 'dosen') {
+            // Pengumpulan di MK yang diampu yang belum dinilai
+            $jumlahLonceng = \App\Models\Submission::query()
+                ->join('assignments', 'assignments.id', '=', 'submissions.assignment_id')
+                ->join('courses', 'courses.id', '=', 'assignments.course_id')
+                ->where('courses.lecturer_id', auth()->id())
+                ->whereDoesntHave('grade')
+                ->count();
+        }
+
         $menu = $menus[$role] ?? [
             ['Tentang', 'tentang', 'tentang'],
         ];
@@ -69,6 +91,21 @@
                 </a>
             @endforeach
 
+            @if ($punyaLonceng)
+                <a href="{{ route($routeLonceng) }}"
+                   class="nav-bell {{ request()->routeIs($routeLonceng) ? 'active' : '' }}"
+                   aria-label="Notifikasi{{ $jumlahLonceng ? ', ' . $jumlahLonceng . ' baru' : '' }}"
+                   title="Notifikasi">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.7 21a2 2 0 0 1-3.4 0"></path>
+                    </svg>
+                    @if ($jumlahLonceng > 0)
+                        <span class="nav-bell__badge">{{ $jumlahLonceng > 99 ? '99+' : $jumlahLonceng }}</span>
+                    @endif
+                </a>
+            @endif
+
             {{-- Pengunjung belum login (mis. di halaman Tentang): "Keluar" kembali ke halaman login.
                  Berupa tautan biasa di dalam <nav>, jadi otomatis ikut gaya dan hover menu lain. --}}
             @guest
@@ -78,18 +115,6 @@
             {{-- Sudah login: logout harus POST (dengan @csrf), jadi berupa tombol di dalam form.
                  Gaya dan efek hover-nya ada di layout.css (.logout-form, .logout-btn). --}}
             @auth
-                {{-- Lonceng notifikasi, angkanya diperbarui polling tiap 30 detik.
-                     Admin: angka = aktivitas hari ini, menuju feed aktivitas (menggantikan menu teks "Notifikasi").
-                     Dosen & mahasiswa: angka = notifikasi belum dibaca. --}}
-                @if ($role === 'admin')
-                    <x-notification-bell
-                        :href="route('admin.notifikasi')"
-                        satuan="aktivitas hari ini"
-                        :active="request()->routeIs('admin.notifikasi')" />
-                @else
-                    <x-notification-bell />
-                @endif
-
                 <form method="POST" action="{{ route('logout') }}" class="logout-form">
                     @csrf
                     <button type="submit" class="logout-btn">Keluar</button>
