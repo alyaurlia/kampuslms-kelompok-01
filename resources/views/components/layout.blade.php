@@ -1,4 +1,3 @@
-
 @props(['title' => 'LMS Kampus', 'role' => null, 'fullFooter' => true])
 <!DOCTYPE html>
 <html lang="id">
@@ -39,7 +38,6 @@
                 ['Dashboard',   'admin.dashboard',          'admin.dashboard'],
                 ['Kelola User', 'admin.users.index',        'admin.users.*'],
                 ['Mata Kuliah', 'admin.mata-kuliah.index',  'admin.mata-kuliah.*'],
-                ['Notifikasi',  'admin.notifikasi',         'admin.notifikasi'],
             ],
             'dosen' => [
                 ['Dashboard',   'dosen.dashboard',          'dosen.dashboard'],
@@ -80,6 +78,18 @@
             {{-- Sudah login: logout harus POST (dengan @csrf), jadi berupa tombol di dalam form.
                  Gaya dan efek hover-nya ada di layout.css (.logout-form, .logout-btn). --}}
             @auth
+                {{-- Lonceng notifikasi, angkanya diperbarui polling tiap 30 detik.
+                     Admin: angka = aktivitas hari ini, menuju feed aktivitas (menggantikan menu teks "Notifikasi").
+                     Dosen & mahasiswa: angka = notifikasi belum dibaca. --}}
+                @if ($role === 'admin')
+                    <x-notification-bell
+                        :href="route('admin.notifikasi')"
+                        satuan="aktivitas hari ini"
+                        :active="request()->routeIs('admin.notifikasi')" />
+                @else
+                    <x-notification-bell />
+                @endif
+
                 <form method="POST" action="{{ route('logout') }}" class="logout-form">
                     @csrf
                     <button type="submit" class="logout-btn">Keluar</button>

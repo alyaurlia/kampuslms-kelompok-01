@@ -97,7 +97,7 @@
 
 <x-layout title="Dashboard Dosen" role="dosen" full-footer>
     <section class="dash">
-        <x-dash-hero portal="Portal Dosen" title="Dashboard Dosen" :notif="$cards[4]['nilai']" notif-href="#tugas-menunggu-nilai" notif-label="Tugas Menunggu Nilai" search-label="Cari mata kuliah..." />
+        <x-dash-hero portal="Portal Dosen" title="Dashboard Dosen" :bell="false" search-label="Cari mata kuliah..." />
 
         <div class="admin-metrics admin-metrics--flow">
             @foreach ($cards as $card)
