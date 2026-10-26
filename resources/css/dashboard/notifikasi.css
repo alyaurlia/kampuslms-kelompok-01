@@ -1,0 +1,749 @@
+/* =========================================================
+   notifikasi.css — Pusat Notifikasi admin (admin/notifikasi.blade.php)
+   Kartu metrik memakai .admin-metric (components/dashboard.css),
+   banner memakai .dash-hero (dashboard/dosen-mahasiswa.css).
+   Semua class lain berawalan .notif- sehingga halaman lain tidak terpengaruh.
+   ========================================================= */
+
+/* Halaman ini dua kolom, jadi dibuat lebih lebar (pola yang sama dengan tentang.css) */
+main:has(.notif) {
+    max-width: 1120px;
+}
+
+.notif {
+    width: 100%;
+    font-family: Arial, sans-serif;
+}
+
+
+/* =========================================================
+   LAYOUT
+   ========================================================= */
+
+.notif-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 1.5rem;
+    align-items: start;
+    margin-top: 1.5rem;
+}
+
+.notif-main { min-width: 0; }
+
+.notif-side {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    min-width: 0;
+}
+
+
+/* =========================================================
+   TOMBOL
+   ========================================================= */
+
+.notif-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.1rem;
+    font-family: Arial, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--color-primary-dark);
+    text-decoration: none;
+    background: #fff;
+    border: 1.5px solid var(--color-border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.notif-btn:hover {
+    transform: translateY(-2px);
+    background: color-mix(in srgb, var(--color-primary) 6%, white);
+    border-color: color-mix(in srgb, var(--color-primary) 30%, var(--color-border));
+}
+
+.notif-btn:focus-visible,
+.notif-tab:focus-visible,
+.notif-page:focus-visible,
+.notif-item a:focus-visible,
+.notif-deadline:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--color-accent) 70%, transparent);
+    outline-offset: 2px;
+}
+
+.notif-btn--primary {
+    color: #fff;
+    background: linear-gradient(90deg, var(--color-card-4-from), var(--color-primary));
+    border-color: transparent;
+    box-shadow: 0 8px 16px color-mix(in srgb, var(--color-primary) 22%, transparent);
+}
+
+.notif-btn--primary:hover {
+    color: #fff;
+    background: linear-gradient(90deg, var(--color-card-4-from), var(--color-primary));
+    border-color: transparent;
+    box-shadow: 0 12px 22px color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+
+
+/* =========================================================
+   TOOLBAR: tab jenis + pencarian + periode
+   ========================================================= */
+
+.notif-toolbar {
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 1.6rem;
+    padding: 1.5rem 1.5rem 1.3rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 28px;
+    box-shadow: 0 14px 34px color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+
+.notif-toolbar::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 5px;
+    background: linear-gradient(90deg, var(--color-card-4-from), var(--color-primary));
+}
+
+.notif-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-bottom: 1.1rem;
+}
+
+.notif-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.5rem 0.6rem 0.5rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-ink);
+    text-decoration: none;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.notif-tab:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
+}
+
+.notif-tab__count {
+    min-width: 28px;
+    padding: 0.1rem 0.55rem;
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 10%, white);
+    border: 1px solid color-mix(in srgb, var(--color-primary) 25%, white);
+    border-radius: 999px;
+}
+
+.notif-tab.is-active {
+    color: #fff;
+    background: linear-gradient(90deg, var(--color-card-4-from), var(--color-primary));
+    border-color: transparent;
+    box-shadow: 0 8px 16px color-mix(in srgb, var(--color-primary) 22%, transparent);
+}
+
+.notif-tab.is-active .notif-tab__count {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+.notif-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.notif-search {
+    flex: 1 1 220px;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+    padding: 0 0.9rem;
+    color: var(--color-ink-soft);
+    background: #fff;
+    border: 1.5px solid var(--color-accent);
+    border-radius: 14px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.notif-search:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+
+.notif-search svg { flex-shrink: 0; }
+
+.notif-search input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.7rem 0;
+    font: inherit;
+    font-size: 0.9rem;
+    color: var(--color-ink);
+    background: transparent;
+    border: 0;
+    outline: 0;
+}
+
+.notif-search input::placeholder { color: var(--color-ink-soft); }
+
+.notif-select {
+    padding: 0.7rem 0.9rem;
+    font: inherit;
+    font-size: 0.9rem;
+    color: var(--color-ink);
+    background: #fff;
+    border: 1.5px solid var(--color-accent);
+    border-radius: 14px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.notif-select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+
+
+/* =========================================================
+   FEED: grup per hari + kartu aktivitas
+   ========================================================= */
+
+.notif-day { margin-bottom: 1.7rem; }
+
+.notif-day__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0 0.3rem 0.8rem;
+}
+
+.notif-day__head h2 {
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+}
+
+.notif-day__head span {
+    font-size: 0.78rem;
+    color: var(--color-ink-soft);
+}
+
+.notif-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.notif-item {
+    --tone: var(--color-primary);
+    display: flex;
+    gap: 1rem;
+    padding: 1.15rem 1.25rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 22px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.notif-item:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--tone) 35%, var(--color-border));
+    box-shadow: 0 12px 26px color-mix(in srgb, var(--tone) 10%, transparent);
+}
+
+.notif-item--materi      { --tone: #2563eb; }
+.notif-item--tugas       { --tone: #7c3aed; }
+.notif-item--pengumpulan { --tone: var(--color-primary); }
+.notif-item--terlambat   { --tone: #b3261e; }
+
+.notif-item__icon {
+    flex: 0 0 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    color: var(--tone);
+    background: color-mix(in srgb, var(--tone) 12%, white);
+    border-radius: 14px;
+}
+
+.notif-item__icon svg,
+.notif-file__icon svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.notif-item__icon svg { width: 21px; height: 21px; }
+
+.notif-item__body {
+    flex: 1;
+    min-width: 0;
+}
+
+.notif-item__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.notif-item__who {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.45rem;
+    min-width: 0;
+}
+
+.notif-item__who > strong {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--color-ink);
+    overflow-wrap: anywhere;
+}
+
+.notif-item__time {
+    flex-shrink: 0;
+    padding-top: 0.15rem;
+    font-size: 0.75rem;
+    color: var(--color-ink-soft);
+    white-space: nowrap;
+}
+
+.notif-item__text {
+    margin: 0.5rem 0 0;
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: var(--color-ink);
+    overflow-wrap: anywhere;
+}
+
+.notif-item__text a {
+    font-weight: 700;
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.notif-item__text a:hover { text-decoration: underline; }
+
+.notif-item__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.7rem;
+}
+
+.notif-item__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.95rem;
+}
+
+/* chip kecil (peran, jenis, status) — warna senada chip di courses & dashboard */
+.notif-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.18rem 0.65rem;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.notif-chip--muted { color: var(--color-ink-soft); background: color-mix(in srgb, var(--color-ink-soft) 13%, white); }
+.notif-chip--tone  { color: var(--tone);            background: color-mix(in srgb, var(--tone) 12%, white); }
+.notif-chip--ok    { color: #3f6b1c; background: #e3eed7; }
+.notif-chip--warn  { color: #8a5d12; background: #f8ecd3; }
+.notif-chip--bad   { color: #b3261e; background: #fdecea; }
+.notif-chip--info  { color: #2c4f85; background: #e1e9f5; }
+
+.notif-meta {
+    padding: 0.22rem 0.7rem;
+    font-size: 0.74rem;
+    color: var(--color-ink-soft);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+}
+
+.notif-meta--kode {
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: var(--color-primary-dark);
+}
+
+/* lampiran berkas / tautan */
+.notif-file {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-top: 0.8rem;
+    padding: 0.55rem 0.85rem 0.55rem 0.6rem;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+}
+
+.notif-file__icon {
+    flex: 0 0 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    color: var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 10%, white);
+    border-radius: 10px;
+}
+
+.notif-file__icon svg { width: 17px; height: 17px; }
+
+.notif-file__name {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.notif-file__size {
+    flex-shrink: 0;
+    font-size: 0.74rem;
+    color: var(--color-ink-soft);
+}
+
+.notif-note {
+    margin: 0.75rem 0 0;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.82rem;
+    font-style: italic;
+    line-height: 1.6;
+    color: var(--color-ink-soft);
+    background: var(--color-bg);
+    border-left: 3px solid var(--tone);
+    border-radius: 0 12px 12px 0;
+    overflow-wrap: anywhere;
+}
+
+/* tampilan kosong */
+.notif-empty {
+    padding: 2rem 1.5rem;
+    text-align: center;
+    background: var(--color-bg);
+    border: 1px dashed var(--color-border);
+    border-radius: 22px;
+}
+
+.notif-empty p {
+    margin: 0 0 1rem;
+    color: var(--color-ink-soft);
+}
+
+.notif-empty .notif-btn { margin: 0 auto; }
+
+
+/* =========================================================
+   PAGINATION
+   ========================================================= */
+
+.notif-pager {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.9rem;
+    padding: 0.9rem 1.2rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+}
+
+.notif-pager__info {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--color-ink-soft);
+}
+
+.notif-pager__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.notif-page {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 0.7rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--color-ink);
+    text-decoration: none;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+a.notif-page:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
+}
+
+.notif-page.is-active {
+    color: #fff;
+    background: linear-gradient(90deg, var(--color-card-4-from), var(--color-primary));
+    border-color: transparent;
+}
+
+.notif-page--wide { padding: 0 1rem; }
+
+.notif-page.is-disabled {
+    color: var(--color-ink-soft);
+    opacity: 0.55;
+}
+
+
+/* =========================================================
+   KARTU SAMPING (mata kuliah & tenggat)
+   ========================================================= */
+
+.notif-card {
+    position: relative;
+    overflow: hidden;
+    padding: 1.75rem 1.5rem 1.4rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 28px;
+    box-shadow: 0 14px 34px color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+
+.notif-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 5px;
+    background: linear-gradient(90deg, var(--color-card-4-from), var(--color-primary));
+}
+
+.notif-card__eyebrow {
+    margin: 0 0 0.3rem;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    color: var(--color-primary);
+}
+
+.notif-card__title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--color-ink);
+}
+
+.notif-card__desc {
+    margin: 0.4rem 0 1.15rem;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--color-ink-soft);
+}
+
+.notif-card__empty {
+    margin: 0;
+    padding: 1rem;
+    font-size: 0.85rem;
+    text-align: center;
+    color: var(--color-ink-soft);
+    background: var(--color-bg);
+    border: 1px dashed var(--color-border);
+    border-radius: 16px;
+}
+
+/* --- mata kuliah dengan bar progres --- */
+.notif-course { --lv-from: var(--color-card-3-from); --lv-to: var(--color-card-3-to); }
+.notif-course--sedang { --lv-from: var(--color-card-2-from); --lv-to: var(--color-card-2-to); }
+.notif-course--rendah { --lv-from: var(--color-card-4-from); --lv-to: var(--color-primary); }
+
+.notif-course + .notif-course {
+    margin-top: 0.95rem;
+    padding-top: 0.95rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.notif-course__top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.45rem;
+}
+
+.notif-course__top a {
+    min-width: 0;
+    font-size: 0.86rem;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--color-ink);
+    text-decoration: none;
+}
+
+.notif-course__top a:hover { color: var(--color-primary); }
+
+.notif-course__top strong {
+    flex-shrink: 0;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--lv-to);
+}
+
+.notif-bar {
+    height: 8px;
+    overflow: hidden;
+    background: #f0e8ed;
+    border-radius: 999px;
+}
+
+.notif-bar__fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--lv-from), var(--lv-to));
+    border-radius: inherit;
+    transition: width 0.5s ease;
+}
+
+.notif-course__sub {
+    margin: 0.45rem 0 0;
+    font-size: 0.72rem;
+    line-height: 1.45;
+    color: var(--color-ink-soft);
+}
+
+/* --- tenggat terdekat --- */
+.notif-deadline {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.85rem 1rem;
+    color: inherit;
+    text-decoration: none;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.notif-deadline + .notif-deadline { margin-top: 0.7rem; }
+
+.notif-deadline:hover {
+    transform: translateX(3px);
+    background: #fff;
+    border-color: color-mix(in srgb, var(--color-primary) 30%, var(--color-border));
+}
+
+.notif-deadline__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.6rem;
+}
+
+.notif-deadline__title {
+    min-width: 0;
+    font-size: 0.86rem;
+    font-weight: 800;
+    line-height: 1.35;
+    color: var(--color-ink);
+    overflow-wrap: anywhere;
+}
+
+.notif-deadline__time {
+    flex-shrink: 0;
+    padding: 0.15rem 0.6rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--color-primary-dark);
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+}
+
+.notif-deadline__sub {
+    font-size: 0.74rem;
+    color: var(--color-ink-soft);
+}
+
+.notif-deadline__left {
+    font-size: 0.76rem;
+    font-weight: 800;
+    color: var(--color-primary);
+}
+
+.notif-deadline.is-urgent { border-color: #f5c2c0; }
+.notif-deadline.is-urgent .notif-deadline__left { color: #b3261e; }
+.notif-deadline.is-urgent .notif-deadline__time {
+    color: #b3261e;
+    background: #fdecea;
+    border-color: #f5c2c0;
+}
+
+
+/* =========================================================
+   RESPONSIF
+   ========================================================= */
+
+@media (max-width: 980px) {
+    .notif-layout { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 560px) {
+    .notif-toolbar { padding: 1.3rem 1.1rem 1.1rem; border-radius: 24px; }
+    .notif-item { padding: 1rem; gap: 0.8rem; border-radius: 20px; }
+    .notif-item__icon { flex-basis: 38px; width: 38px; height: 38px; border-radius: 12px; }
+    .notif-item__icon svg { width: 18px; height: 18px; }
+    .notif-item__top { flex-direction: column; gap: 0.3rem; }
+    .notif-item__time { padding-top: 0; white-space: normal; }
+    .notif-select, .notif-filter > .notif-btn { flex: 1 1 auto; }
+    .notif-pager { justify-content: center; text-align: center; }
+    .notif-card { padding: 1.5rem 1.2rem 1.2rem; border-radius: 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .notif-btn, .notif-tab, .notif-item, .notif-page, .notif-deadline,
+    .notif-search, .notif-select, .notif-bar__fill { transition: none; }
+}

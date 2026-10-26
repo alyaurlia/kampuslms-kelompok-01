@@ -467,6 +467,9 @@
         title="Dashboard"
         sub="Pantau data dan aktivitas pembelajaran KampusLMS."
         status="Sistem aktif"
+        :notif="$aktivitasHariIni"
+        :notif-href="route('admin.notifikasi')"
+        notif-label="Aktivitas hari ini"
         search-label="Cari data..."
         target=".admin-metric, .admin-course-item"
     />
