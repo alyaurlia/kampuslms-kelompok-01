@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminNotifikasiController;
+use App\Http\Controllers\DosenNotifikasiController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CourseController;
@@ -9,7 +10,6 @@ use App\Http\Controllers\CourseEnrollmentController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\MahasiswaDashboardController;
-use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\UserController;
@@ -77,12 +77,6 @@ Route::middleware('auth')->group(function () {
     // di AssignmentController@download (AssignmentPolicy::view).
     Route::get('/tugas/{assignment}/lampiran', [AssignmentController::class, 'download'])
         ->name('tugas.lampiran');
-
-    // Jumlah notifikasi belum dibaca milik user yang login. Dipanggil lonceng
-    // di navbar tiap 30 detik (polling). Nama lengkap: notifikasi.belum-dibaca
-    Route::get('/notifikasi/belum-dibaca', [NotifikasiController::class, 'belumDibaca'])
-        ->middleware('throttle:60,1')
-        ->name('notifikasi.belum-dibaca');
 
 
     // =========================================================
@@ -152,6 +146,11 @@ Route::middleware('auth')->group(function () {
 
             Route::view('/dashboard', 'dosen.dashboard')
                 ->name('dashboard');
+
+            // Pusat notifikasi dosen: pengumpulan di MK yang diampu.
+            // Nama lengkap: dosen.notifikasi
+            Route::get('/notifikasi', [DosenNotifikasiController::class, 'index'])
+                ->name('notifikasi');
 
             // Dosen hanya melihat MK yang diampu. Mengubah MK = admin saja
             // (CoursePolicy::update), jadi edit/update tidak dibuka di sini.
