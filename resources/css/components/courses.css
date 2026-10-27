@@ -1,384 +1,1169 @@
 /* =========================================================
-   courses.css — komponen inti mata kuliah
-   Dipakai courses/index.blade.php dan courses/show.blade.php.
-   Isi: motif banner, kartu detail, grid daftar, header halaman,
-   filter, chip status, tombol aksi kartu, pagination.
-   Materi/tugas -> courses/materials.css, assignments.css,
-   grading.css, enrollments.css. Tombol .mk-btn-* -> buttons.css.
+   COURSES.CSS
+   Halaman daftar dan detail mata kuliah Admin / Dosen
+   Palet: marun, magenta, putih, dan krem
+   ========================================================= */
+
+:root {
+    --mk-maroon: #8f0d42;
+    --mk-maroon-dark: #700b34;
+    --mk-magenta: #c2185b;
+    --mk-pink: #f8dce7;
+    --mk-cream: #fff8f2;
+    --mk-white: #ffffff;
+    --mk-ink: #241b2f;
+    --mk-muted: #756b78;
+    --mk-border: #f0dfe5;
+    --mk-shadow: 0 12px 30px rgba(100, 30, 58, 0.08);
+    --mk-transition: 220ms ease;
+}
+
+/* =========================================================
+   TAUTAN KEMBALI
    ========================================================= */
 
 .mk-back-link {
-    font-family: Arial, sans-serif;
-    font-size: 0.85rem;
-    color: var(--color-ink-soft);
-    text-decoration: none;
-    display: inline-block;
-    margin-bottom: 0.75rem;
-}
-.mk-back-link:hover { text-decoration: underline; }
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
 
-/* --- motif banner, dipakai baik di banner besar (show)
-       maupun banner kecil di grid (index) --- */
-.mk-pattern-diamond::before {
-    background-image:
-        linear-gradient(45deg, rgba(255,255,255,0.25) 25%, transparent 25%),
-        linear-gradient(-45deg, rgba(255,255,255,0.25) 25%, transparent 25%);
-    background-size: 32px 32px;
+    color: var(--mk-maroon);
+    font-family: Arial, sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+
+    transition:
+        color var(--mk-transition),
+        transform var(--mk-transition);
 }
-.mk-pattern-triangle::before {
-    background-image:
-        linear-gradient(60deg, rgba(255,255,255,0.2) 25%, transparent 25.5%),
-        linear-gradient(-60deg, rgba(255,255,255,0.2) 25%, transparent 25.5%);
-    background-size: 36px 42px;
+
+.mk-back-link:hover {
+    color: var(--mk-magenta);
+    transform: translateX(-3px);
+    text-decoration: none;
 }
+
+/* =========================================================
+   MOTIF DEKORATIF BANNER
+   ========================================================= */
+
+.mk-pattern-diamond,
+.mk-pattern-triangle,
+.mk-pattern-circle {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+}
+
+.mk-pattern-diamond::before,
+.mk-pattern-triangle::before,
 .mk-pattern-circle::before {
-    background-image: radial-gradient(circle, rgba(255,255,255,0.25) 2px, transparent 2.5px);
-    background-size: 24px 24px;
-}
-[class^="mk-pattern-"]::before,
-[class*=" mk-pattern-"]::before {
     content: "";
     position: absolute;
     inset: 0;
-    opacity: 0.35;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.3;
+    animation: mk-pattern-drift 16s ease-in-out infinite alternate;
 }
+
+.mk-pattern-diamond::before {
+    background-image:
+        linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 0.22) 25%,
+            transparent 25%
+        ),
+        linear-gradient(
+            -45deg,
+            rgba(255, 255, 255, 0.22) 25%,
+            transparent 25%
+        );
+    background-size: 32px 32px;
+}
+
+.mk-pattern-triangle::before {
+    background-image:
+        linear-gradient(
+            60deg,
+            rgba(255, 255, 255, 0.2) 25%,
+            transparent 25.5%
+        ),
+        linear-gradient(
+            -60deg,
+            rgba(255, 255, 255, 0.2) 25%,
+            transparent 25.5%
+        );
+    background-size: 36px 42px;
+}
+
+.mk-pattern-circle::before {
+    background-image:
+        radial-gradient(
+            circle,
+            rgba(255, 255, 255, 0.3) 2px,
+            transparent 2.5px
+        );
+    background-size: 24px 24px;
+}
+
+@keyframes mk-pattern-drift {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: 36px 24px;
+    }
+}
+
+/* =========================================================
+   BADGE KODE MATA KULIAH
+   ========================================================= */
 
 .mk-badge {
     position: absolute;
     top: 16px;
     left: 16px;
-    background: rgba(255, 255, 255, 0.92);
-    color: var(--color-primary-dark);
+    z-index: 2;
+
+    display: inline-flex;
+    align-items: center;
+
+    padding: 6px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 9px;
+
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--mk-maroon);
+
     font-family: Arial, sans-serif;
-    font-weight: 700;
-    font-size: 0.75rem;
+    font-size: 0.76rem;
+    font-weight: 800;
     letter-spacing: 0.02em;
-    padding: 4px 12px;
-    border-radius: 6px;
+
+    box-shadow: 0 4px 12px rgba(60, 0, 25, 0.08);
 }
 
-/* --- halaman detail (show.blade.php) --- */
+/* =========================================================
+   HALAMAN DETAIL MATA KULIAH
+   ========================================================= */
+
 .mk-card {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 10px;
-    overflow: hidden;
-}
-.mk-banner {
     position: relative;
-    height: 170px;
+    isolation: isolate;
+
+    overflow: hidden;
+
+    background: var(--mk-white);
+    border: 1px solid var(--mk-border);
+    border-radius: 22px;
+
+    box-shadow: 0 8px 26px rgba(100, 30, 58, 0.06);
+
+    transition:
+        transform var(--mk-transition),
+        box-shadow var(--mk-transition),
+        border-color var(--mk-transition);
 }
+
+.mk-card:hover {
+    border-color: #e8bfd0;
+    box-shadow: 0 16px 38px rgba(100, 30, 58, 0.11);
+    transform: translateY(-3px);
+}
+
+/* Banner marun-magenta.
+   Selector ini lebih spesifik daripada .mk-bg-1 sampai .mk-bg-5,
+   sehingga warna ungu sebelumnya tidak menimpa banner detail. */
+
+.mk-card .mk-banner {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+
+    min-height: 150px;
+    height: 170px;
+
+    background: linear-gradient(
+        120deg,
+        #760b36 0%,
+        #a20f4d 48%,
+        #d41463 100%
+    );
+}
+
+.mk-card .mk-banner.mk-bg-1,
+.mk-card .mk-banner.mk-bg-2,
+.mk-card .mk-banner.mk-bg-3,
+.mk-card .mk-banner.mk-bg-4,
+.mk-card .mk-banner.mk-bg-5 {
+    background: linear-gradient(
+        120deg,
+        #760b36 0%,
+        #a20f4d 48%,
+        #d41463 100%
+    );
+}
+
+.mk-card .mk-banner::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+
+    background:
+        radial-gradient(
+            circle at 85% 20%,
+            rgba(255, 255, 255, 0.2),
+            transparent 35%
+        ),
+        linear-gradient(
+            110deg,
+            transparent 30%,
+            rgba(255, 255, 255, 0.08),
+            transparent 70%
+        );
+
+    background-size: 100% 100%, 220% 100%;
+    background-position: center, 0 0;
+
+    transition: background-position 600ms ease;
+}
+
+.mk-card:hover .mk-banner::after {
+    background-position: center, 100% 0;
+}
+
+/* Isi kartu detail */
+
 .mk-body {
-    padding: 1.5rem;
+    padding: clamp(1.25rem, 3vw, 2rem);
+    background: var(--mk-white);
+
+    color: var(--mk-ink);
     font-family: Arial, sans-serif;
 }
+
+/* Judul mata kuliah */
+
 .mk-title {
-    font-size: 1.5rem;
     margin: 0 0 1.25rem;
-    color: var(--color-ink);
+
+    color: var(--mk-ink);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.35rem, 2vw, 1.75rem);
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
 }
+
+/* Informasi kode, SKS, dosen, dan status */
+
 .mk-meta-row {
     display: flex;
-    gap: 2rem;
     flex-wrap: wrap;
+    gap: 1.5rem 2.25rem;
+
     padding-bottom: 1.25rem;
     margin-bottom: 1.25rem;
-    border-bottom: 1px solid var(--color-border);
+
+    border-bottom: 1px solid var(--mk-border);
 }
+
 .mk-meta-item {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
-}
-.mk-meta-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    color: var(--color-ink-soft);
-}
-.mk-meta-value {
-    font-size: 0.95rem;
-    color: var(--color-ink);
-}
-.mk-desc-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    color: var(--color-ink-soft);
-    margin: 0 0 0.5rem;
-}
-.mk-desc-label--spaced { margin-top: 1.25rem; }
-.mk-desc-text {
-    font-size: 0.9rem;
-    line-height: 1.6;
-    margin: 0;
-    color: var(--color-ink);
+    gap: 0.35rem;
+    min-width: 70px;
 }
 
-/* --- pintasan Materi & Tugas di halaman detail mata kuliah --- */
-.mk-shortcuts {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
+.mk-meta-label {
+    color: var(--mk-muted);
+
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
+
+.mk-meta-value {
+    color: var(--mk-ink);
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+/* Deskripsi */
+
+.mk-desc-label {
+    margin: 0 0 0.55rem;
+
+    color: var(--mk-maroon);
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
+
+.mk-desc-label--spaced {
     margin-top: 1.5rem;
 }
-.mk-shortcut {
-    flex: 1;
-    min-width: 200px;
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    padding: 1rem 1.25rem;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    text-decoration: none;
-    color: inherit;
-    transition: box-shadow 0.15s ease, transform 0.15s ease;
-}
-.mk-shortcut:hover {
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
-}
-.mk-shortcut-title {
-    font-weight: 700;
-    color: var(--color-primary);
-}
-.mk-shortcut-count {
-    font-size: 0.8rem;
-    color: var(--color-ink-soft);
-}
 
-/* --- halaman daftar (index.blade.php) --- */
-.mk-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 1.5rem;
-}
-.mk-grid-card {
-    display: flex;
-    flex-direction: column;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 10px;
-    overflow: hidden;
-    text-decoration: none;
-    color: inherit;
-    transition: box-shadow 0.15s ease, transform 0.15s ease;
-}
-.mk-grid-card:hover {
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
-}
-.mk-grid-banner {
-    position: relative;
-    height: 120px;
-}
-.mk-grid-arrow {
-    position: absolute;
-    bottom: 12px;
-    right: 12px;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.92);
-    color: var(--color-primary-dark);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8rem;
-}
-.mk-grid-body {
-    padding: 1rem 1.1rem 1.2rem;
-    font-family: Arial, sans-serif;
-}
-.mk-grid-title {
-    font-size: 1rem;
-    font-weight: 600;
-    margin: 0 0 0.4rem;
-    color: var(--color-primary);
-    line-height: 1.35;
-}
-.mk-grid-meta {
-    font-size: 0.8rem;
-    color: var(--color-ink-soft);
+.mk-desc-text {
     margin: 0;
+
+    color: #514653;
+    font-size: 0.92rem;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
 }
 
 /* =========================================================
-   Halaman daftar (courses/index.blade.php): header, filter,
-   notifikasi, kartu, tombol aksi, dan pagination
+   PINTASAN MATERI DAN TUGAS
    ========================================================= */
 
-/* --- header halaman: judul + tombol tambah --- */
-.mk-page-header {
+.mk-shortcuts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+
+    margin-top: 1.5rem;
+}
+
+.mk-shortcut {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 0.45rem;
+
+    min-width: 0;
+    padding: 1.1rem 1.25rem;
+
+    background: linear-gradient(145deg, #ffffff, #fff9fb);
+    border: 1px solid var(--mk-border);
+    border-radius: 15px;
+
+    color: var(--mk-ink);
+    text-decoration: none;
+
+    transition:
+        transform var(--mk-transition),
+        box-shadow var(--mk-transition),
+        border-color var(--mk-transition),
+        background var(--mk-transition);
+}
+
+.mk-shortcut::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+
+    width: 4px;
+    background: linear-gradient(
+        180deg,
+        var(--mk-magenta),
+        var(--mk-maroon)
+    );
+
+    transform: scaleY(0);
+    transform-origin: bottom;
+
+    transition: transform var(--mk-transition);
+}
+
+.mk-shortcut:hover {
+    border-color: #e7b6ca;
+    background: #fff4f8;
+    box-shadow: 0 12px 24px rgba(143, 13, 66, 0.1);
+    transform: translateY(-4px);
+    text-decoration: none;
+}
+
+.mk-shortcut:hover::before {
+    transform: scaleY(1);
+}
+
+.mk-shortcut-title {
+    color: var(--mk-maroon);
+    font-size: 0.98rem;
+    font-weight: 800;
+
+    transition: color var(--mk-transition);
+}
+
+.mk-shortcut:hover .mk-shortcut-title {
+    color: var(--mk-magenta);
+}
+
+.mk-shortcut-count {
+    color: var(--mk-muted);
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+/* =========================================================
+   MAHASISWA TERDAFTAR DAN BAGIAN ISI DETAIL
+   ========================================================= */
+
+.mk-body hr {
+    border: 0;
+    border-top: 1px solid var(--mk-border);
+    margin: 1.35rem 0;
+}
+
+.mk-body h2,
+.mk-body h3,
+.mk-body h4 {
+    color: var(--mk-ink);
+}
+
+.mk-body a:not(.mk-back-link):not(.mk-shortcut) {
+    transition:
+        color var(--mk-transition),
+        background var(--mk-transition);
+}
+
+.mk-body input:not([type="checkbox"]):not([type="radio"]),
+.mk-body select,
+.mk-body textarea {
+    width: 100%;
+    min-height: 42px;
+    padding: 0.65rem 0.8rem;
+
+    border: 1px solid #ead9df;
+    border-radius: 10px;
+
+    background: #fffdfc;
+    color: var(--mk-ink);
+    font: inherit;
+
+    transition:
+        border-color var(--mk-transition),
+        box-shadow var(--mk-transition),
+        background var(--mk-transition);
+}
+
+.mk-body input:not([type="checkbox"]):not([type="radio"]):focus,
+.mk-body select:focus,
+.mk-body textarea:focus {
+    outline: none;
+    border-color: var(--mk-magenta);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(194, 24, 91, 0.12);
+}
+
+.mk-body input[type="checkbox"] {
+    accent-color: var(--mk-magenta);
+}
+
+.mk-body label {
+    color: var(--mk-ink);
+}
+
+/* =========================================================
+   HALAMAN DAFTAR MATA KULIAH
+   ========================================================= */
+
+.mk-page-header {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+
+    display: flex;
     align-items: center;
+    justify-content: space-between;
     flex-wrap: wrap;
-    gap: 0.75rem;
+    gap: 1.25rem;
+
+    padding: 1.75rem 2rem;
+    margin-bottom: 1.5rem;
+
+    color: #ffffff;
+    background: linear-gradient(
+        120deg,
+        #760b36 0%,
+        #a20f4d 52%,
+        #d41463 100%
+    );
+
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 22px;
+
+    box-shadow: 0 12px 28px rgba(100, 30, 58, 0.13);
+}
+
+.mk-page-header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+
+    background-image:
+        linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 0.08) 25%,
+            transparent 25%
+        ),
+        linear-gradient(
+            -45deg,
+            rgba(255, 255, 255, 0.08) 25%,
+            transparent 25%
+        );
+
+    background-size: 34px 34px;
+    opacity: 0.55;
+}
+
+.mk-page-header .mk-page-title {
+    margin: 0;
+
+    color: #ffffff;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.mk-page-title--spaced {
     margin-bottom: 1.5rem;
 }
-.mk-page-title {
-    font-size: 1.6rem;
-    margin: 0;
-}
-.mk-page-title--spaced { margin-bottom: 1.5rem; }
+
+/* Tombol tambah */
+
 .mk-btn-add {
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    background: var(--color-card-1-from);
-    color: #fff;
-    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+
+    padding: 0.7rem 1.1rem;
+
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 12px;
+
+    background: #ffffff;
+    color: var(--mk-maroon);
+
     font-family: Arial, sans-serif;
     font-size: 0.9rem;
+    font-weight: 800;
+    text-decoration: none;
+
+    box-shadow: 0 5px 14px rgba(60, 0, 25, 0.1);
+
+    transition:
+        transform var(--mk-transition),
+        box-shadow var(--mk-transition),
+        background var(--mk-transition),
+        color var(--mk-transition);
 }
 
-/* --- notifikasi sukses --- */
+.mk-btn-add:hover {
+    background: #fff0f5;
+    color: var(--mk-maroon-dark);
+    box-shadow: 0 9px 20px rgba(60, 0, 25, 0.18);
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+/* =========================================================
+   NOTIFIKASI SUKSES
+   ========================================================= */
+
 .alert-success {
-    background: #e6f4ea;
-    border: 1px solid #b7dfc2;
-    border-radius: 6px;
-    padding: 1rem;
+    padding: 1rem 1.2rem;
     margin-bottom: 1.5rem;
+
+    color: #236b42;
+    background: #effaf2;
+    border: 1px solid #c8e8d1;
+    border-radius: 13px;
+
     font-family: Arial, sans-serif;
-    color: #1e7e34;
+    line-height: 1.6;
 }
 
-/* --- form pencarian & filter status --- */
+/* =========================================================
+   FILTER DAN PENCARIAN
+   ========================================================= */
+
 .mk-filter {
     display: flex;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
     flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+
+    background: #ffffff;
+    border: 1px solid var(--mk-border);
+    border-radius: 18px;
+
+    box-shadow: 0 6px 18px rgba(100, 30, 58, 0.04);
 }
+
 .mk-filter-input {
     flex: 1;
     min-width: 200px;
-    padding: 0.5rem;
-    border: 1px solid var(--color-border);
-    border-radius: 4px;
 }
+
+.mk-filter-input,
 .mk-filter-select {
-    padding: 0.5rem;
-    border: 1px solid var(--color-border);
-    border-radius: 4px;
+    min-height: 43px;
+    padding: 0.65rem 0.8rem;
+
+    color: var(--mk-ink);
+    background: #fffaf7;
+    border: 1px solid #ead9df;
+    border-radius: 11px;
+
+    font: inherit;
+
+    transition:
+        border-color var(--mk-transition),
+        box-shadow var(--mk-transition);
 }
+
+.mk-filter-input:focus,
+.mk-filter-select:focus {
+    outline: none;
+    border-color: var(--mk-magenta);
+    box-shadow: 0 0 0 3px rgba(194, 24, 91, 0.12);
+}
+
 .mk-filter-btn {
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    border: none;
-    background: var(--color-card-1-from);
-    color: #fff;
+    min-height: 43px;
+    padding: 0.65rem 1rem;
+
+    color: #ffffff;
+    background: linear-gradient(
+        120deg,
+        var(--mk-magenta),
+        var(--mk-maroon)
+    );
+
+    border: 1px solid transparent;
+    border-radius: 11px;
+
+    font: inherit;
+    font-weight: 700;
     cursor: pointer;
+
+    transition:
+        transform var(--mk-transition),
+        box-shadow var(--mk-transition),
+        filter var(--mk-transition);
 }
+
+.mk-filter-btn:hover {
+    filter: brightness(1.08);
+    box-shadow: 0 6px 15px rgba(143, 13, 66, 0.18);
+    transform: translateY(-2px);
+}
+
 .mk-filter-reset {
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    border: 1px solid var(--color-border);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 43px;
+    padding: 0.65rem 1rem;
+
+    color: var(--mk-maroon);
+    background: #fff0f5;
+    border: 1px solid #f3d3df;
+    border-radius: 11px;
+
     text-decoration: none;
-    color: inherit;
+
+    transition:
+        color var(--mk-transition),
+        background var(--mk-transition),
+        transform var(--mk-transition);
 }
 
-/* --- tampilan kosong --- */
-.mk-empty {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
-    padding: 1.5rem;
-}
-.mk-empty p {
-    margin: 0;
-    color: var(--color-ink-soft);
-    text-align: center;
-    font-family: Arial, sans-serif;
-}
-
-/* --- warna banner kartu (pengganti style inline gradient);
-       nomor 1-5 berasal dari crc32(kode) % 5 + 1 --- */
-.mk-bg-1 { background: linear-gradient(135deg, var(--color-card-1-from), var(--color-card-1-to)); }
-.mk-bg-2 { background: linear-gradient(135deg, var(--color-card-2-from), var(--color-card-2-to)); }
-.mk-bg-3 { background: linear-gradient(135deg, var(--color-card-3-from), var(--color-card-3-to)); }
-.mk-bg-4 { background: linear-gradient(135deg, var(--color-card-4-from), var(--color-card-4-to)); }
-.mk-bg-5 { background: linear-gradient(135deg, var(--color-card-5-from), var(--color-card-5-to)); }
-
-/* --- area klik kartu (banner + judul + meta) --- */
-.mk-grid-link {
+.mk-filter-reset:hover {
+    color: #ffffff;
+    background: var(--mk-maroon);
+    transform: translateY(-2px);
     text-decoration: none;
-    color: inherit;
-}
-
-/* --- baris tombol Edit / Hapus di dasar kartu --- */
-.mk-grid-actions {
-    display: flex;
-    gap: 0.5rem;
-    padding: 0 1rem 1rem 1rem;
-    margin-top: auto;
-}
-.mk-action-edit {
-    flex: 1;
-    text-align: center;
-    padding: 0.4rem;
-    border-radius: 4px;
-    border: 1px solid var(--color-border);
-    text-decoration: none;
-    color: inherit;
-    font-family: Arial, sans-serif;
-    font-size: 0.85rem;
-}
-.mk-action-form {
-    flex: 1;
-}
-.mk-action-delete {
-    width: 100%;
-    padding: 0.4rem;
-    border-radius: 4px;
-    border: 1px solid #f5c2c0;
-    background: #fdecea;
-    color: #b3261e;
-    cursor: pointer;
-    font-family: Arial, sans-serif;
-    font-size: 0.85rem;
-}
-
-/* --- pagination --- */
-.mk-pagination {
-    margin-top: 2rem;
 }
 
 /* =========================================================
-   Chip status mata kuliah (draft / active / archived)
-   Tampil di pojok kanan atas banner kartu, untuk admin dan dosen.
+   KARTU DAFTAR MATA KULIAH
+   ========================================================= */
+
+.mk-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    align-items: stretch;
+    gap: 1.35rem;
+}
+
+.mk-grid-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+
+    color: var(--mk-ink);
+    background: #ffffff;
+
+    border: 1px solid var(--mk-border);
+    border-radius: 20px;
+
+    box-shadow: 0 7px 22px rgba(100, 30, 58, 0.05);
+
+    text-decoration: none;
+
+    transition:
+        transform var(--mk-transition),
+        box-shadow var(--mk-transition),
+        border-color var(--mk-transition);
+}
+
+.mk-grid-card:hover {
+    color: var(--mk-ink);
+    border-color: #e7b6ca;
+    box-shadow: 0 16px 32px rgba(100, 30, 58, 0.12);
+    transform: translateY(-5px);
+    text-decoration: none;
+}
+
+.mk-grid-banner {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+
+    height: 120px;
+
+    background: linear-gradient(
+        120deg,
+        #760b36,
+        #a20f4d,
+        #d41463
+    );
+}
+
+.mk-grid-banner::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+
+    background:
+        radial-gradient(
+            circle at 85% 20%,
+            rgba(255, 255, 255, 0.22),
+            transparent 38%
+        );
+
+    transition: transform 350ms ease;
+}
+
+.mk-grid-card:hover .mk-grid-banner::after {
+    transform: scale(1.12);
+}
+
+.mk-grid-arrow {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 30px;
+    height: 30px;
+
+    color: var(--mk-maroon);
+    background: rgba(255, 255, 255, 0.96);
+
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+
+    font-size: 0.85rem;
+
+    transition:
+        transform var(--mk-transition),
+        color var(--mk-transition),
+        background var(--mk-transition);
+}
+
+.mk-grid-card:hover .mk-grid-arrow {
+    color: #ffffff;
+    background: var(--mk-magenta);
+    transform: translateX(3px);
+}
+
+.mk-grid-body {
+    flex: 1;
+    padding: 1.1rem 1.15rem 1.25rem;
+
+    font-family: Arial, sans-serif;
+}
+
+.mk-grid-title {
+    margin: 0 0 0.45rem;
+
+    color: var(--mk-maroon);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.4;
+
+    transition: color var(--mk-transition);
+}
+
+.mk-grid-card:hover .mk-grid-title {
+    color: var(--mk-magenta);
+}
+
+.mk-grid-meta {
+    margin: 0;
+
+    color: var(--mk-muted);
+    font-size: 0.82rem;
+    line-height: 1.6;
+}
+
+/* =========================================================
+   WARNA BANNER KARTU DAFTAR
+   ========================================================= */
+
+.mk-bg-1 {
+    background: linear-gradient(135deg, #760b36, #c2185b);
+}
+
+.mk-bg-2 {
+    background: linear-gradient(135deg, #8f0d42, #e04b87);
+}
+
+.mk-bg-3 {
+    background: linear-gradient(135deg, #700b34, #a20f4d);
+}
+
+.mk-bg-4 {
+    background: linear-gradient(135deg, #9f1239, #d41463);
+}
+
+.mk-bg-5 {
+    background: linear-gradient(135deg, #6f173f, #bb3970);
+}
+
+/* =========================================================
+   AREA TAUTAN DAN AKSI KARTU
+   ========================================================= */
+
+.mk-grid-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.mk-grid-link:hover {
+    color: inherit;
+    text-decoration: none;
+}
+
+.mk-grid-actions {
+    display: flex;
+    gap: 0.6rem;
+
+    padding: 0 1rem 1rem;
+    margin-top: auto;
+}
+
+.mk-action-edit {
+    flex: 1;
+
+    padding: 0.55rem 0.65rem;
+
+    color: var(--mk-maroon);
+    background: #ffffff;
+
+    border: 1px solid #e8cbd6;
+    border-radius: 9px;
+
+    font-family: Arial, sans-serif;
+    font-size: 0.84rem;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+
+    transition:
+        color var(--mk-transition),
+        background var(--mk-transition),
+        border-color var(--mk-transition),
+        transform var(--mk-transition);
+}
+
+.mk-action-edit:hover {
+    color: #ffffff;
+    background: var(--mk-maroon);
+    border-color: var(--mk-maroon);
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+.mk-action-form {
+    flex: 1;
+}
+
+.mk-action-delete {
+    width: 100%;
+    padding: 0.55rem 0.65rem;
+
+    color: #a3233b;
+    background: #fff1f2;
+
+    border: 1px solid #f4c8d0;
+    border-radius: 9px;
+
+    font-family: Arial, sans-serif;
+    font-size: 0.84rem;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        color var(--mk-transition),
+        background var(--mk-transition),
+        border-color var(--mk-transition),
+        transform var(--mk-transition);
+}
+
+.mk-action-delete:hover {
+    color: #ffffff;
+    background: #a3233b;
+    border-color: #a3233b;
+    transform: translateY(-2px);
+}
+
+/* =========================================================
+   TOMBOL UMUM DI HALAMAN DETAIL
+   ========================================================= */
+
+.mk-body button,
+.mk-body .btn {
+    transition:
+        transform var(--mk-transition),
+        box-shadow var(--mk-transition),
+        background var(--mk-transition),
+        border-color var(--mk-transition);
+}
+
+.mk-body button:hover,
+.mk-body .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(143, 13, 66, 0.14);
+}
+
+/* =========================================================
+   STATUS MATA KULIAH
    ========================================================= */
 
 .mk-status {
     position: absolute;
     top: 16px;
     right: 16px;
+    z-index: 2;
+
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    background: rgba(255, 255, 255, 0.92);
-    color: var(--color-ink);
+    gap: 7px;
+
+    padding: 6px 11px;
+
+    color: var(--mk-ink);
+    background: rgba(255, 255, 255, 0.96);
+
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: 9px;
+
     font-family: Arial, sans-serif;
-    font-weight: 700;
     font-size: 0.7rem;
-    letter-spacing: 0.03em;
+    font-weight: 800;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 6px;
+
+    box-shadow: 0 4px 12px rgba(60, 0, 25, 0.08);
 }
 
-/* titik berwarna di depan teks status */
 .mk-status::before {
     content: "";
+    flex-shrink: 0;
+
     width: 8px;
     height: 8px;
+
     border-radius: 50%;
-    background: var(--color-ink-soft);
+    background: var(--mk-muted);
 }
 
-.mk-status--draft::before    { background: #DEA249; } /* kuning: belum dibuka */
-.mk-status--active::before   { background: #5E8B2F; } /* hijau: sedang berjalan */
-.mk-status--archived::before { background: #8A6B75; } /* abu: diarsipkan */
+.mk-status--draft::before {
+    background: #d99a25;
+}
+
+.mk-status--active::before {
+    background: #328454;
+}
+
+.mk-status--archived::before {
+    background: #8a6b75;
+}
+
+/* =========================================================
+   KEADAAN KOSONG
+   ========================================================= */
+
+.mk-empty {
+    padding: 1.75rem;
+
+    color: var(--mk-muted);
+    background: #fffaf7;
+
+    border: 1px dashed #e8cbd6;
+    border-radius: 17px;
+}
+
+.mk-empty p {
+    margin: 0;
+
+    color: var(--mk-muted);
+    font-family: Arial, sans-serif;
+    line-height: 1.7;
+    text-align: center;
+}
+
+/* =========================================================
+   PAGINATION
+   ========================================================= */
+
+.mk-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+
+    margin-top: 1.75rem;
+}
+
+.mk-pagination a,
+.mk-pagination button,
+.mk-pagination span {
+    border-radius: 9px;
+    transition:
+        color var(--mk-transition),
+        background var(--mk-transition),
+        border-color var(--mk-transition);
+}
+
+.mk-pagination a:hover,
+.mk-pagination button:hover {
+    color: #ffffff;
+    background: var(--mk-maroon);
+    border-color: var(--mk-maroon);
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 760px) {
+    .mk-page-header {
+        align-items: flex-start;
+        padding: 1.35rem;
+        border-radius: 18px;
+    }
+
+    .mk-page-header .mk-page-title {
+        font-size: 1.45rem;
+    }
+
+    .mk-body {
+        padding: 1.25rem;
+    }
+
+    .mk-meta-row {
+        gap: 1rem 1.5rem;
+    }
+
+    .mk-shortcuts {
+        grid-template-columns: 1fr;
+    }
+
+    .mk-card .mk-banner {
+        height: 145px;
+    }
+}
+
+@media (max-width: 480px) {
+    .mk-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mk-filter {
+        padding: 0.8rem;
+    }
+
+    .mk-filter-input {
+        min-width: 100%;
+    }
+
+    .mk-filter-select,
+    .mk-filter-btn,
+    .mk-filter-reset {
+        width: 100%;
+    }
+
+    .mk-grid-actions {
+        flex-direction: column;
+    }
+
+    .mk-action-form {
+        width: 100%;
+    }
+
+    .mk-card {
+        border-radius: 17px;
+    }
+}
+
+/* Hormati pengaturan pengguna yang mengurangi animasi. */
+
+@media (prefers-reduced-motion: reduce) {
+    .mk-pattern-diamond::before,
+    .mk-pattern-triangle::before,
+    .mk-pattern-circle::before {
+        animation: none;
+    }
+
+    .mk-card,
+    .mk-shortcut,
+    .mk-grid-card,
+    .mk-btn-add,
+    .mk-filter-btn,
+    .mk-filter-reset,
+    .mk-action-edit,
+    .mk-action-delete {
+        transition: none;
+    }
+
+    .mk-card:hover,
+    .mk-shortcut:hover,
+    .mk-grid-card:hover {
+        transform: none;
+    }
+}
