@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Events\NilaiDiberikan;
 use App\Models\Grade;
 use App\Models\Submission;
 use App\Models\User;
@@ -43,10 +44,24 @@ class GradeSubmission
         // relasi ($submission->grade()->make()), bukan mass assignment.
         $grade->forceFill($attributes)->save();
 
-        // TODO F9: kirim notifikasi "nilai keluar" ke mahasiswa (via queue)
-        // HANYA saat nilai menjadi published: $grade->is_published dan
-        // ($grade->wasRecentlyCreated || $grade->wasChanged('is_published')).
+        // Notifikasi "nilai keluar" ke mahasiswa (lewat queue) HANYA saat nilai menjadi
+        // published: nilai baru yang langsung terbit, atau is_published berubah menjadi true.
+        // Mengubah skor atau feedback pada nilai yang sudah terbit tidak memicunya lagi.
+        if ($this->terbit($grade)
+            && ($grade->wasRecentlyCreated || $grade->wasChanged('is_published'))) {
+            NilaiDiberikan::dispatch($grade);
+        }
 
         return $grade;
+    }
+
+    /**
+     * Kolom is_published bisa terisi default database, dan nilainya tidak ikut ada di
+     * atribut model setelah insert; bila null, baca ulang dari database.
+     */
+    private function terbit(Grade $grade): bool
+    {
+        return (bool) ($grade->is_published
+            ?? $grade->newQuery()->whereKey($grade->getKey())->value('is_published'));
     }
 }

@@ -10,6 +10,8 @@ use App\Http\Controllers\CourseEnrollmentController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\MahasiswaDashboardController;
+use App\Http\Controllers\MahasiswaNotifikasiController;
+use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\UserController;
@@ -77,6 +79,12 @@ Route::middleware('auth')->group(function () {
     // di AssignmentController@download (AssignmentPolicy::view).
     Route::get('/tugas/{assignment}/lampiran', [AssignmentController::class, 'download'])
         ->name('tugas.lampiran');
+
+    // Jumlah pada lonceng notifikasi di navbar (polling tiap 30 detik).
+    // Berlaku untuk semua peran; angkanya dihitung per peran di JumlahNotifikasi.
+    Route::get('/notifikasi/belum-dibaca', [NotifikasiController::class, 'belumDibaca'])
+        ->middleware('throttle:60,1')
+        ->name('notifikasi.belum-dibaca');
 
 
     // =========================================================
@@ -209,6 +217,20 @@ Route::middleware('auth')->group(function () {
 
             Route::get('/dashboard', [MahasiswaDashboardController::class, 'index'])
                 ->name('dashboard');
+
+            // Pusat notifikasi mahasiswa: notifikasi database (tugas baru, nilai) + tandai dibaca.
+            // Kepemilikan dijaga di controller: hanya notifikasi milik user yang login.
+            // Nama lengkap: mahasiswa.notifikasi, mahasiswa.notifikasi.dibaca,
+            //               mahasiswa.notifikasi.dibaca-semua
+            Route::get('/notifikasi', [MahasiswaNotifikasiController::class, 'index'])
+                ->name('notifikasi');
+
+            Route::post('/notifikasi/dibaca-semua', [MahasiswaNotifikasiController::class, 'dibacaSemua'])
+                ->name('notifikasi.dibaca-semua');
+
+            Route::post('/notifikasi/{id}/dibaca', [MahasiswaNotifikasiController::class, 'dibaca'])
+                ->whereUuid('id')
+                ->name('notifikasi.dibaca');
 
             Route::resource('mata-kuliah', CourseController::class)
                 ->only([
