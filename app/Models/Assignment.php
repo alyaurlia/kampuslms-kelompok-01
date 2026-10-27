@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\TugasDipublikasikan;
 use App\Support\FileSize;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
@@ -51,6 +52,18 @@ class Assignment extends Model
      */
     protected static function booted(): void
     {
+        // Tugas baru terbit: dibuat langsung berstatus published, atau berubah dari
+        // draft ke published. Mengubah tugas yang sudah published (judul, batas waktu,
+        // dst.) TIDAK memicu event, jadi mahasiswa tidak dinotifikasi berulang.
+        // Ditulis di model agar web, API, dan tinker sama. Untuk mematikannya saat
+        // seeding: Assignment::withoutEvents(fn () => ...).
+        static::saved(function (Assignment $assignment) {
+            if ($assignment->status === 'published'
+                && ($assignment->wasRecentlyCreated || $assignment->wasChanged('status'))) {
+                TugasDipublikasikan::dispatch($assignment);
+            }
+        });
+
         static::deleted(function (Assignment $assignment) {
             $disk = Storage::disk('local');
 
