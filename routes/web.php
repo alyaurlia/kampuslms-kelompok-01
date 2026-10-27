@@ -10,6 +10,7 @@ use App\Http\Controllers\CourseEnrollmentController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\MahasiswaDashboardController;
+use App\Http\Controllers\MahasiswaNilaiController;
 use App\Http\Controllers\MahasiswaNotifikasiController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\PasswordResetController;
@@ -231,6 +232,11 @@ Route::middleware('auth')->group(function () {
             Route::post('/notifikasi/{id}/dibaca', [MahasiswaNotifikasiController::class, 'dibaca'])
                 ->whereUuid('id')
                 ->name('notifikasi.dibaca');
+
+            // Rekap nilai: nilai tugas per mata kuliah milik mahasiswa yang login.
+            // Nama lengkap: mahasiswa.nilai
+            Route::get('/nilai', [MahasiswaNilaiController::class, 'index'])
+                ->name('nilai');
 
             Route::resource('mata-kuliah', CourseController::class)
                 ->only([
