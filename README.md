@@ -56,3 +56,45 @@ Sistem manajemen pembelajaran kampus berbasis web menggunakan Laravel.
 | Adelia Cyntia Renata | Frontend |
 | Alya Auralia | Backend |
 | Andika Putra Pratama | Backend |
+
+## Queue & Notifikasi
+
+Aplikasi ini memakai queue berbasis database untuk mengirim notifikasi
+secara asinkron (tugas baru dipublikasikan, nilai diberikan).
+
+### Konfigurasi
+
+Pastikan di `.env`:
+
+```
+QUEUE_CONNECTION=database
+```
+
+Lalu jalankan migrasi (membuat tabel `jobs`, `failed_jobs`, dan `notifications`):
+
+```
+php artisan migrate
+```
+
+### Menjalankan Worker
+
+Worker harus berjalan agar notifikasi terkirim:
+
+```
+php artisan queue:work
+```
+
+> **Penting:** Jika worker tidak dijalankan, job hanya menumpuk di tabel
+> `jobs` dan notifikasi tidak akan terkirim, tanpa pesan error apa pun.
+
+### Memeriksa Job yang Gagal
+
+```
+php artisan queue:failed     # melihat daftar job gagal
+php artisan queue:retry all  # menjalankan ulang job gagal
+```
+
+### Di Server Produksi
+
+Worker dijalankan lewat Supervisor agar tetap hidup setelah logout,
+dan perlu di-restart setiap deployment: `php artisan queue:restart`.
