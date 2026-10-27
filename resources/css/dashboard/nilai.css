@@ -1,0 +1,345 @@
+/* =========================================================
+   Rekap Nilai mahasiswa (views/mahasiswa/nilai.blade.php)
+   Memakai token warna situs dan kontrol .notif-* dari notifikasi.css.
+   ========================================================= */
+
+main:has(.nilai) {
+    max-width: 1120px;
+}
+
+.nilai {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.nilai-unit {
+    margin-left: 0.35rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-ink-soft);
+    letter-spacing: 0;
+}
+
+.nilai-filter {
+    background: var(--color-surface, #fff);
+    border: 1px solid var(--color-border);
+    border-radius: 22px;
+    padding: 1rem 1.1rem;
+}
+
+/* ---------- Kartu tabel ---------- */
+.nilai-card {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-surface, #fff);
+    border: 1px solid var(--color-border);
+    border-radius: 28px;
+    padding: 1.6rem 1.4rem 1.3rem;
+    box-shadow: 0 10px 30px rgba(203, 18, 94, 0.06);
+}
+
+.nilai-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--color-card-4-from, #F85988), var(--color-primary));
+}
+
+.nilai-card__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.4rem 1rem;
+}
+
+.nilai-card__head h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--color-ink);
+}
+
+.nilai-card__head span {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-ink-soft);
+}
+
+.nilai-card__hint {
+    margin: 0.3rem 0 1rem;
+    font-size: 0.85rem;
+    color: var(--color-ink-soft);
+}
+
+/* ---------- Tabel berbasis grid ---------- */
+.nilai-table {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.nilai-head,
+.nilai-row__sum {
+    display: grid;
+    grid-template-columns: 84px minmax(0, 1fr) 52px 84px 64px 112px 150px 28px;
+    align-items: center;
+    column-gap: 0.75rem;
+}
+
+.nilai-head {
+    padding: 0.7rem 1rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-primary-dark);
+    background: #fdf1e6;
+    border-radius: 14px;
+}
+
+.is-num { text-align: right; }
+.is-center { text-align: center; }
+
+.nilai-row {
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 18px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nilai-row:hover,
+.nilai-row[open] {
+    border-color: var(--color-accent);
+    box-shadow: 0 6px 18px rgba(203, 18, 94, 0.08);
+}
+
+.nilai-row__sum {
+    padding: 0.85rem 1rem;
+    cursor: pointer;
+    list-style: none;
+}
+
+.nilai-row__sum::-webkit-details-marker { display: none; }
+
+.nilai-row__sum:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 18px;
+}
+
+.nilai-cell {
+    min-width: 0;
+    font-size: 0.92rem;
+    color: var(--color-ink);
+}
+
+.nilai-cell small {
+    display: block;
+    font-size: 0.74rem;
+    color: var(--color-ink-soft);
+}
+
+.nilai-cell--kode {
+    font-weight: 800;
+    color: var(--color-primary);
+}
+
+.nilai-cell--mk strong {
+    display: block;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.nilai-huruf {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    font-weight: 800;
+    font-size: 0.92rem;
+}
+
+.nilai-huruf--a { background: #e3eed7; color: #3f6b1c; }
+.nilai-huruf--b { background: #e1e9f5; color: #2c4f85; }
+.nilai-huruf--c { background: #f8ecd3; color: #8a5d12; }
+.nilai-huruf--d { background: #fdecea; color: #b3261e; }
+.nilai-huruf--none { background: #f3ece6; color: var(--color-ink-soft); }
+
+.nilai-chevron {
+    display: inline-flex;
+    justify-content: center;
+    color: var(--color-ink-soft);
+    transition: transform 0.2s ease;
+}
+
+.nilai-row[open] .nilai-chevron { transform: rotate(180deg); }
+
+/* ---------- Rincian tugas ---------- */
+.nilai-detail {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.7rem;
+    padding: 0.2rem 1rem 1.1rem;
+    border-top: 1px dashed var(--color-border);
+}
+
+.nilai-detail__title {
+    margin: 0.8rem 0 0;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+}
+
+.nilai-detail__empty {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--color-ink-soft);
+}
+
+.nilai-tugas {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 0.85rem 1rem;
+    background: #fff8f2;
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+}
+
+.nilai-tugas__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem 0.8rem;
+}
+
+.nilai-tugas__top strong {
+    font-size: 0.95rem;
+    color: var(--color-ink);
+}
+
+.nilai-tugas__chips {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.nilai-tugas__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 1rem;
+    font-size: 0.8rem;
+    color: var(--color-ink-soft);
+}
+
+.nilai-tugas__skor {
+    font-weight: 800;
+    color: var(--color-primary-dark);
+}
+
+/* ---------- Total ---------- */
+.nilai-total {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1.1rem;
+    padding: 1rem 1.2rem;
+    background: #fdf1e6;
+    border-radius: 18px;
+}
+
+.nilai-total__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.4rem;
+    font-size: 0.85rem;
+    color: var(--color-ink-soft);
+}
+
+.nilai-total__list strong { color: var(--color-ink); }
+
+.nilai-total__ips {
+    display: flex;
+    align-items: baseline;
+    gap: 0.8rem;
+    padding: 0.6rem 1.1rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+}
+
+.nilai-total__ips small {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+}
+
+.nilai-total__ips strong {
+    font-size: 1.6rem;
+    color: var(--color-primary);
+}
+
+.nilai-note {
+    margin: 0;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--color-ink-soft);
+}
+
+/* ---------- Responsif ---------- */
+@media (max-width: 900px) {
+    .nilai-head { display: none; }
+
+    .nilai-row__sum {
+        grid-template-columns: 1fr 1fr;
+        row-gap: 0.55rem;
+        position: relative;
+        padding-right: 2.6rem;
+    }
+
+    .nilai-cell--mk { grid-column: 1 / -1; order: -1; }
+    .nilai-cell--kode { grid-column: 1 / -1; order: -2; }
+    .is-num, .is-center { text-align: left; }
+
+    .nilai-cell::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 0.66rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--color-ink-soft);
+    }
+
+    .nilai-cell--kode::before,
+    .nilai-cell--mk::before { display: none; }
+
+    .nilai-chevron { position: absolute; top: 0.9rem; right: 0.9rem; }
+}
+
+@media (max-width: 560px) {
+    .nilai-card { padding: 1.3rem 0.9rem 1rem; border-radius: 22px; }
+    .nilai-total { padding: 0.9rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nilai-row, .nilai-chevron { transition: none; }
+}
+
+/* Bar nilai tugas: warna isi sendiri (di notifikasi.css warnanya ikut kelas induk antrean). */
+.nilai-tugas .notif-bar__fill {
+    background: linear-gradient(90deg, var(--color-card-4-from, #F85988), var(--color-primary));
+}

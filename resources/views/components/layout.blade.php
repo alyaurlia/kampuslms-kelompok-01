@@ -16,6 +16,7 @@
         'resources/css/dashboard/dosen-mahasiswa.css',
         'resources/css/dashboard/task-panel.css',
         'resources/css/dashboard/notifikasi.css',
+        'resources/css/dashboard/nilai.css',
         'resources/css/components/courses.css',
         'resources/css/components/buttons.css',
         'resources/css/courses/materials.css',
@@ -46,6 +47,7 @@
             'mahasiswa' => [
                 ['Dashboard',   'mahasiswa.dashboard',          'mahasiswa.dashboard'],
                 ['Mata Kuliah', 'mahasiswa.mata-kuliah.index',  'mahasiswa.mata-kuliah.*'],
+                ['Nilai',       'mahasiswa.nilai',              'mahasiswa.nilai'],
             ],
         ];
 
