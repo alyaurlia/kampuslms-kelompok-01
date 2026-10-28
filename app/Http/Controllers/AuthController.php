@@ -9,23 +9,33 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'nim_nip' => ['required', 'string'],
+        $request->validate([
+            'login'    => ['required', 'string'],
             'password' => ['required', 'string'],
         ], [
-            'nim_nip.required' => 'NIM/NIP wajib diisi.',
+            'login.required'    => 'NIM/NIP atau email wajib diisi.',
             'password.required' => 'Kata sandi wajib diisi.',
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+        $login = trim($request->input('login'));
+
+        // Berformat email -> cek kolom email, selain itu -> nim_nip
+        $isEmail = filter_var($login, FILTER_VALIDATE_EMAIL);
+        $field   = $isEmail ? 'email' : 'nim_nip';
+        $value   = $isEmail ? strtolower($login) : $login;
+
+        if (Auth::attempt(
+            [$field => $value, 'password' => $request->input('password')],
+            $request->boolean('remember')
+        )) {
             $request->session()->regenerate();
 
             return redirect()->route(Auth::user()->role . '.dashboard');
         }
 
         return back()
-            ->withErrors(['nim_nip' => 'NIM/NIP atau kata sandi salah.'])
-            ->onlyInput('nim_nip');
+            ->withErrors(['login' => 'NIM/NIP, email, atau kata sandi salah.'])
+            ->onlyInput('login');
     }
 
     public function logout(Request $request)
