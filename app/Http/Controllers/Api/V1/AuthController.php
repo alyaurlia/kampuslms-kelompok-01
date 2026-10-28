@@ -17,13 +17,19 @@ class AuthController extends Controller
     /** POST /api/v1/auth/login (publik, di-throttle 5/menit di route) */
     public function login(LoginRequest $request): JsonResponse
     {
-        $user = User::where('email', $request->email)->first();
+        $login = trim((string) ($request->input('login') ?: $request->input('email')));
 
-        // SATU pesan untuk email salah maupun password salah,
-        // supaya penyerang tidak bisa menebak email yang terdaftar.
+        // Berformat email -> cek kolom email, selain itu -> nim_nip
+        $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'nim_nip';
+        $value = $field === 'email' ? strtolower($login) : $login;
+
+        $user = User::where($field, $value)->first();
+
+        // SATU pesan untuk akun salah maupun password salah,
+        // supaya penyerang tidak bisa menebak akun yang terdaftar.
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
-                'email' => ['Email atau kata sandi salah.'],
+                'email' => ['Email/NIM/NIP atau kata sandi salah.'],
             ]);
         }
 

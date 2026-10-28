@@ -54,7 +54,7 @@
                         @csrf
 
                         <div>
-                            <input type="text" name="nim_nip" value="{{ old('nim_nip') }}" placeholder="NIM / NIP"
+                            <input type="text" name="login" value="{{ old('login') }}" placeholder="NIM / NIP / Email"
                                 class="login-input" autocomplete="username">
                         </div>
 

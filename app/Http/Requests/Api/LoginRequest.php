@@ -13,8 +13,10 @@ class LoginRequest extends FormRequest
 
     public function rules(): array
     {
+        // Klien boleh mengirim "login" (NIM/NIP atau email) atau "email" (kompatibel dengan klien lama).
         return [
-            'email'       => ['required', 'string', 'email'],
+            'login'       => ['required_without:email', 'nullable', 'string'],
+            'email'       => ['required_without:login', 'nullable', 'string'],
             'password'    => ['required', 'string'],
             'device_name' => ['nullable', 'string', 'max:100'],
         ];
@@ -23,9 +25,9 @@ class LoginRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'email.required'    => 'Email wajib diisi.',
-            'email.email'       => 'Format email tidak valid.',
-            'password.required' => 'Kata sandi wajib diisi.',
+            'login.required_without' => 'NIM/NIP atau email wajib diisi.',
+            'email.required_without' => 'NIM/NIP atau email wajib diisi.',
+            'password.required'      => 'Kata sandi wajib diisi.',
         ];
     }
 }
